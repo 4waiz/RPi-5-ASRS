@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Empty from "C:/Users/omerj/Downloads/svelte5/src/assets/inverntory/Empty.svg";
-  import Full from "C:/Users/omerj/Downloads/svelte5/src/assets/inverntory/Full.svg";
-  import Partial from "C:/Users/omerj/Downloads/svelte5/src/assets/inverntory/Partial.svg";
+  import Empty from "/home/edgelif5/Downloads/ASRS-Svelte-Frontend-main/frontend/src/assets/inverntory/Empty.svg";
+  import Full from "/home/edgelif5/Downloads/ASRS-Svelte-Frontend-main/frontend/src/assets/inverntory/Full.svg";
+  import Partial from "/home/edgelif5/Downloads/ASRS-Svelte-Frontend-main/frontend/src/assets/inverntory/Partial.svg";
 
   let {slots} = $props();
   const icons = { full: Full, empty: Empty, partial: Partial } as const;
