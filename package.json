@@ -1,5 +1,5 @@
 {
-  "name": "my-svelte-app",
+  "name": "edge-asrs-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,5 +12,8 @@
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "svelte": "^5.39.6",
     "vite": "^7.1.7"
+  },
+  "dependencies": {
+    "marked": "^11.2.0"
   }
 }
