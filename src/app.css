@@ -94,3 +94,22 @@ button:focus-visible {
   margin: 0px;
   padding: 0px;
 }
+
+body {
+  margin: 0;
+  user-select: none;
+  caret-color: transparent;
+}
+
+body input,
+body textarea,
+body [contenteditable="true"] {
+  user-select: text;
+  caret-color: auto;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none;
+  box-shadow: none;
+}

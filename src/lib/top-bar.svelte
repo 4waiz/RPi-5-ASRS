@@ -71,6 +71,8 @@
     border: 0;
     text-align: center;
     color: #525252;
+    user-select: none;
+    caret-color: transparent;
 }
 
 .tab-active {

@@ -2,7 +2,7 @@
     import CircularProgressBar from "../Statistical charts/Circular-Progress-Bar.svelte";
     import Temperature from "../Statistical charts/Temperature .svelte";
     import NumericData from "../Statistical charts/numeric-data.svelte";
-    import AbustractInvontory from "../abustract-invontory.svelte";
+    import AbstractInventory from "../abstract-inventory.svelte";
     let Cl = [80, 20];
     let Present = 30;
 
@@ -67,7 +67,7 @@
         <div class="hd"></div>
         <NumericData />
     </div>
-    <AbustractInvontory {slots} />
+    <AbstractInventory {slots} />
 </div>
 
 <style>

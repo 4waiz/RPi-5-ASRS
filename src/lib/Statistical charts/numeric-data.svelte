@@ -1,5 +1,5 @@
 <script>
-    let {value=100, unit="km/h",lable="Labole"} = $props();
+    let { value = 100, unit = "km/h", label = "Label" } = $props();
 </script>
 
 <div class="compinent-conternar">
@@ -9,7 +9,7 @@
             <samp class="unit">{unit}</samp>
         </p>
     </div>
-    <p class="lable">{lable}</p>
+    <p class="label">{label}</p>
 </div>
 
 <style>
@@ -44,7 +44,7 @@
     line-height: 1;
 }
 
-.lable {
+.label {
     margin: 0;
     color: #000;
     font-size: 18px;

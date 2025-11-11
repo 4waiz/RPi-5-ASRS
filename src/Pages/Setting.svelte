@@ -494,6 +494,9 @@
     border-radius: 140px;
     --slider-thumb: none;
     outline: none;
+    user-select: none;
+    caret-color: transparent;
+    cursor: pointer;
   }
 
 /* WebKit (Chrome / Edge / Safari) */
