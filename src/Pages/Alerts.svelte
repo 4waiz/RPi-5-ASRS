@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { alertsData, diagnosticOptions } from '../stores/alertStore.js';
   import { getComponentImage } from '../lib/componentImageMap.js';
+  import SideBar from '../lib/side-bar.svelte';
   import { marked } from 'marked';
 
   const API_BASE = 'http://localhost:5001';
@@ -41,6 +42,11 @@
   $: warningCount = $alertsData.filter(
     (a) => a.severity === 'warning' && a.status !== 'resolved'
   ).length;
+
+  $: sidebarAlertCounts = {
+    alerts: criticalCount + errorCount,
+    warnings: warningCount
+  };
 
   // Shared helpers
   function getSeverityColor(severity) {
@@ -423,9 +429,16 @@
     showAlertDetailModal = false;
   }
 </script>
+<div class="alerts-layout">
+  <SideBar
+    AlertsNum={sidebarAlertCounts.alerts}
+    WoriginNum={sidebarAlertCounts.warnings}
+    ActivePage={"Alerts"}
+  />
 
-<div class="app-container">
-  <div class="main-content">
+  <section class="alerts-main">
+    <div class="app-container">
+      <div class="main-content">
     <div class="topbar">
       <div class="filter-section">
         <button
@@ -975,16 +988,43 @@
     </div>
   {/if}
 </div>
+</section>
+</div>
 
 <style>
-  .app-container {
+  .alerts-layout {
+    display: flex;
+    width: 100%;
     min-height: 100vh;
+    height: 100vh;
+    gap: 32px;
     background: #f5f5f5;
+    padding: 0;
+    box-sizing: border-box;
+    align-items: stretch;
+  }
+
+  .alerts-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: #f5f5f5;
+    padding: 0;
+  }
+
+  .app-container {
+    flex: 1;
+    background: #f5f5f5;
+    border-radius: 0;
+    padding: 32px;
+    box-sizing: border-box;
+    height: 100%;
   }
 
   .main-content {
     flex: 1;
-    min-height: 100vh;
+    min-height: 100%;
     background: #f5f5f5;
   }
 

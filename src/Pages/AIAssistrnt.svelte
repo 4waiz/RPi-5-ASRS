@@ -5,7 +5,7 @@
     <div>
          <SideBar AlertsNum="5" WoriginNum="2" ActivePage="AI Assistant" />
     </div>
-    <h1>Ai Assistent</h1>
+    <h1>AI Assistant</h1>
 </div>
 
 <style>

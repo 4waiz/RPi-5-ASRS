@@ -2,17 +2,17 @@
   import SideBar from "../lib/side-bar.svelte";
   import TopBar from "../lib/top-bar.svelte";
   import DigitalTwinTabPage from "../lib/Home-tab-pages/DigitalTwin-tab-page.svelte";
-  import InverntoryTabPage from "../lib/Home-tab-pages/inverntory-tab-page.svelte";
-  import CompunentsOverviewTab from "../lib/Home-tab-pages/compunents-overview-tab.svelte";
+  import InventoryTabPage from "../lib/Home-tab-pages/inventory-tab-page.svelte";
+  import ComponentsOverviewTab from "../lib/Home-tab-pages/compunents-overview-tab.svelte";
   import OverviewTabPage from "../lib/Home-tab-pages/overview-tab-page.svelte";
   import SmallAlert from "../lib/small-alert.svelte";
   let Alerts = [2, 5];
-  let Names = ["Overeview", "Inverntory", "Digital Twin", "Compunents"];
+  let Names = ["Overview", "Inventory", "Digital Twin", "Components"];
   let Pages = [
     OverviewTabPage,
-    InverntoryTabPage,
+    InventoryTabPage,
     DigitalTwinTabPage,
-    CompunentsOverviewTab,
+    ComponentsOverviewTab,
   ];
 </script>
 
