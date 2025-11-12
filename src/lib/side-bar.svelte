@@ -39,7 +39,6 @@
                 <span class="badge yellow">{WoriginNum}</span>
             </div>
         </div>
-
         <div class={setActive("AI Assistant")} onclick={() => myVariable.set(AI)}>
             <svg class="nav-icon" viewBox="0 0 24 24">
                 <path

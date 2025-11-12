@@ -10,7 +10,6 @@
             classes[i] = "tab";
         }
     }
-    
     function handleClick(n) {
         for (let i = 0; i < Names.length; i++) {
             if (i == n) {

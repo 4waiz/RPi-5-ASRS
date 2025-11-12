@@ -64,7 +64,6 @@
 </div>
 
 <style>
-  /* --- Same layout as other pages; no black strip --- */
   .page {
     display: grid;
     grid-template-columns: 220px 1fr; /* your sidebar width */

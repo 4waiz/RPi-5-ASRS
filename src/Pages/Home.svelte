@@ -34,7 +34,6 @@
 
 <div class="main">
   <SideBar WoriginNum={Alerts[1]} AlertsNum={Alerts[0]} ActivePage={"Home"} />
-
   <section class="right-con">
     <TopBar {Names} {Pages} {Icons} bind:activeIndex>
   <svelte:fragment slot="alerts">

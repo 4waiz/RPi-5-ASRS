@@ -211,7 +211,6 @@
     gap: 12px;
   }
 
-  /* Styles for Live Operations Section */
   .live-operations-container {
     width: fit-content;
     box-sizing: border-box;

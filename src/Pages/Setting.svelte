@@ -400,7 +400,6 @@
 
   .label{ font-size:16px; font-weight:600; line-height:22px; margin:4px 0 8px; }
 
-  /* ===== Inline reveal inside input ===== */
   .ipgroup{
     position: relative;
     margin-bottom: 8px;

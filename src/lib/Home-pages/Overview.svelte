@@ -66,7 +66,6 @@
       <NumericData />
     </div>
 
-    <!-- Spacer pushes the status card to the far right -->
     <div style="flex:0 0 0px;"></div>
 
 
