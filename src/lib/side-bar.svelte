@@ -3,7 +3,7 @@
     import Home from "../Pages/Home.svelte";
     import Setting from "../Pages/Setting.svelte";
     import Alerts from "../Pages/Alerts.svelte";
-    import AI from "../Pages/AI.svelte";
+    import AI from "../Pages/AIAssistant.svelte";
     let { AlertsNum, WoriginNum, ActivePage } = $props();
     function setActive(page) {
         if (ActivePage == page) {
