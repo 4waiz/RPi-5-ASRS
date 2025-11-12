@@ -1,8 +1,8 @@
 <script>
     import CircularProgressBar from "../Statistical charts/Circular-Progress-Bar.svelte";
-    import Temperature from "../Statistical charts/Temperature .svelte";
+    import Temperature from "../Statistical charts/Temperature.svelte";
     import NumericData from "../Statistical charts/numeric-data.svelte";
-    import AbstractInventory from "../abstract-inventory.svelte";
+    import Inventory from "./Inventory.svelte";
     let Cl = [80, 20];
     let Present = 30;
 
@@ -61,13 +61,13 @@
     <div class="vd"></div>
 
     <div class="column2">
-        <NumericData lable="Carbon Emission" />
+        <NumericData label="Carbon Emission" />
         <div class="hd"></div>
         <NumericData />
         <div class="hd"></div>
         <NumericData />
     </div>
-    <AbstractInventory {slots} />
+
 </div>
 
 <style>

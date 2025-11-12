@@ -3,7 +3,7 @@
     import Home from "../Pages/Home.svelte";
     import Setting from "../Pages/Setting.svelte";
     import Alerts from "../Pages/Alerts.svelte";
-    import AIAssistrnt from "../Pages/AIAssistrnt.svelte";
+    import AI from "../Pages/AI.svelte";
     let { AlertsNum, WoriginNum, ActivePage } = $props();
     function setActive(page) {
         if (ActivePage == page) {
@@ -16,7 +16,7 @@
 
 <nav class="sidebar">
     <div class="logo-section">
-        <img src="\src\assets\Edge_logo.png" alt="Egde Logo" height="50px" />
+        <img src="\src\assets\Icons\Edge_logo.png" alt="Egde Logo" height="50px" />
     </div>
 
     <div class="nav-menu">
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div class={setActive("AI Assistant")} onclick={() => myVariable.set(AIAssistrnt)}>
+        <div class={setActive("AI Assistant")} onclick={() => myVariable.set(AI)}>
             <svg class="nav-icon" viewBox="0 0 24 24">
                 <path
                     d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"

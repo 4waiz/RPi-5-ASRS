@@ -167,7 +167,6 @@ export const componentImageMap = {
   'gantry': 'stepper-motor.png',
   'spreader': 'solenoid.png',
   'incline': 'motor-driver.png',
-  'agv': 'stepper-motor.png',
   'cross belt': 'motor-driver.png',
   'dust prone': 'photoelectric-sensor.png',
   'erp': 'raspberry-pi.png',
@@ -192,15 +191,11 @@ export const componentImageMap = {
   // ======================
   'qc_vision': 'photoelectric-sensor.png',
   'motion': 'stepper-motor.png',
-  'gantry': 'stepper-motor.png',
   'cyber': 'raspberry-pi.png',
   'environmental': 'power-supply.png',
   'power': 'power-supply.png',
   'commissioning': 'raspberry-pi.png',
-  'rfid': 'proximity-sensor.png',
   'scale': 'proximity-sensor.png',
-  'shuttle': 'stepper-motor.png',
-  'rack': 'stepper-motor.png',
   'environment': 'power-supply.png'
 };
 

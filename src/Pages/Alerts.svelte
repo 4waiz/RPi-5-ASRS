@@ -5,7 +5,8 @@
   import SideBar from '../lib/side-bar.svelte';
   import { marked } from 'marked';
 
-  const API_BASE = 'http://localhost:5001';
+  const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000';
+
 
   let currentFilter = 'all';
   let filteredAlerts = [];

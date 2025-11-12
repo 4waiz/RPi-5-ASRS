@@ -1,19 +1,22 @@
 <script>
-    let { Names, Pages } = $props();
+    let { Names, Pages, Icons = [], activeIndex = $bindable(0) } = $props();
     let classes = $state([]);
-    let slectedPabge = $state(Pages[0]);
+    let selectedPage = $state(Pages[activeIndex]);
+    
     for (let i = 0; i < Names.length; i++) {
-        if (i === 0) {
+        if (i === activeIndex) {
             classes[i] = "tab-active";
         } else {
             classes[i] = "tab";
         }
     }
+    
     function handleClick(n) {
         for (let i = 0; i < Names.length; i++) {
             if (i == n) {
                 classes[i] = "tab-active";
-                slectedPabge = Pages[i];
+                selectedPage = Pages[i];
+                activeIndex = i;
             } else {
                 classes[i] = "tab";
             }
@@ -24,16 +27,19 @@
 <div class="tab-container">
     <div class="tab-bar">
         {#each Names as name, i}
-            <button class={classes[i]} onclick={() => handleClick(i)}>
+            <button class={classes[i]} on:click={() => handleClick(i)}>
+                <img class="tab-icon" src={(activeIndex===i ? Icons[i]?.active : Icons[i]?.inactive) || ""} alt="" />
                 <span class="tab-text">{Names[i]}</span>
             </button>
         {/each}
     </div>
     <div class="devider"></div>
 
+    <slot name="alerts" />
+
     <div class="content-area">
         <div id="content">
-            <svelte:component this={slectedPabge} />
+            <svelte:component this={selectedPage} />
         </div>
     </div>
 </div>
@@ -59,6 +65,8 @@
 .tab,
 .tab-active {
     display: flex;
+    align-items: center;
+    gap: 8px;
     width: 140px;
     height: 48px;
     padding: 12px;
