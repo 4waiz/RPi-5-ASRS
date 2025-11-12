@@ -105,6 +105,6 @@
 .content-area {
     flex: 1;
     width: 100%;
-    margin-top: 12px;
+    margin-top: 30px;
 }
 </style>
