@@ -1,0 +1,22 @@
+# Node / Svelte
+node_modules/
+.vite/
+dist/
+.build/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Databases / local artifacts
+*.db
+
+# OS/editor
+.DS_Store
+Thumbs.db
+
+# Vosk (optional – exclude the large Arabic model)
+backend/AIAssistant/voskModels/vosk-model-ar-mgb2-0.4/

@@ -119,7 +119,7 @@ def llm_reply(user_text: str,
         return f"{fallback} You said: {user_text}", lang_code
 
     # --- The rest of the logic remains the same ---
-    from langchain.prompts import ChatPromptTemplate
+    from langchain_core.prompts import ChatPromptTemplate
 
     memory_pairs = _normalize_history(history)
     memory_pairs = memory_pairs[-LLM_USE_MEMORY_TURNS:] if LLM_USE_MEMORY_TURNS > 0 else []
