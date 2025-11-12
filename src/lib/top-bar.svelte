@@ -67,10 +67,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 140px;
+    width: 155px;
     height: 48px;
-    padding: 12px;
-    gap: 6.544px;
+    padding: 12px 8px;
     border-radius: 12px 12px 0 0;
     justify-content: center;
     align-items: center;
@@ -81,6 +80,7 @@
     color: #525252;
     user-select: none;
     caret-color: transparent;
+    white-space: nowrap;
 }
 
 .tab-active {
@@ -105,6 +105,6 @@
 .content-area {
     flex: 1;
     width: 100%;
-    margin-top: 32px;
+    margin-top: 12px;
 }
 </style>

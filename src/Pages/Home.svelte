@@ -38,7 +38,7 @@
   <section class="right-con">
     <TopBar {Names} {Pages} {Icons} bind:activeIndex>
   <svelte:fragment slot="alerts">
-    {#if activeIndex === 0}
+    {#if activeIndex === 0 || activeIndex === 1}
       <div class="alert-section">
         <SmallAlert Massage="massage 1" Type="W" Time="12:16" />
         <SmallAlert Massage="massage 2" Type="Alert" Time="10:25" />
@@ -62,7 +62,7 @@
 
   .right-con {
     flex: 1;
-    min-width: 0; /* <— lets it shrink instead of pushing page wider */
+    min-width: 0;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -71,9 +71,9 @@
 
   .alert-section {
     width: 100%;
-    min-width: 0; /* safe in flex contexts */
-    margin: 24px 0;
-    height: 120px;
+    min-width: 0;
+    margin: 9px 0 0 0;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -81,7 +81,6 @@
     gap: 8px;
   }
 
-      /* 🔧 Make sure components fit perfectly */
   :global(html),
   :global(body) {
     margin: 0;
