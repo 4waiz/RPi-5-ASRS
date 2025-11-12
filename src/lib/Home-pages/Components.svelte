@@ -152,7 +152,6 @@ const statusStore = createStatusStore();
     gap: 28px;
     align-items: stretch;
     padding: 20px 24px 32px;
-    background: #f3f3f3;
     min-height: calc(100vh - 120px);
     box-sizing: border-box;
     transition: all 200ms ease;
