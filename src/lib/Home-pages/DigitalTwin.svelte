@@ -255,13 +255,13 @@
       );
 
       // Always look at the scene center (origin)
-      camera.lookAt(0, 50, 0);
+      camera.lookAt(CAMERA_LOOK_TARGET);
 
       if (progress >= 1) {
         const onComplete = this.activeAnimation.onComplete;
         this.activeAnimation = null;
         controls.enabled = true;
-        controls.target.set(0, 50, 0);
+        controls.target.copy(CAMERA_LOOK_TARGET);
         onComplete();
       }
     }
@@ -763,7 +763,8 @@
     const { width, height } = getRenderDimensions();
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(0, 100, 500);
+    camera.position.set(CAMERA_PRESETS.front.x, CAMERA_PRESETS.front.y, CAMERA_PRESETS.front.z);
+    camera.lookAt(CAMERA_LOOK_TARGET);
 
     renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -820,9 +821,11 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = true;
-    controls.minDistance = 1;
-    controls.maxDistance = 1000;
+    controls.minDistance = CAMERA_MIN_DISTANCE;
+    controls.maxDistance = CAMERA_MAX_DISTANCE;
     controls.maxPolarAngle = Math.PI;
+    controls.target.copy(CAMERA_LOOK_TARGET);
+    controls.update();
 
     clock = new THREE.Clock();
   }
@@ -906,17 +909,20 @@
   // ============================================================================
   // COMPASS CAMERA CONTROLS
   // ============================================================================
-  const CAMERA_DISTANCE = 500;
-  const CAMERA_HEIGHT = 100;
+  const CAMERA_DISTANCE = 320;
+  const CAMERA_HEIGHT = 125;
+  const CAMERA_MIN_DISTANCE = 220;
+  const CAMERA_MAX_DISTANCE = 520;
+  const CAMERA_LOOK_TARGET = new THREE.Vector3(0, 50, 0);
 
   const CAMERA_PRESETS = {
-    north: { x: 0, y: CAMERA_HEIGHT, z: CAMERA_DISTANCE },      // Front view
-    east: { x: CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },       // Right view
-    south: { x: 0, y: CAMERA_HEIGHT, z: -CAMERA_DISTANCE },     // Back view
-    west: { x: -CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 }       // Left view
+    front: { x: CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },
+    right: { x: 0, y: CAMERA_HEIGHT, z: CAMERA_DISTANCE },
+    back:  { x: -CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },
+    left:  { x: 0, y: CAMERA_HEIGHT, z: -CAMERA_DISTANCE }
   };
 
-  async function rotateCameraTo(direction: 'north' | 'east' | 'south' | 'west') {
+  async function rotateCameraTo(direction: 'front' | 'right' | 'back' | 'left') {
     if (cameraController.isAnimating()) return;
     const targetPos = CAMERA_PRESETS[direction];
     await cameraController.moveCameraToPreset(targetPos);
@@ -981,20 +987,20 @@
 
   <!-- Compass UI -->
   <div class="compass-ui">
-    <button class="compass-btn north" on:click={() => rotateCameraTo('north')} title="North View">
-      N
+    <button class="compass-btn front" on:click={() => rotateCameraTo('front')} title="Front View">
+      Front
     </button>
     <div class="compass-row">
-      <button class="compass-btn west" on:click={() => rotateCameraTo('west')} title="West View">
-        W
+      <button class="compass-btn left" on:click={() => rotateCameraTo('left')} title="Left View">
+        Left
       </button>
       <div class="compass-center"></div>
-      <button class="compass-btn east" on:click={() => rotateCameraTo('east')} title="East View">
-        E
+      <button class="compass-btn right" on:click={() => rotateCameraTo('right')} title="Right View">
+        Right
       </button>
     </div>
-    <button class="compass-btn south" on:click={() => rotateCameraTo('south')} title="South View">
-      S
+    <button class="compass-btn back" on:click={() => rotateCameraTo('back')} title="Back View">
+      Back
     </button>
   </div>
 
@@ -1002,8 +1008,8 @@
     <div class="panel-title">Select Box</div>
     <div class="box-list" bind:this={boxListEl}></div>
     <div class="action-buttons">
-      <button id="getBoxOutBtn" bind:this={getBoxOutBtnEl} disabled>Get Out</button>
-      <button id="putBoxInBtn" bind:this={putBoxInBtnEl} disabled>Put In</button>
+      <button id="getBoxOutBtn" bind:this={getBoxOutBtnEl} disabled>Out</button>
+      <button id="putBoxInBtn" bind:this={putBoxInBtnEl} disabled>In</button>
     </div>
   </div>
 
@@ -1066,64 +1072,98 @@
     z-index: 150;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 12px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(0, 0, 0, 0.15);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    align-items: stretch;
+    gap: 12px;
+    min-width: 190px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 18px 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
   }
 
   .compass-row {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
     align-items: center;
   }
 
   .compass-center {
-    width: 32px;
-    height: 32px;
-    background: radial-gradient(circle, rgba(255, 171, 60, 0.3) 0%, transparent 70%);
+    width: 46px;
+    height: 46px;
+    background: radial-gradient(circle, rgba(255, 171, 60, 0.45) 0%, transparent 70%);
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    justify-self: center;
   }
 
   .compass-btn {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-    color: #333;
-    font-size: 16px;
-    font-weight: 700;
+    min-width: 84px;
+    height: 38px;
+    padding: 0 18px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+    background: #f8f8f8;
+    color: #1f1f1f;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .compass-btn:hover {
-    background: linear-gradient(135deg, #FF5622 0%, #FF8A50 100%);
+    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
     color: white;
-    border-color: #FF5622;
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(255, 86, 34, 0.3);
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(255, 107, 53, 0.35);
   }
 
   .compass-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
-  .compass-btn.north,
-  .compass-btn.south {
-    align-self: center;
+  .compass-btn.front,
+  .compass-btn.back {
+    width: 100%;
+  }
+
+  @media (max-width: 1200px), (max-height: 700px) {
+    .compass-ui {
+      top: 12px;
+      right: 12px;
+      min-width: 150px;
+      padding: 12px 14px;
+      gap: 10px;
+      border-radius: 14px;
+    }
+
+    .compass-row {
+      gap: 8px;
+      grid-template-columns: 1fr auto 1fr;
+    }
+
+    .compass-center {
+      width: 34px;
+      height: 34px;
+    }
+
+    .compass-btn {
+      min-width: 58px;
+      height: 30px;
+      padding: 0 10px;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+    }
   }
 
   .control-panel {

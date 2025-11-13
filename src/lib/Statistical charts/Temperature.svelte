@@ -1,6 +1,6 @@
 <script>
     // Props
-    let { Temperature = 104, max = 160, steps = 3  } = $props();
+    let { Temperature = 104, max = 160, steps = 3, label = "Temperature" } = $props();
 
     // Clamp and normalize fill %
     const pct = $derived(Math.max(0, Math.min(100, (Temperature / max) * 100)));
@@ -24,7 +24,6 @@
     <div class="thermo">
         <div class="tube">
             <div class="fill"></div>
-            <div class="pointer"></div>
         </div>
 
         <div class="labels">
@@ -32,13 +31,11 @@
                 <div>{t}</div>
             {/each}
         </div>
-
-        <div class="circle"></div>
     </div>
 
     <div class="readout">
         <div class="value">{Math.round(Temperature)}°C</div>
-        <div class="label">Temperature</div>
+        <div class="label">{label}</div>
     </div>
 </div>
 <style>
@@ -56,20 +53,21 @@
 .thermo {
     display: flex;
     align-items: flex-end;
-    gap: 6px;
-    height: 90px;
+    gap: 10px;
+    height: 110px;
     position: relative;
-    margin: 0 -20px 8px 0;
+    margin: 0 0 12px 0;
 }
 
 .tube {
     position: relative;
-    width: 11px;
-    height: 84px;
-    background: #c8c8c8;
-    border: 2px solid #c8c8c8;
-    border-radius: 10px;
+    width: 18px;
+    height: 100px;
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+    border: 2.5px solid #b0b0b0;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .fill {
@@ -77,55 +75,38 @@
     bottom: 0;
     width: 100%;
     height: var(--level);
-    background: #e11d48;
+    background: linear-gradient(to top, #e11d48 0%, #ff6b9d 100%);
     transition: height 0.5s ease;
-}
-
-.circle {
-    position: absolute;
-    bottom: -12px;
-    right: 16.5px;
-    width: 20px;
-    height: 20px;
-    background: #e11d48;
-    border: 2px solid #c8c8c8;
-    border-radius: 50%;
-    transition: height 0.5s ease;
-}
-
-.pointer {
-    position: absolute;
-    left: -8px;
-    bottom: var(--level);
-    width: 0;
-    height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 8px solid #000;
-    transform: translateY(50%);
-    transition: bottom 0.5s ease;
+    box-shadow: 0 -2px 8px rgba(225, 29, 72, 0.4);
 }
 
 .labels {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 90px;
-    font-size: 14px;
+    height: 110px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
 }
 
 .readout {
     margin-top: 14px;
     text-align: center;
+    max-width: 120px;
 }
 
 .value {
     font-size: 19px;
     font-weight: 700;
     line-height: 20px;
+    margin-bottom: 2px;
 }
 
 .label {
-    font-size: 19px;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.3;
+    word-wrap: break-word;
 }
 </style>

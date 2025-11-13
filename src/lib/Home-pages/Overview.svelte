@@ -8,32 +8,19 @@
   import Full    from "../../assets/inventory/Full.svg";
   import Partial from "../../assets/inventory/Partial.svg";
 
-  let Cl = [80, 20];
-
-  /* Svelte 5 rune so reactive updates don’t warn */
-  let Present = $state(30);
-
-  function generateRandomNumber() {
-    setInterval(() => {
-      Present = Math.floor(Math.random() * 100);
-    }, 2000);
-  }
-  generateRandomNumber();
-
-  /* demo slot states */
+  /* demo slot states - 7 in storage, 8 out storage, 1 out of stock */
   let slots = [
-    "full","full","full","full","full","full","full",
-    "empty","empty",
-    "partial","partial","partial","partial","partial","partial","partial",
-    "partial","partial","partial","partial","partial","partial","partial","partial"
+    "full","full","full","full","full","full","full",  // 7 in storage
+    "partial","partial","partial","partial","partial","partial","partial","partial",  // 8 out storage
+    "empty"  // 1 out of stock
   ];
 
   const icons = { full: Full, empty: Empty, partial: Partial };
 
   let counts = $derived({
     full: slots.filter((s) => s === "full").length,
-    empty: slots.filter((s) => s === "empty").length,
     partial: slots.filter((s) => s === "partial").length,
+    empty: slots.filter((s) => s === "empty").length,
   });
 </script>
 
@@ -41,29 +28,29 @@
   <div class="row">
     <!-- Column 1 -->
     <div class="column1">
-      <CircularProgressBar Name="Pick/Put Accuracy" {Present} />
+      <CircularProgressBar Name="Car Stock" Present={100} />
       <div class="hd"></div>
-      <CircularProgressBar Name="Pick/Put Accuracy" Present={10} />
+      <Temperature Temperature={45} max={160} label="Processor Temperature" />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 2 -->
     <div class="column1">
-      <Temperature Temperature={33} max={99} />
+      <CircularProgressBar Name="Helicopter Stock" Present={10} />
       <div class="hd"></div>
-      <CircularProgressBar Name="Pick/Put Accuracy" {Present} />
+      <Temperature Temperature={23} max={160} label="Ambient Temperature" />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 3 -->
     <div class="column2">
-      <NumericData label="Carbon Emission" />
+      <NumericData value={120} unit="kWh" label="Energy Consumption" />
       <div class="hd"></div>
-      <NumericData />
+      <NumericData value={65} unit="%" label="Humidity" />
       <div class="hd"></div>
-      <NumericData />
+      <NumericData value={25} unit="%" label="ASRS Utilization" />
     </div>
 
     <div style="flex:0 0 0px;"></div>
@@ -87,21 +74,19 @@
         </div>
 
         <div class="legend">
-          <div class="legend-row">
-            <div class="legend-item">
-              <img class="legend-icon" src={icons.full} alt="Full" />
-              <span><strong>{counts.full}</strong> : Full</span>
-            </div>
-
-            <div class="legend-item">
-              <img class="legend-icon" src={icons.empty} alt="Empty" />
-              <span><strong>{counts.empty}</strong> : Empty</span>
-            </div>
+          <div class="legend-item">
+            <img class="legend-icon" src={icons.full} alt="In Storage" />
+            <span><strong>{counts.full}</strong> : In Storage</span>
           </div>
 
           <div class="legend-item">
-            <img class="legend-icon" src={icons.partial} alt="Partial" />
-            <span><strong>{counts.partial}</strong> : Partially full</span>
+            <img class="legend-icon" src={icons.partial} alt="Out Storage" />
+            <span><strong>{counts.partial}</strong> : Out Storage</span>
+          </div>
+
+          <div class="legend-item">
+            <img class="legend-icon" src={icons.empty} alt="Out of stock" />
+            <span><strong>{counts.empty}</strong> : Out of stock</span>
           </div>
         </div>
 
@@ -199,11 +184,9 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 14px;
   }
-
-  .legend-row { display: flex; gap: 20px; }
 
   .legend-item {
     display: flex;

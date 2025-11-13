@@ -22,7 +22,7 @@
   onMount(() => {
     if (typeof document === "undefined") return;
     previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = previousBodyOverflow || "auto";
 
     return () => {
       document.body.style.overflow = previousBodyOverflow || "";
@@ -43,7 +43,7 @@
   });
 
   // Demo values
-  const asrsId    = $state("ASRS-2025-001");
+  const asrsId    = $state("Station A01");
   const runtime   = $state("00:08:20");
   const timestamp = $state("11/03/2025, 06:38:08");
 
@@ -114,14 +114,14 @@
 </svelte:head>
 
 <div class="page">
-  <!-- Header -->
-  <div class="topbar">
-    <button class="iconbtn" aria-label="Back" onclick={() => myVariable.set(Home)}>
-      <img class="icon" src={arrowBackIcon} alt="Back" width="22" height="22" />
-    </button>
+  <SideBar AlertsNum={0} WoriginNum={0} ActivePage="Settings" />
 
-    <div class="titleblock">
-      <h1 class="h1">System Setting</h1>
+  <div class="settings-shell">
+    <!-- Header -->
+    <div class="topbar">
+
+      <div class="titleblock">
+        <h1 class="h1">System Setting</h1>
       <div class="meta">
         <span class="meta-label">ASRS ID:</span>&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
         <span class="meta-label">Runtime:</span>&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
@@ -130,12 +130,12 @@
     </div>
   </div>
 
-  <div class="divider"></div>
+    <div class="divider"></div>
 
-  <!-- Main grid - strict sizing to fit everything -->
-  <div class="content-grid">
+    <!-- Main grid -->
+    <div class="content-grid">
     <!-- Language -->
-    <section class="card">
+    <section class="card card-language">
       <div class="card-header">
         <img class="icon" src={languageIcon} alt="Language" width="18" height="18" />
         <h2 class="card-title">Language</h2>
@@ -169,7 +169,7 @@
     </section>
 
     <!-- Brightness -->
-    <section class="card">
+    <section class="card card-brightness">
       <div class="card-header">
         <img class="icon" src={brightnessIcon} alt="Brightness" width="18" height="18" />
         <h2 class="card-title">Display Brightness</h2>
@@ -189,7 +189,7 @@
     </section>
 
     <!-- Network -->
-    <section class="card">
+    <section class="card card-network">
       <div class="card-header">
         <img class="icon" src={networkIcon} alt="Network" width="18" height="18" />
         <h2 class="card-title">Network Configuration</h2>
@@ -266,7 +266,7 @@
     </section>
 
     <!-- Logs -->
-    <section class="card">
+    <section class="card card-logs">
       <div class="card-header">
         <img class="icon" src={logsPadlockIcon} alt="Locked" width="18" height="18" />
         <h2 class="card-title">Machine Logs</h2>
@@ -367,15 +367,15 @@
         </div>
       </div>
     </section>
+    </div>
   </div>
 </div>
 
 <style>
-  :global(html, body) { 
-    height: 100%; 
-    margin: 0; 
-    padding: 0; 
-    overflow: hidden;
+  :global(html, body) {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
   }
   
   :global(*), :global(*::before), :global(*::after) { 
@@ -399,19 +399,27 @@
     background: var(--bg-page);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overflow-y: auto;
   }
 
-  /* STRICT 1024x600 with calculated spacing to fit everything */
   .page {
-    width: 1024px;
-    height: 600px;
-    padding: 16px 20px;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    gap: 32px;
+    background: #ebebeb;
+    padding-right: 32px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  .settings-shell {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background: var(--bg-page);
-    overflow: hidden;
-    margin: 0 auto;
+    gap: 20px;
+    padding: 24px;
   }
 
   /* Compact Header - 65px total */
@@ -421,25 +429,6 @@
     gap: 12px;
     flex-shrink: 0;
     height: 50px;
-  }
-
-  .iconbtn {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-card);
-    cursor: pointer;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-
-  .iconbtn:hover {
-    background: var(--bg-page);
-    border-color: var(--secondary);
   }
 
   .titleblock {
@@ -477,33 +466,29 @@
     flex-shrink: 0;
   }
 
-  /* Grid - calculated to fit exactly */
   .content-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    flex: 1;
-    min-height: 0;
-    max-height: 505px;
-    grid-template-rows: repeat(2, 1fr) auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
     grid-template-areas:
       "language brightness"
       "network logs"
-      "backup backup";
+      "backup  backup";
   }
 
-  .card:nth-child(1) { grid-area: language; }
-  .card:nth-child(2) { grid-area: brightness; }
-  .card:nth-child(3) { grid-area: network; }
-  .card:nth-child(4) { grid-area: logs; }
-  .card:nth-child(5) { grid-area: backup; }
+  .card-language { grid-area: language; }
+  .card-brightness { grid-area: brightness; }
+  .card-network { grid-area: network; }
+  .card-logs { grid-area: logs; }
+  .card-backup { grid-area: backup; }
 
   /* Compact Card */
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 14px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -773,29 +758,31 @@
   }
 
   .backup-row {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
   }
 
   .backup-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
     flex: 1;
+    min-width: 0;
   }
 
   .hold-button {
     width: 100%;
-    height: 32px;
-    padding: 0 10px;
+    height: 40px;
+    padding: 0 16px;
     border: 1.5px solid var(--border);
-    border-radius: 7px;
+    border-radius: 8px;
     background: var(--bg-card);
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--primary);
     cursor: pointer;
     position: relative;
@@ -817,13 +804,61 @@
 
   .timestamp-input {
     width: 100%;
-    height: 28px;
-    padding: 0 10px;
+    height: 34px;
+    padding: 0 14px;
     border: 1.5px solid var(--border);
-    border-radius: 7px;
-    background: var(--bg-page);
-    font-size: 10px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    font-size: 12px;
     color: var(--secondary);
     font-family: "Inter", monospace;
+  }
+
+  @media (max-width: 840px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "language"
+        "brightness"
+        "network"
+        "logs"
+        "backup";
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .topbar {
+      flex-direction: column;
+      gap: 8px;
+      height: auto;
+    }
+    .page {
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .settings-shell {
+      padding: 0;
+    }
+  }
+
+  @media (max-height: 620px) {
+    .settings-shell {
+      padding: 12px;
+    }
+
+    .card {
+      padding: 12px;
+      gap: 8px;
+    }
+
+    .hold-button {
+      height: 28px;
+    }
+
+    .timestamp-input {
+      height: 24px;
+    }
   }
 </style>

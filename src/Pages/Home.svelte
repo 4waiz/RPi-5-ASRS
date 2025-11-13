@@ -39,8 +39,8 @@
   <svelte:fragment slot="alerts">
     {#if activeIndex === 0 || activeIndex === 1}
       <div class="alert-section">
-        <SmallAlert Massage="massage 1" Type="W" Time="12:16" />
-        <SmallAlert Massage="massage 2" Type="Alert" Time="10:25" />
+        <SmallAlert Massage="There is no available stock in the Bux 8 to meet the incoming orders." Type="W" Time="12:16" />
+        <SmallAlert Massage="The supplier item with ID 9 has been rejected as it does not meet the quality standards." Type="Alert" Time="10:25" />
       </div>
     {/if}
   </svelte:fragment>

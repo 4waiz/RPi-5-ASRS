@@ -1,5 +1,5 @@
 <script>
-    let { value = 100, unit = "km/h", label = "Label" } = $props();
+    let { value = 100, unit = "kWh", label = "Label" } = $props();
 </script>
 
 <div class="compinent-conternar">

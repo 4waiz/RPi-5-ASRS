@@ -342,6 +342,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     gap: 20px;
     flex-wrap: wrap;
+    min-width: 0;
   }
 
   .nav-tabs {
@@ -421,6 +422,7 @@
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
     margin: 0 24px;
+    min-width: 0;
   }
 
   .summary-card {
@@ -460,7 +462,6 @@
     background: #f7f7f7;
     border-radius: 24px;
     padding: 24px;
-    overflow-y: auto;
   }
 
   .alerts-grid {
@@ -520,7 +521,7 @@
     background: #e64a19;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 820px) {
     .alerts-page {
       flex-direction: column;
       padding: 16px;
