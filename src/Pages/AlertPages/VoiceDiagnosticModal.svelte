@@ -183,11 +183,16 @@
     }
 
     isProcessing = true;
-    error = '';   
+    error = '';
     aiResponse = '';
 
-    // INSTANT ACKNOWLEDGMENT - plays immediately
-    if (viewMode === 'audio') {
+    // CHECK IF IT'S A GREETING - skip acknowledgment for greetings
+    const greetingKeywords = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings'];
+    const isGreeting = greetingKeywords.some(keyword => transcript.toLowerCase().includes(keyword));
+    const isShortGreeting = isGreeting && transcript.split(' ').length <= 5;
+
+    // ONLY play acknowledgment for technical queries (not greetings)
+    if (viewMode === 'audio' && !isShortGreeting) {
       const acknowledgment = await getInstantAcknowledgment(transcript);
       await speakInstantAcknowledgment(acknowledgment);
     }
@@ -212,11 +217,17 @@
       console.log('Received data:', data);
       aiResponse = data.response || 'No response received';
       
-      // Small delay before full response
+      // Adjust delay based on whether acknowledgment was played
       if (viewMode === 'audio' && aiResponse) {
-        setTimeout(() => {
+        if (isShortGreeting) {
+          // No acknowledgment was played, start immediately
           speakResponse(aiResponse);
-        }, 1000);
+        } else {
+          // Acknowledgment was played, wait 1 second
+          setTimeout(() => {
+            speakResponse(aiResponse);
+          }, 1000);
+        }
       }
     } catch (err) {
       console.error('Error querying AI:', err);
@@ -1053,4 +1064,3 @@
   transform: translateY(-1px);
 }
 </style>
-

@@ -56,7 +56,7 @@
   let ip2Value = $state("192.168.0.102");
   let ip1Masked = $state(true);
   let ip2Masked = $state(true);
-  const maskIP = (s: string) => s.replace(/\d/g, "•"); // bullet like Figma
+  const maskIP = (s: string) => s.replace(/\d/g, "•");
 
   // ===== Backup logic (hold-to-activate) =====
   const HOLD_MS = 2000;
@@ -109,351 +109,724 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
   />
 </svelte:head>
 
 <div class="page">
-  <!-- Header -->
+  <!-- Header with better spacing from top -->
   <div class="topbar">
-    <button class="iconbtn pressable" aria-label="Back" onclick={() => myVariable.set(Home)}>
+    <button class="iconbtn" aria-label="Back" onclick={() => myVariable.set(Home)}>
       <img class="icon" src={arrowBackIcon} alt="Back" width="24" height="24" />
     </button>
 
     <div class="titleblock">
       <h1 class="h1">System Setting</h1>
-      <div class="meta muted">
-        <span class="strong">ASRS ID:</span>&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
-        <span class="strong">Runtime:</span>&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
-        <span class="strong">Timestamp:</span>&nbsp;{timestamp}
+      <div class="meta">
+        <span class="meta-label">ASRS ID:</span>&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
+        <span class="meta-label">Runtime:</span>&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
+        <span class="meta-label">Timestamp:</span>&nbsp;{timestamp}
       </div>
     </div>
   </div>
 
-  <hr class="rule" />
+  <div class="divider"></div>
 
-  <!-- Main grid -->
-  <div class="grid">
+  <!-- Main grid - optimized for 1024x600 -->
+  <div class="content-grid">
     <!-- Language -->
-    <section class="card card--language">
-      <div class="card-head">
-        <img class="icon" src={languageIcon} alt="Language" width="24" height="24" />
-        <h2 class="h2">Language</h2>
+    <section class="card card-language">
+      <div class="card-header">
+        <img class="icon" src={languageIcon} alt="Language" width="20" height="20" />
+        <h2 class="card-title">Language</h2>
       </div>
 
-      <div class="row gap lang-toggle" class:lang-en={language==='en'} class:lang-ar={language==='ar'}>
-        <button type="button" class="pill pressable {language==='en' ? 'pill--active' : ''}" aria-pressed={language==='en'} onclick={() => (language = 'en')}>
-          <span class="pill-dot"><img src={checkIcon} alt="" width="14" height="14" /></span> English
-        </button>
+      <div class="card-content">
+        <div class="lang-toggle">
+          <button 
+            type="button" 
+            class="lang-btn {language==='en' ? 'active' : ''}" 
+            aria-pressed={language==='en'} 
+            onclick={() => (language = 'en')}
+          >
+            {#if language==='en'}
+              <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
+            {/if}
+            English
+          </button>
 
-        <button type="button" class="pill pressable {language==='ar' ? 'pill--active' : ''}" aria-pressed={language==='ar'} onclick={() => (language = 'ar')}>
-          <span class="pill-dot"><img src={checkIcon} alt="" width="14" height="14" /></span> عربي / Arabic
-        </button>
+          <button 
+            type="button" 
+            class="lang-btn {language==='ar' ? 'active' : ''}" 
+            aria-pressed={language==='ar'} 
+            onclick={() => (language = 'ar')}
+          >
+            {#if language==='ar'}
+              <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
+            {/if}
+            عربي / Arabic
+          </button>
+        </div>
       </div>
     </section>
 
     <!-- Brightness -->
-    <section class="card card--brightness">
-      <div class="card-head">
-        <img class="icon" src={brightnessIcon} alt="Brightness" width="24" height="24" />
-        <h2 class="h2">Display Brightness</h2>
+    <section class="card card-brightness">
+      <div class="card-header">
+        <img class="icon" src={brightnessIcon} alt="Brightness" width="20" height="20" />
+        <h2 class="card-title">Display Brightness</h2>
       </div>
 
-      <div class="slider-wrap">
-        <input
-          class="slider"
-          type="range"
-          min="0"
-          max="100"
-          bind:value={brightness}
-          style={sliderStyle}
-          aria-label="Brightness"
-        />
+      <div class="card-content">
+        <div class="slider-container">
+          <input
+            class="slider"
+            type="range"
+            min="0"
+            max="100"
+            bind:value={brightness}
+            style={sliderStyle}
+            aria-label="Brightness"
+          />
+        </div>
       </div>
     </section>
 
     <!-- Network -->
-    <section class="card card--network">
-      <div class="card-head">
-        <img class="icon" src={networkIcon} alt="Network" width="24" height="24" />
-        <h2 class="h2">Network Configuration</h2>
-        <img class="icon ml8" src={padlockIcon} alt="Locked" width="24" height="24" />
+    <section class="card card-network">
+      <div class="card-header">
+        <img class="icon" src={networkIcon} alt="Network" width="20" height="20" />
+        <h2 class="card-title">Network Configuration</h2>
+        <img class="icon lock-icon" src={padlockIcon} alt="Locked" width="18" height="18" />
       </div>
 
-      <div class="label">Machine IPs:</div>
+      <div class="card-content">
+        <div class="section-label">Machine IPs:</div>
 
-      <!-- INLINE reveal button (inside the same input) -->
-      <div class="ipgroup">
-        <input
-          class="ip"
-          value={ip1Masked ? maskIP(ip1Value) : ip1Value}
-          readonly
-          aria-label="Machine IP 1"
-        />
-        <button
-          class="reveal"
-          type="button"
-          aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
-          onclick={() => (ip1Masked = !ip1Masked)}
-        >
-          <img src={revealIcon} alt="" />
-        </button>
-      </div>
+        <div class="ip-wrapper">
+          <input
+            class="ip-input"
+            value={ip1Masked ? maskIP(ip1Value) : ip1Value}
+            readonly
+            aria-label="Machine IP 1"
+          />
+          <button
+            class="reveal-btn"
+            type="button"
+            aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
+            onclick={() => (ip1Masked = !ip1Masked)}
+          >
+            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    stroke-width="2"/>
+              <circle cx="12" cy="12.5" r="3.5" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      stroke-width="2"/>
+              {#if ip1Masked}
+                <line x1="4" y1="4" x2="20" y2="21" 
+                      stroke="currentColor" 
+                      stroke-width="2" 
+                      stroke-linecap="round"/>
+              {/if}
+            </svg>
+          </button>
+        </div>
 
-      <div class="ipgroup">
-        <input
-          class="ip"
-          value={ip2Masked ? maskIP(ip2Value) : ip2Value}
-          readonly
-          aria-label="Machine IP 2"
-        />
-        <button
-          class="reveal"
-          type="button"
-          aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
-          onclick={() => (ip2Masked = !ip2Masked)}
-        >
-          <img src={revealIcon} alt="" />
-        </button>
-      </div>
-    </section>
-
-    <!-- Backup -->
-    <section class="card card--backup">
-      <div class="card-head">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="black" stroke-width="2"/>
-          <rect x="7" y="3" width="8" height="5" fill="none" stroke="black" stroke-width="2"/>
-          <rect x="7" y="13" width="10" height="6" rx="1" fill="none" stroke="black" stroke-width="2"/>
-        </svg>
-        <h2 class="h2">Backup</h2>
-      </div>
-
-      <p class="muted small">Press and hold for at least 2 seconds to save/restore parameters.</p>
-
-      <div class="backup-row">
-        <button
-          class="holdbtn pressable"
-          style={`--p:${storeProgress}`}
-          onpointerdown={() => startHold('store')}
-          onpointerup={() => cancelHold('store')}
-          onpointerleave={() => cancelHold('store')}
-          onpointercancel={() => cancelHold('store')}
-        >
-          <span class="ring" aria-hidden="true"></span>
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="black" stroke-width="2"/>
-            <rect x="7" y="3" width="8" height="5" fill="none" stroke="black" stroke-width="2"/>
-          </svg>
-          <span>Store parameters</span>
-        </button>
-        <input class="stamp" value={storeTimestamp} readonly />
-      </div>
-
-      <div class="backup-row">
-        <button
-          class="holdbtn pressable"
-          style={`--p:${restoreProgress}`}
-          onpointerdown={() => startHold('restore')}
-          onpointerup={() => cancelHold('restore')}
-          onpointerleave={() => cancelHold('restore')}
-          onpointercancel={() => cancelHold('restore')}
-        >
-          <span class="ring" aria-hidden="true"></span>
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3v10M7 8l5 5 5-5" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 21h14" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Restore parameters</span>
-        </button>
-        <input class="stamp" value={restoreTimestamp} readonly />
+        <div class="ip-wrapper">
+          <input
+            class="ip-input"
+            value={ip2Masked ? maskIP(ip2Value) : ip2Value}
+            readonly
+            aria-label="Machine IP 2"
+          />
+          <button
+            class="reveal-btn"
+            type="button"
+            aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
+            onclick={() => (ip2Masked = !ip2Masked)}
+          >
+            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    stroke-width="2"/>
+              <circle cx="12" cy="12.5" r="3.5" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      stroke-width="2"/>
+              {#if ip2Masked}
+                <line x1="4" y1="4" x2="20" y2="21" 
+                      stroke="currentColor" 
+                      stroke-width="2" 
+                      stroke-linecap="round"/>
+              {/if}
+            </svg>
+          </button>
+        </div>
       </div>
     </section>
 
     <!-- Logs -->
-    <section class="card card--logs">
-      <div class="card-head">
-        <img class="icon ml8" src={logsPadlockIcon} alt="Locked" width="24" height="24" />
-        <h2 class="h2">Machine Logs</h2>
-        <img class="icon ml8" src={logsFilterIcon} alt="Filter" width="24" height="24" />
+    <section class="card card-logs">
+      <div class="card-header">
+        <img class="icon" src={logsPadlockIcon} alt="Locked" width="20" height="20" />
+        <h2 class="card-title">Machine Logs</h2>
+        <img class="icon lock-icon" src={logsFilterIcon} alt="Filter" width="18" height="18" />
       </div>
 
-      <div class="row gap">
-        <button type="button" class="pill pressable {activeLogTab==='all' ? 'pill--active' : ''}" aria-pressed={activeLogTab==='all'} onclick={() => (activeLogTab='all')}>All logs</button>
-        <button type="button" class="pill pressable {activeLogTab==='error' ? 'pill--active' : ''}" aria-pressed={activeLogTab==='error'} onclick={() => (activeLogTab='error')}>Error logs</button>
-        <button type="button" class="pill pressable {activeLogTab==='operation' ? 'pill--active' : ''}" aria-pressed={activeLogTab==='operation'} onclick={() => (activeLogTab='operation')}>Operation logs</button>
+      <div class="card-content">
+        <div class="log-tabs">
+          <button 
+            type="button" 
+            class="log-tab {activeLogTab==='all' ? 'active' : ''}" 
+            aria-pressed={activeLogTab==='all'} 
+            onclick={() => (activeLogTab='all')}
+          >
+            All
+          </button>
+          <button 
+            type="button" 
+            class="log-tab {activeLogTab==='error' ? 'active' : ''}" 
+            aria-pressed={activeLogTab==='error'} 
+            onclick={() => (activeLogTab='error')}
+          >
+            Errors
+          </button>
+          <button 
+            type="button" 
+            class="log-tab {activeLogTab==='operation' ? 'active' : ''}" 
+            aria-pressed={activeLogTab==='operation'} 
+            onclick={() => (activeLogTab='operation')}
+          >
+            Operations
+          </button>
+        </div>
+
+        <div class="log-actions">
+          <button class="action-btn">
+            <img class="icon" src={exportIcon} alt="Export" width="18" height="18" />
+            <span>Export</span>
+          </button>
+          <button class="action-btn">
+            <span>View</span>
+            <img class="icon" src={viewIcon} alt="View" width="18" height="18" />
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Backup - spans both columns on bottom -->
+    <section class="card card-backup">
+      <div class="card-header">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+          <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="7" y="13" width="10" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h2 class="card-title">Backup</h2>
       </div>
 
-      <div class="row gap mt12">
-        <button class="btn pressable"><img class="icon" src={exportIcon} alt="Export" width="24" height="24" /><span>Export</span></button>
-        <button class="btn pressable"><span>View</span><img class="icon" src={viewIcon} alt="View" width="24" height="24" /></button>
+      <div class="card-content">
+        <p class="help-text">Hold 2s to save/restore</p>
+
+        <div class="backup-row">
+          <div class="backup-group">
+            <button
+              class="hold-button"
+              style={`--p:${storeProgress}`}
+              onpointerdown={() => startHold('store')}
+              onpointerup={() => cancelHold('store')}
+              onpointerleave={() => cancelHold('store')}
+              onpointercancel={() => cancelHold('store')}
+            >
+              <span class="progress-ring"></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Store</span>
+            </button>
+            <input class="timestamp-input" value={storeTimestamp} readonly />
+          </div>
+
+          <div class="backup-group">
+            <button
+              class="hold-button"
+              style={`--p:${restoreProgress}`}
+              onpointerdown={() => startHold('restore')}
+              onpointerup={() => cancelHold('restore')}
+              onpointerleave={() => cancelHold('restore')}
+              onpointercancel={() => cancelHold('restore')}
+            >
+              <span class="progress-ring"></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v10M7 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Restore</span>
+            </button>
+            <input class="timestamp-input" value={restoreTimestamp} readonly />
+          </div>
+        </div>
       </div>
     </section>
   </div>
 </div>
 
 <style>
-  :global(html, body){ height:100%; margin:0; padding:0; }
-  :global(*), :global(*::before), :global(*::after){ box-sizing:border-box; }
-
-  :global(:root){
-    --ink:#111;
-    --muted:rgba(0,0,0,.68);
-    --brand:#E54817;
-    --track-rest:rgba(0,0,0,.30);
-    --border:rgba(0,0,0,.08);
-    --border-strong:rgba(0,0,0,.30);
-    --ring:rgba(229,72,23,.35);
-    --ui-scale:1.1;
+  :global(html, body) { 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden;
+  }
+  
+  :global(*), :global(*::before), :global(*::after) { 
+    box-sizing: border-box; 
   }
 
-  :global(body){
-    font:16px/1.35 "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-    color:var(--ink);
-    background:#fff;
-  }
-  :global(button){ cursor:pointer; font:inherit; color:inherit; background:#fff; border:1px solid transparent; }
-  :global(input){ font:inherit; }
-
-  .page{
-    width: calc(100vw / var(--ui-scale));
-    height: calc(100vh / var(--ui-scale));
-    transform: scale(var(--ui-scale));
-    transform-origin: top left;
-    padding: 8px 16px;
-    display:flex; flex-direction:column; gap:8px;
-    background:#fff;
-  }
-  @media (max-width: 900px){
-    .page{ transform:none; width:100%; height:auto; padding: clamp(16px, 4vw, 24px); gap:16px; }
+  :global(:root) {
+    --primary: #111827;
+    --secondary: #6B7280;
+    --border: #E5E7EB;
+    --bg-card: #FFFFFF;
+    --bg-page: #F9FAFB;
+    --brand: #E54817;
+    --brand-light: rgba(229, 72, 23, 0.1);
+    --track-rest: #E5E7EB;
   }
 
-  .topbar{ display:flex; align-items:flex-start; gap:12px; }
-  .iconbtn{ width:40px; height:40px; display:grid; place-items:center; border:1px solid var(--muted); border-radius:8px; background:#fff; }
-  .titleblock{ flex:1; }
-  .meta{ margin-top:10px; font-size:15px; }
-  .h1{ font-size: clamp(30px, 3vw, 36px); line-height:1.1; margin:0; }
-  .h2{ font-size: clamp(19px, 2.2vw, 24px); margin:0; }
-  .muted{ color:var(--muted); }
-  .strong{ font-weight:700; }
-  .icon{ width:24px; height:24px; display:inline-block; }
-  .pressable{ transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background-color .12s ease, color .12s ease; }
-  .pressable:hover{ box-shadow:0 1px 2px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.08); }
-  .pressable:active{ transform:translateY(1px) scale(.98); }
-  .pressable:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
-
-  .rule{ margin: 10px 0 8px; height:1px; border:none; background:var(--border); }
-
-  .grid{
-    display:grid; grid-template-columns: 1fr; gap: 10px; flex:1 1 auto; min-height:0;
-  }
-  @media (min-width: 900px){
-    .grid{
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 14px; row-gap: 10px;
-      grid-template-areas:
-        "language brightness"
-        "network   backup"
-        "logs      backup";
-      align-content:stretch;
-    }
-    .grid > .card{ height:auto; }
-    .card--language{ grid-area: language; }
-    .card--brightness{ grid-area: brightness; }
-    .card--network{ grid-area: network; }
-    .card--backup{ grid-area: backup; }
-    .card--logs{ grid-area: logs; }
+  :global(body) {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--primary);
+    background: var(--bg-page);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .card{ display:flex; flex-direction:column; gap:6px; }
-  .card-head{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
-  .ml8{ margin-left:8px; }
-  .small{ font-size:12.5px; margin: 0 0 12px; }
-
-  .row{ display:flex; align-items:center; flex-wrap: wrap; }
-  .gap{ gap:12px; }
-  .mt12{ margin-top:12px; }
-
-  .pill{
-    height:40px; padding:0 18px; border-radius:24px; border:1px solid var(--muted);
-    color:var(--muted); background:#fff; font-size:15px; font-weight:500;
-    display:inline-flex; align-items:center; gap:9px;
+  /* Page optimized for 1024x600 */
+  .page {
+    width: 1024px;
+    height: 600px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--bg-page);
+    overflow: hidden;
+    margin: 0 auto;
   }
-  .pill--active{ border-color:var(--brand); color:var(--brand); font-weight:500; }
-  .lang-toggle .pill-dot{ display:none; }
-  .lang-toggle .pill.pill--active .pill-dot{ display:grid; }
-  .lang-toggle.lang-en .pill:first-child,
-  .lang-toggle.lang-ar .pill:last-child{ border-color:var(--brand); color:var(--brand); font-weight:500; }
-  .lang-toggle.lang-en .pill:first-child .pill-dot,
-  .lang-toggle.lang-ar .pill:last-child .pill-dot{ display:grid; }
-  .pill-dot{ width:20px; height:20px; border-radius:999px; display:grid; place-items:center; background:var(--brand); border:1px solid #fff; }
 
-  .slider-wrap{ width: 100%; max-width: 320px; height: 32px; display:flex; align-items:center; }
-
-  .slider{
-    -webkit-appearance:none; appearance:none;
-    width: 100%; height: 12px; border-radius: 140px;
-    outline: none; user-select: none; caret-color: transparent; cursor: pointer;
+  /* Header with natural spacing */
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex-shrink: 0;
   }
-  .slider::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none;
-    width:34px; height:29px; margin-top:0;
-    background: var(--slider-thumb) center/100% 100% no-repeat transparent !important;
-    border:0; border-radius:0; box-shadow:none; transition: transform .12s ease;
-  }
-  .slider:active::-webkit-slider-thumb{ transform: scale(0.96); }
-  .slider::-moz-range-thumb{
-    width:34px; height:28px;
-    background: var(--slider-thumb) center/100% 100% no-repeat transparent !important;
-    border:0; border-radius:0; box-shadow:none; transition: transform .12s ease;
-  }
-  .slider:active::-moz-range-thumb{ transform: scale(0.96); }
 
-  .label{ font-size:16px; font-weight:600; line-height:22px; margin:4px 0 8px; }
+  .iconbtn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
 
-  .ipgroup{
+  .iconbtn:hover {
+    background: var(--bg-page);
+    border-color: var(--secondary);
+  }
+
+  .titleblock {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .meta {
+    font-size: 13px;
+    color: var(--secondary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.3;
+  }
+
+  .meta-label {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  /* Grid Layout - Optimized for 1024x600 */
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: 1fr 1fr auto;
+    grid-template-areas:
+      "language brightness"
+      "network logs"
+      "backup backup";
+  }
+
+  .card-language { grid-area: language; }
+  .card-brightness { grid-area: brightness; }
+  .card-network { grid-area: network; }
+  .card-logs { grid-area: logs; }
+  .card-backup { grid-area: backup; }
+
+  /* Card with proper content structure */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-bottom: 14px;
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  /* BIGGER card titles */
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .lock-icon {
+    margin-left: auto;
+    opacity: 0.5;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Language Section */
+  .lang-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .lang-btn {
+    flex: 1;
+    min-height: 0;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .lang-btn:hover {
+    border-color: var(--secondary);
+    background: var(--bg-page);
+  }
+
+  .lang-btn.active {
+    border-color: var(--brand);
+    color: var(--brand);
+    background: var(--brand-light);
+  }
+
+  .check-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Brightness Slider */
+  .slider-container {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--slider-thumb) center/contain no-repeat;
+    border: 0;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: var(--slider-thumb) center/contain no-repeat;
+    border: 0;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  /* Network Section */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+
+  .ip-wrapper {
     position: relative;
-    margin-bottom: 8px;
-  }
-  .ip{
-    width:100%;
-    height:40px;
-    border-radius:8px;
-    border:1px solid var(--border-strong);
-    background:#fff;
-    color:var(--muted);
-    padding:0 44px 0 12px; /* space on the right for the eye */
-    font-size:14px;
-  }
-  .reveal{
-    position:absolute; right:6px; top:50%; transform:translateY(-50%);
-    width:36px; height:36px;
-    display:grid; place-items:center;
-    border:0; background:transparent; border-radius:8px;
-  }
-  .reveal img{ width:22px; height:22px; opacity:.85; }
-  .reveal:hover img{ opacity:1; }
-  .reveal:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
-
-  .btn{
-    height:44px; padding:0 22px; border-radius:8px; border:1px solid var(--border-strong);
-    background:#fff; display:inline-flex; align-items:center; gap:10px;
-    font-size:14.5px; font-weight:600;
+    display: flex;
+    align-items: center;
   }
 
-  .backup-row{ display:flex; gap:10px; align-items:center; margin-top:6px; flex-wrap:wrap; }
-  .holdbtn{
-    position:relative; height:48px; padding:0 16px;
-    border:1px solid var(--border-strong); border-radius:8px; background:#fff;
-    display:inline-flex; align-items:center; gap:10px; font-size:14.5px;
+  .ip-input {
+    width: 100%;
+    height: 38px;
+    padding: 0 44px 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    font-size: 13px;
+    color: var(--secondary);
+    font-family: "Inter", monospace;
   }
-  .holdbtn .ring{
-    width:18px; height:18px; border-radius:999px; flex:0 0 18px;
-    background: conic-gradient(var(--brand) calc(var(--p,0)*1*1turn), #eee 0);
-    transition: background .05s linear;
+
+  .reveal-btn {
+    position: absolute;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
   }
-  .stamp{
-    flex:1 1 280px; height:40px; border-radius:10px; border:1px solid var(--border-strong);
-    padding:0 12px; color:var(--muted); font-size:14px; background:#fff;
+
+  .reveal-btn:hover {
+    background: var(--bg-page);
+  }
+
+  .eye-icon {
+    color: var(--secondary);
+    transition: color 0.2s;
+  }
+
+  .reveal-btn:hover .eye-icon {
+    color: var(--primary);
+  }
+
+  /* Backup Section - Compact */
+  .card-backup .card-content {
+    gap: 8px;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: var(--secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .backup-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .backup-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .hold-button {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .hold-button:hover {
+    border-color: var(--secondary);
+    background: var(--bg-page);
+  }
+
+  .progress-ring {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: conic-gradient(var(--brand) calc(var(--p, 0) * 360deg), var(--track-rest) 0);
+    flex-shrink: 0;
+  }
+
+  .timestamp-input {
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-page);
+    font-size: 11px;
+    color: var(--secondary);
+    font-family: "Inter", monospace;
+  }
+
+  /* Logs Section */
+  .log-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .log-tab {
+    height: 34px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .log-tab:hover {
+    border-color: var(--secondary);
+    background: var(--bg-page);
+  }
+
+  .log-tab.active {
+    border-color: var(--brand);
+    color: var(--brand);
+    background: var(--brand-light);
+  }
+
+  .log-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+
+  .action-btn {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    border-color: var(--secondary);
+    background: var(--bg-page);
   }
 </style>

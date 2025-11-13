@@ -323,7 +323,7 @@ def generate_alerts_from_excel():
     return alerts
 
 
-def retrieve_context(query_text, k=3):
+def retrieve_context(query_text, k=1):
     global doc_embeddings_global, model
     if doc_embeddings_global is None or model is None:
         raise Exception("RAG pipeline not initialized.")
@@ -343,6 +343,16 @@ def generate_response(user_query, context):
     if not openai.api_key:
         return "OpenAI API key is not configured. Please set the OPENAI_API_KEY environment variable."
     
+    # DETECT GREETINGS - handle them separately without technical context
+    greeting_keywords = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings']
+    user_query_lower = user_query.lower().strip()
+    
+    is_greeting = any(keyword in user_query_lower for keyword in greeting_keywords)
+    
+    # If it's just a greeting with no technical content
+    if is_greeting and len(user_query.split()) <= 5:
+        return "Hello! I'm your ASRS maintenance assistant. I'm here to help you diagnose and troubleshoot any issues with the automated storage and retrieval system. What problem are you experiencing today? You can describe any alarms, unusual sounds, or equipment behavior you've noticed."
+    
     system_prompt = """
     You are an expert ASRS (Automated Storage and Retrieval System) maintenance assistant with a friendly, conversational tone.
     You're speaking directly to a technician who needs help, so be natural and supportive like a helpful colleague.
@@ -352,7 +362,7 @@ def generate_response(user_query, context):
     - Use conversational phrases like "Alright, let me help you with that" or "Okay, so here's what I think is happening"
     - Avoid using markdown symbols like ** or # - just speak naturally
     - Don't say "number 1, number 2" - instead say "first", "second", "then"
-    - Keep sentences concise and clear for spoken audio `
+    - Keep sentences concise and clear for spoken audio
     - Use pauses naturally by ending sentences, not with dashes or special formatting
 
     Structure your spoken response:
@@ -377,12 +387,13 @@ def generate_response(user_query, context):
 
     try:
         completion = openai.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": human_prompt}
             ],
-            temperature=0.5,
+            temperature=0.2,
+            max_tokens=400,
         )
         return completion.choices[0].message.content
     except Exception as e:
@@ -399,25 +410,27 @@ def generate_quick_acknowledgment(user_query):
         return "Got it, let me check that for you"
     
     system_prompt = """
-    You are a helpful assistant that generates brief acknowledgments to user queries.
-    
+    You are a helpful assistant that generates conversational acknowledgments to user queries.
+
     RULES:
-    - Generate a 5-10 word acknowledgment that shows you understood their query
+    - Generate a 15-25 word acknowledgment that shows you understood and are investigating
     - Be specific to what they asked about
-    - Use conversational language like "Got it", "Understood", "Okay"
-    - Mention the key topic from their query
-    - DO NOT give solutions or detailed responses
-    - This will be spoken aloud, so be natural
-    
+    - Use natural conversational flow
+    - Validate their concern, then say what you're doing
+    - DO NOT give solutions yet
+    - This will be spoken aloud, so sound natural and helpful
+
     Examples:
     User: "The conveyor belt is slipping"
-    Response: "Got it, checking the conveyor belt issue now"
-    
+    Response: "Got it, I hear you about the conveyor belt slipping. Let me pull up the diagnostic data and check what's going on with that system."
+
     User: "There's an alarm on the elevator"
-    Response: "Understood, looking into that elevator alarm"
-    
+    Response: "Understood, the elevator alarm is concerning. Give me a moment to access the system logs and see what triggered it."
+
     User: "Motor 3 is overheating"
-    Response: "Okay, analyzing the motor overheating problem"
+    Response: "Okay, motor 3 overheating - that needs attention. Let me check the temperature sensors and recent operation history real quick."
+
+    Keep it between 15-25 words, sound helpful and engaged.
     """
     
     try:
@@ -428,7 +441,7 @@ def generate_quick_acknowledgment(user_query):
                 {"role": "user", "content": f"Generate a brief acknowledgment for: {user_query}"}
             ],
             temperature=0.3,
-            max_tokens=30  # Keep it short
+            max_tokens=60  # Keep it short
         )
         acknowledgment = completion.choices[0].message.content.strip()
         print(f"Quick acknowledgment generated: {acknowledgment}")
@@ -575,7 +588,17 @@ async def handle_query(request: QueryRequest):
     print(f"Query: {user_query}")
 
     try:
-        context = retrieve_context(user_query)
+        # DETECT GREETINGS - skip RAG retrieval for greetings
+        greeting_keywords = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings']
+        user_query_lower = user_query.lower().strip()
+        is_greeting = any(keyword in user_query_lower for keyword in greeting_keywords)
+        
+        # If greeting with no technical content, skip context retrieval
+        if is_greeting and len(user_query.split()) <= 5:
+            context = ""  # Empty context for greetings
+        else:
+            context = retrieve_context(user_query)  # Normal RAG retrieval for technical queries
+        
         response_text = generate_response(user_query, context)
         
         print(f"Response generated successfully")
