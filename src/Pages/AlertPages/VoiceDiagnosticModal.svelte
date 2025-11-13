@@ -122,6 +122,60 @@
     }
   }
 
+  async function getInstantAcknowledgment(query) {
+    try {
+      // Quick API call for instant acknowledgment
+      const response = await fetch('http://localhost:8000/api/quick-acknowledge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: query }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Acknowledgment failed');
+      }
+
+      const data = await response.json();
+      return data.acknowledgment || "Got it, let me check that for you";
+    } catch (err) {
+      console.error('Error getting acknowledgment:', err);
+      return "Got it, let me check that for you";
+    }
+  }
+
+  async function speakInstantAcknowledgment(text) {
+    // Use OpenAI TTS for natural voice (same as full response)
+    try {
+      const response = await fetch('http://localhost:8000/api/synthesize-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: text }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Speech synthesis failed');
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const audio = new Audio(audioUrl);
+      audio.volume = 1.0;
+      
+      await audio.play();
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+      };
+    } catch (err) {
+      console.error('Error playing acknowledgment:', err);
+    }
+  }
+
   async function processQuery() {
     if (!transcript.trim()) {
       error = 'No transcript to process';
@@ -129,8 +183,14 @@
     }
 
     isProcessing = true;
-    error = '';
+    error = '';   
     aiResponse = '';
+
+    // INSTANT ACKNOWLEDGMENT - plays immediately
+    if (viewMode === 'audio') {
+      const acknowledgment = await getInstantAcknowledgment(transcript);
+      await speakInstantAcknowledgment(acknowledgment);
+    }
 
     try {
       console.log('Sending query to backend:', transcript);
@@ -152,10 +212,11 @@
       console.log('Received data:', data);
       aiResponse = data.response || 'No response received';
       
-      // Automatically speak the response in audio mode
+      // Small delay before full response
       if (viewMode === 'audio' && aiResponse) {
-        // No delay needed - permission is already claimed
-        speakResponse(aiResponse);
+        setTimeout(() => {
+          speakResponse(aiResponse);
+        }, 1000);
       }
     } catch (err) {
       console.error('Error querying AI:', err);
@@ -988,7 +1049,8 @@
   }
 
   .interrupt-btn:hover {
-    background: #ff5722;
-    transform: translateY(-1px);
-  }
+  background: #ff5722;
+  transform: translateY(-1px);
+}
 </style>
+

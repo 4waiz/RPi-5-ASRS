@@ -59,8 +59,14 @@ class QueryRequest(BaseModel):
 class SpeechRequest(BaseModel):
     text: str
 
+class QuickAcknowledgeRequest(BaseModel):
+    query: str
+
 class QueryResponse(BaseModel):
     response: str
+
+class QuickAcknowledgeResponse(BaseModel):
+    acknowledgment: str
 
 class AlertsResponse(BaseModel):
     alerts: List[dict]
@@ -384,6 +390,54 @@ def generate_response(user_query, context):
         return f"Sorry, I encountered an error while generating a response: {str(e)}"
 
 
+def generate_quick_acknowledgment(user_query):
+    """
+    Generate a quick, personalized acknowledgment based on the user's query
+    This should be FAST (<1 second) and brief (5-10 words)
+    """
+    if not openai.api_key:
+        return "Got it, let me check that for you"
+    
+    system_prompt = """
+    You are a helpful assistant that generates brief acknowledgments to user queries.
+    
+    RULES:
+    - Generate a 5-10 word acknowledgment that shows you understood their query
+    - Be specific to what they asked about
+    - Use conversational language like "Got it", "Understood", "Okay"
+    - Mention the key topic from their query
+    - DO NOT give solutions or detailed responses
+    - This will be spoken aloud, so be natural
+    
+    Examples:
+    User: "The conveyor belt is slipping"
+    Response: "Got it, checking the conveyor belt issue now"
+    
+    User: "There's an alarm on the elevator"
+    Response: "Understood, looking into that elevator alarm"
+    
+    User: "Motor 3 is overheating"
+    Response: "Okay, analyzing the motor overheating problem"
+    """
+    
+    try:
+        completion = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Generate a brief acknowledgment for: {user_query}"}
+            ],
+            temperature=0.3,
+            max_tokens=30  # Keep it short
+        )
+        acknowledgment = completion.choices[0].message.content.strip()
+        print(f"Quick acknowledgment generated: {acknowledgment}")
+        return acknowledgment
+    except Exception as e:
+        print(f"Error generating acknowledgment: {e}")
+        return "Got it, let me check that for you"
+
+
 def get_diagnostic_options():
     global df
     if df is None: 
@@ -415,6 +469,7 @@ async def startup_event():
     print(f"API Endpoints:")
     print(f"  - GET  /api/initial-data")
     print(f"  - POST /api/query")
+    print(f"  - POST /api/quick-acknowledge")
     print(f"  - GET  /api/alerts")
     print(f"  - POST /api/synthesize-speech")
     print(f"API Docs available at: http://localhost:8000/docs")
@@ -457,6 +512,7 @@ async def root():
         "endpoints": {
             "initial_data": "/api/initial-data",
             "query": "/api/query",
+            "quick_acknowledge": "/api/quick-acknowledge",
             "alerts": "/api/alerts",
             "synthesize_speech": "/api/synthesize-speech"
         }
@@ -481,6 +537,30 @@ async def get_initial_data():
         "alerts": alerts_data,
         "severityInfo": severity_info
     }
+
+
+@app.post('/api/quick-acknowledge', response_model=QuickAcknowledgeResponse)
+async def quick_acknowledge(request: QuickAcknowledgeRequest):
+    """
+    Generate a quick acknowledgment for the user's query
+    This endpoint is designed to be FAST (<1 second)
+    """
+    user_query = request.query
+    
+    if not user_query:
+        raise HTTPException(status_code=400, detail='Query is required')
+    
+    print(f"\n=== Quick Acknowledge Request ===")
+    print(f"Query: {user_query}")
+    
+    try:
+        acknowledgment = generate_quick_acknowledgment(user_query)
+        print(f"Acknowledgment: {acknowledgment}")
+        return {"acknowledgment": acknowledgment}
+    except Exception as e:
+        print(f"Error generating acknowledgment: {e}")
+        # Fallback to generic acknowledgment
+        return {"acknowledgment": "Got it, let me check that for you"}
 
 
 @app.post('/api/query', response_model=QueryResponse)
