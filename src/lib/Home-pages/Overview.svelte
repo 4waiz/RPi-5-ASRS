@@ -105,9 +105,9 @@
 
   .column1 {
     display: flex;
-    width: 112.78px;
+    width: 140px;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     gap: 16px;
   }
 
@@ -119,7 +119,7 @@
 
   .column2 {
     display: flex;
-    width: 112.78px;
+    width: 140px;
     flex-direction: column;
     align-items: flex-start;
     gap: 40px;
@@ -127,7 +127,7 @@
 
   .row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 32px;
   }
 

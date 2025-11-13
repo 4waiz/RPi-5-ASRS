@@ -84,8 +84,128 @@
       quick_checks: 'Wipe photoeye,Clear belt',
       fix: 'Clean PE1 lens and confirm the takeaway belt is free of cartons.',
       prevent_recurrence: 'Add hourly wipe instruction to the operator checklist.'
+    },
+    {
+      id: 'demo-critical-2',
+      title: 'Conveyor drive overheating',
+      severity: 'critical',
+      status: 'active',
+      rpn: 162,
+      severity_rating: 9,
+      occurrence_rating: 4,
+      detection_rating: 4,
+      code: 'CV-DRV-332',
+      subsystem: 'conveyor',
+      component: 'Drive Motor',
+      detection_source: 'thermal sensor',
+      timestamp: new Date().toLocaleString(),
+      machine: 'Merge Conveyor 1',
+      message: 'Drive housing temperature exceeded safety threshold for more than 90 seconds.',
+      probable_causes: 'Fan failure,Restricted airflow',
+      quick_checks: 'Inspect fan guard,Verify ventilation louvers',
+      fix: 'Replace failed fan and clear debris blocking airflow.',
+      prevent_recurrence: 'Schedule quarterly fan cleaning.'
+    },
+    {
+      id: 'demo-critical-3',
+      title: 'Storage shuttle misalignment',
+      severity: 'critical',
+      status: 'active',
+      rpn: 174,
+      severity_rating: 9,
+      occurrence_rating: 5,
+      detection_rating: 4,
+      code: 'ST-SHL-441',
+      subsystem: 'storage',
+      component: 'Shuttle Rail',
+      detection_source: 'vision system',
+      timestamp: new Date().toLocaleString(),
+      machine: 'Rack Lane B-04',
+      message: 'Camera flagged shuttle tracking deviation greater than 3 mm.',
+      probable_causes: 'Loose fasteners,Obstacle on rail',
+      quick_checks: 'Inspect rail clamps,Remove debris',
+      fix: 'Tighten fasteners to torque spec and recalibrate guidance camera.',
+      prevent_recurrence: 'Add misalignment check to daily inspection.'
     }
   ];
+
+  const MAX_ALERTS_DISPLAYED = 5;
+  const DISPLAY_LIMITS = Object.freeze({
+    critical: 3,
+    warning: 1,
+    error: 1
+  });
+
+  function normalizeAlerts(list = []) {
+    const buckets = {
+      critical: [],
+      error: [],
+      warning: [],
+      other: []
+    };
+
+    for (const alert of list ?? []) {
+      const severity = (alert.severity ?? '').toLowerCase();
+      if (severity === 'critical' || severity === 'error' || severity === 'warning') {
+        buckets[severity].push(alert);
+      } else {
+        buckets.other.push(alert);
+      }
+    }
+
+    const ordered = [];
+    const takeFromBucket = (bucketName, limit) => {
+      const bucket = buckets[bucketName];
+      while (
+        bucket?.length &&
+        ordered.length < MAX_ALERTS_DISPLAYED &&
+        (limit === undefined || limit > 0)
+      ) {
+        ordered.push(bucket.shift());
+        if (limit !== undefined) limit -= 1;
+      }
+    };
+
+    takeFromBucket('critical', DISPLAY_LIMITS.critical);
+    takeFromBucket('error', DISPLAY_LIMITS.error);
+    takeFromBucket('warning', DISPLAY_LIMITS.warning);
+
+    const leftovers = [
+      ...buckets.critical,
+      ...buckets.error,
+      ...buckets.warning,
+      ...buckets.other
+    ];
+
+    for (const alert of leftovers) {
+      if (ordered.length >= MAX_ALERTS_DISPLAYED) break;
+      ordered.push(alert);
+    }
+
+    return ordered;
+  }
+
+  function meetsDisplayTargets(list = []) {
+    return (
+      list.length >= MAX_ALERTS_DISPLAYED &&
+      list.filter((alert) => (alert.severity ?? '').toLowerCase() === 'critical').length >=
+        DISPLAY_LIMITS.critical &&
+      list.filter((alert) => (alert.severity ?? '').toLowerCase() === 'warning').length >=
+        DISPLAY_LIMITS.warning &&
+      list.filter((alert) => (alert.severity ?? '').toLowerCase() === 'error').length >=
+        DISPLAY_LIMITS.error
+    );
+  }
+
+  function prepareAlerts(list = [], { fillWithDemo = true } = {}) {
+    const normalized = normalizeAlerts(list);
+    if (fillWithDemo && !meetsDisplayTargets(normalized)) {
+      return normalizeAlerts([...(list ?? []), ...DEMO_ALERTS]);
+    }
+    return normalized;
+  }
+
+  alertsData.set(prepareAlerts(DEMO_ALERTS));
 
   let loading = true;
   let error = '';
@@ -96,6 +216,8 @@
   let diagnosticResult = '';
 
   let selectedAlert = null;
+  let totalTrackedAlerts = 0;
+  let sidebarAlertCount = MAX_ALERTS_DISPLAYED;
 
   $: alerts = $alertsData;
   $: filterValue = $currentFilter;
@@ -109,8 +231,9 @@
   $: criticalCount = alerts.filter((alert) => alert.severity === 'critical').length;
   $: errorCount = alerts.filter((alert) => alert.severity === 'error').length;
   $: warningCount = alerts.filter((alert) => alert.severity === 'warning').length;
-  $: activeAlertCount = alerts.filter((alert) => (alert.status ?? 'active') !== 'resolved').length;
-  $: sidebarAlertCount = criticalCount + errorCount;
+  $: totalTrackedAlerts = criticalCount + errorCount + warningCount;
+  $: sidebarAlertCount =
+    totalTrackedAlerts > 0 ? Math.min(MAX_ALERTS_DISPLAYED, totalTrackedAlerts) : MAX_ALERTS_DISPLAYED;
 
   onMount(() => {
     currentFilter.set('all');
@@ -126,18 +249,20 @@
         throw new Error(`Alerts service responded with ${response.status}`);
       }
       const data = await response.json();
+      const remoteOptions = Array.isArray(data.diagnostic_options)
+        ? data.diagnostic_options
+        : Array.isArray(data.diagnosticOptions)
+        ? data.diagnosticOptions
+        : [];
       diagnosticOptions.set(
-        Array.isArray(data.diagnosticOptions) && data.diagnosticOptions.length
-          ? data.diagnosticOptions
-          : DEMO_DIAGNOSTIC_OPTIONS
+        remoteOptions.length ? remoteOptions : DEMO_DIAGNOSTIC_OPTIONS
       );
-      alertsData.set(
-        Array.isArray(data.alerts) && data.alerts.length ? data.alerts : DEMO_ALERTS
-      );
+      const incomingAlerts = Array.isArray(data.alerts) ? data.alerts : [];
+      alertsData.set(prepareAlerts(incomingAlerts));
     } catch (err) {
       console.error('Failed to load initial alerts data', err);
       diagnosticOptions.set(DEMO_DIAGNOSTIC_OPTIONS);
-      alertsData.set(DEMO_ALERTS);
+      alertsData.set(prepareAlerts(DEMO_ALERTS));
       error = 'Unable to reach the alerts service. Showing demo data for now.';
     } finally {
       loading = false;
@@ -155,7 +280,11 @@
         throw new Error(`Alerts service responded with ${response.status}`);
       }
       const data = await response.json();
-      alertsData.set(Array.isArray(data.alerts) ? data.alerts : []);
+      alertsData.set(
+        prepareAlerts(Array.isArray(data.alerts) ? data.alerts : [], {
+          fillWithDemo: filter === 'all'
+        })
+      );
     } catch (err) {
       console.error('Failed to refresh alerts', err);
       error = 'Could not refresh alerts. Keeping the previous list.';
@@ -190,7 +319,7 @@
 </script>
 
 <div class="alerts-page">
-  <SideBar AlertsNum={sidebarAlertCount} WoriginNum={warningCount} ActivePage="Alerts" />
+  <SideBar AlertsNum={sidebarAlertCount} ActivePage="Alerts" />
 
   <section class="alerts-shell">
     <!-- NEW TOP BAR - Styled like Home page navigation tabs -->
@@ -245,26 +374,26 @@
     <div class="summary-row">
       <div class="summary-card">
         <span class="summary-label">Total Alerts</span>
-        <span class="summary-value">{alerts.length}</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-label">Active</span>
-        <span class="summary-value">{activeAlertCount}</span>
+        <span class="summary-value">{sidebarAlertCount}</span>
       </div>
       <div class="summary-card critical">
-        <span class="summary-label">Critical & Errors</span>
-        <span class="summary-value">{sidebarAlertCount}</span>
+        <span class="summary-label">Critical</span>
+        <span class="summary-value">{criticalCount}</span>
       </div>
       <div class="summary-card warning">
         <span class="summary-label">Warnings</span>
         <span class="summary-value">{warningCount}</span>
+      </div>
+      <div class="summary-card error">
+        <span class="summary-label">Errors</span>
+        <span class="summary-value">{errorCount}</span>
       </div>
     </div>
 
     <div class="content-region">
       {#if loading}
         <div class="state-card">
-          <div class="spinner" />
+          <div class="spinner"></div>
           <p>Loading alerts...</p>
         </div>
       {:else if error}
@@ -441,6 +570,10 @@
 
   .summary-card.warning {
     border-color: #f9a825;
+  }
+
+  .summary-card.error {
+    border-color: #ff7043;
   }
 
   .summary-label {

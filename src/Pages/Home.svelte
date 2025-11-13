@@ -16,7 +16,7 @@
   import greyComponent from "../assets/TopPageIcon/grey-component.svg?url";
   import orangeComponent from "../assets/TopPageIcon/orange-component.svg?url";
 
-  let Alerts = [2, 5];
+  const totalErrors = 5;
   let Names = ["Overview", "Inventory", "Digital Twin", "Components"];
   let Icons = [
     { inactive: greyOverview,  active: orangeOverview },
@@ -33,7 +33,7 @@
 </script>
 
 <div class="main">
-  <SideBar WoriginNum={Alerts[1]} AlertsNum={Alerts[0]} ActivePage={"Home"} />
+  <SideBar AlertsNum={totalErrors} ActivePage={"Home"} />
   <section class="right-con">
     <TopBar {Names} {Pages} {Icons} bind:activeIndex>
   <svelte:fragment slot="alerts">

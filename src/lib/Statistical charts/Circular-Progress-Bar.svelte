@@ -81,5 +81,7 @@
     width: 112px;
     font-size: 16px;
     font-weight: 600;
+    white-space: nowrap;
+    text-align: center;
   }
 </style>

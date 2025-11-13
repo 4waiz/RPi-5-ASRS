@@ -114,7 +114,7 @@
 </svelte:head>
 
 <div class="page">
-  <SideBar AlertsNum={0} WoriginNum={0} ActivePage="Settings" />
+  <SideBar AlertsNum={5} ActivePage="Settings" />
 
   <div class="settings-shell">
     <!-- Header -->

@@ -4,7 +4,8 @@
     import Setting from "../Pages/Setting.svelte";
     import Alerts from "../Pages/Alerts.svelte";
     import AI from "../Pages/AIAssistant.svelte";
-    let { AlertsNum, WoriginNum, ActivePage } = $props();
+    let { AlertsNum = 5, ActivePage } = $props();
+    const totalErrors = $derived(Math.min(5, Number(AlertsNum) || 0));
     function setActive(page) {
         if (ActivePage == page) {
             return "nav-item active";
@@ -34,10 +35,7 @@
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
             Alerts
-            <div class="badge-container">
-                <span class="badge red">{AlertsNum}</span>
-                <span class="badge yellow">{WoriginNum}</span>
-            </div>
+            <span class="badge red">{totalErrors}</span>
         </div>
         <div class={setActive("AI Assistant")} onclick={() => myVariable.set(AI)}>
             <svg class="nav-icon" viewBox="0 0 24 24">
@@ -141,13 +139,6 @@
         stroke-linejoin: round;
     }
 
-    .badge-container {
-        display: flex;
-        gap: 6px;
-        margin-left: auto;
-        width: fit-content;
-    }
-
     .badge {
         display: flex;
         align-items: center;
@@ -158,14 +149,11 @@
         font-size: 12px;
         font-weight: 600;
         color: #fff;
+        margin-left: auto;
     }
 
     .badge.red {
         background: #ef4444;
     }
 
-    .badge.yellow {
-        background: #fbbf24;
-        color: #000;
-    }
 </style>

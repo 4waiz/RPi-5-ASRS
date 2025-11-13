@@ -913,13 +913,29 @@
   const CAMERA_HEIGHT = 125;
   const CAMERA_MIN_DISTANCE = 220;
   const CAMERA_MAX_DISTANCE = 520;
-  const CAMERA_LOOK_TARGET = new THREE.Vector3(0, 50, 0);
+  const CAMERA_LOOK_TARGET = new THREE.Vector3(10, 35, -20);
 
   const CAMERA_PRESETS = {
-    front: { x: CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },
-    right: { x: 0, y: CAMERA_HEIGHT, z: CAMERA_DISTANCE },
-    back:  { x: -CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },
-    left:  { x: 0, y: CAMERA_HEIGHT, z: -CAMERA_DISTANCE }
+    front: {
+      x: CAMERA_LOOK_TARGET.x + CAMERA_DISTANCE,
+      y: CAMERA_HEIGHT,
+      z: CAMERA_LOOK_TARGET.z
+    },
+    right: {
+      x: CAMERA_LOOK_TARGET.x,
+      y: CAMERA_HEIGHT,
+      z: CAMERA_LOOK_TARGET.z + CAMERA_DISTANCE
+    },
+    back: {
+      x: CAMERA_LOOK_TARGET.x - CAMERA_DISTANCE,
+      y: CAMERA_HEIGHT,
+      z: CAMERA_LOOK_TARGET.z
+    },
+    left: {
+      x: CAMERA_LOOK_TARGET.x,
+      y: CAMERA_HEIGHT,
+      z: CAMERA_LOOK_TARGET.z - CAMERA_DISTANCE
+    }
   };
 
   async function rotateCameraTo(direction: 'front' | 'right' | 'back' | 'left') {
@@ -1072,97 +1088,78 @@
     z-index: 150;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    min-width: 190px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 18px 20px;
-    border-radius: 16px;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+    align-items: center;
+    gap: 14px;
+    background: transparent;
+    padding: 0;
   }
 
   .compass-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 12px;
+    display: flex;
     align-items: center;
+    gap: 18px;
   }
 
   .compass-center {
-    width: 46px;
-    height: 46px;
-    background: radial-gradient(circle, rgba(255, 171, 60, 0.45) 0%, transparent 70%);
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    justify-self: center;
+    background: radial-gradient(circle, rgba(255, 198, 126, 0.85) 0%, rgba(255, 198, 126, 0) 70%);
+    box-shadow: 0 0 12px rgba(255, 198, 126, 0.7);
   }
 
   .compass-btn {
-    min-width: 84px;
-    height: 38px;
-    padding: 0 18px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 999px;
-    background: #f8f8f8;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0, 0, 0, 0.2);
+    background: #fff;
     color: #1f1f1f;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   }
 
   .compass-btn:hover {
-    background: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
-    color: white;
-    border-color: transparent;
+    background: linear-gradient(135deg, #ff6b35 0%, #ffb347 100%);
+    color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(255, 107, 53, 0.35);
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
   }
 
   .compass-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .compass-btn.front,
-  .compass-btn.back {
-    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   }
 
   @media (max-width: 1200px), (max-height: 700px) {
     .compass-ui {
       top: 12px;
       right: 12px;
-      min-width: 150px;
-      padding: 12px 14px;
       gap: 10px;
-      border-radius: 14px;
     }
 
     .compass-row {
-      gap: 8px;
-      grid-template-columns: 1fr auto 1fr;
-    }
-
-    .compass-center {
-      width: 34px;
-      height: 34px;
+      gap: 12px;
     }
 
     .compass-btn {
-      min-width: 58px;
-      height: 30px;
-      padding: 0 10px;
-      font-size: 10px;
+      width: 50px;
+      height: 50px;
+      font-size: 9px;
       letter-spacing: 0.04em;
+    }
+
+    .compass-center {
+      width: 14px;
+      height: 14px;
     }
   }
 
