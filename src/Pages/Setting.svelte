@@ -114,10 +114,10 @@
 </svelte:head>
 
 <div class="page">
-  <!-- Header with better spacing from top -->
+  <!-- Header -->
   <div class="topbar">
     <button class="iconbtn" aria-label="Back" onclick={() => myVariable.set(Home)}>
-      <img class="icon" src={arrowBackIcon} alt="Back" width="24" height="24" />
+      <img class="icon" src={arrowBackIcon} alt="Back" width="22" height="22" />
     </button>
 
     <div class="titleblock">
@@ -132,75 +132,71 @@
 
   <div class="divider"></div>
 
-  <!-- Main grid - optimized for 1024x600 -->
+  <!-- Main grid - strict sizing to fit everything -->
   <div class="content-grid">
     <!-- Language -->
-    <section class="card card-language">
+    <section class="card">
       <div class="card-header">
-        <img class="icon" src={languageIcon} alt="Language" width="20" height="20" />
+        <img class="icon" src={languageIcon} alt="Language" width="18" height="18" />
         <h2 class="card-title">Language</h2>
       </div>
 
-      <div class="card-content">
-        <div class="lang-toggle">
-          <button 
-            type="button" 
-            class="lang-btn {language==='en' ? 'active' : ''}" 
-            aria-pressed={language==='en'} 
-            onclick={() => (language = 'en')}
-          >
-            {#if language==='en'}
-              <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
-            {/if}
-            English
-          </button>
+      <div class="lang-toggle">
+        <button 
+          type="button" 
+          class="lang-btn {language==='en' ? 'active' : ''}" 
+          aria-pressed={language==='en'} 
+          onclick={() => (language = 'en')}
+        >
+          {#if language==='en'}
+            <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
+          {/if}
+          English
+        </button>
 
-          <button 
-            type="button" 
-            class="lang-btn {language==='ar' ? 'active' : ''}" 
-            aria-pressed={language==='ar'} 
-            onclick={() => (language = 'ar')}
-          >
-            {#if language==='ar'}
-              <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
-            {/if}
-            عربي / Arabic
-          </button>
-        </div>
+        <button 
+          type="button" 
+          class="lang-btn {language==='ar' ? 'active' : ''}" 
+          aria-pressed={language==='ar'} 
+          onclick={() => (language = 'ar')}
+        >
+          {#if language==='ar'}
+            <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
+          {/if}
+          عربي / Arabic
+        </button>
       </div>
     </section>
 
     <!-- Brightness -->
-    <section class="card card-brightness">
+    <section class="card">
       <div class="card-header">
-        <img class="icon" src={brightnessIcon} alt="Brightness" width="20" height="20" />
+        <img class="icon" src={brightnessIcon} alt="Brightness" width="18" height="18" />
         <h2 class="card-title">Display Brightness</h2>
       </div>
 
-      <div class="card-content">
-        <div class="slider-container">
-          <input
-            class="slider"
-            type="range"
-            min="0"
-            max="100"
-            bind:value={brightness}
-            style={sliderStyle}
-            aria-label="Brightness"
-          />
-        </div>
+      <div class="slider-wrapper">
+        <input
+          class="slider"
+          type="range"
+          min="0"
+          max="100"
+          bind:value={brightness}
+          style={sliderStyle}
+          aria-label="Brightness"
+        />
       </div>
     </section>
 
     <!-- Network -->
-    <section class="card card-network">
+    <section class="card">
       <div class="card-header">
-        <img class="icon" src={networkIcon} alt="Network" width="20" height="20" />
+        <img class="icon" src={networkIcon} alt="Network" width="18" height="18" />
         <h2 class="card-title">Network Configuration</h2>
-        <img class="icon lock-icon" src={padlockIcon} alt="Locked" width="18" height="18" />
+        <img class="icon lock-icon" src={padlockIcon} alt="Locked" width="16" height="16" />
       </div>
 
-      <div class="card-content">
+      <div class="network-content">
         <div class="section-label">Machine IPs:</div>
 
         <div class="ip-wrapper">
@@ -216,7 +212,7 @@
             aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
             onclick={() => (ip1Masked = !ip1Masked)}
           >
-            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18">
+            <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
                     fill="none" 
                     stroke="currentColor" 
@@ -248,7 +244,7 @@
             aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
             onclick={() => (ip2Masked = !ip2Masked)}
           >
-            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18">
+            <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
                     fill="none" 
                     stroke="currentColor" 
@@ -270,14 +266,14 @@
     </section>
 
     <!-- Logs -->
-    <section class="card card-logs">
+    <section class="card">
       <div class="card-header">
-        <img class="icon" src={logsPadlockIcon} alt="Locked" width="20" height="20" />
+        <img class="icon" src={logsPadlockIcon} alt="Locked" width="18" height="18" />
         <h2 class="card-title">Machine Logs</h2>
-        <img class="icon lock-icon" src={logsFilterIcon} alt="Filter" width="18" height="18" />
+        <img class="icon lock-icon" src={logsFilterIcon} alt="Filter" width="16" height="16" />
       </div>
 
-      <div class="card-content">
+      <div class="logs-content">
         <div class="log-tabs">
           <button 
             type="button" 
@@ -307,21 +303,21 @@
 
         <div class="log-actions">
           <button class="action-btn">
-            <img class="icon" src={exportIcon} alt="Export" width="18" height="18" />
+            <img class="icon" src={exportIcon} alt="Export" width="16" height="16" />
             <span>Export</span>
           </button>
           <button class="action-btn">
             <span>View</span>
-            <img class="icon" src={viewIcon} alt="View" width="18" height="18" />
+            <img class="icon" src={viewIcon} alt="View" width="16" height="16" />
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Backup - spans both columns on bottom -->
+    <!-- Backup -->
     <section class="card card-backup">
       <div class="card-header">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
           <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
           <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
           <rect x="7" y="13" width="10" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -329,47 +325,45 @@
         <h2 class="card-title">Backup</h2>
       </div>
 
-      <div class="card-content">
-        <p class="help-text">Hold 2s to save/restore</p>
+      <p class="help-text">Hold 2s to save/restore</p>
 
-        <div class="backup-row">
-          <div class="backup-group">
-            <button
-              class="hold-button"
-              style={`--p:${storeProgress}`}
-              onpointerdown={() => startHold('store')}
-              onpointerup={() => cancelHold('store')}
-              onpointerleave={() => cancelHold('store')}
-              onpointercancel={() => cancelHold('store')}
-            >
-              <span class="progress-ring"></span>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
-                <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              <span>Store</span>
-            </button>
-            <input class="timestamp-input" value={storeTimestamp} readonly />
-          </div>
+      <div class="backup-row">
+        <div class="backup-group">
+          <button
+            class="hold-button"
+            style={`--p:${storeProgress}`}
+            onpointerdown={() => startHold('store')}
+            onpointerup={() => cancelHold('store')}
+            onpointerleave={() => cancelHold('store')}
+            onpointercancel={() => cancelHold('store')}
+          >
+            <span class="progress-ring"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
+              <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>Store</span>
+          </button>
+          <input class="timestamp-input" value={storeTimestamp} readonly />
+        </div>
 
-          <div class="backup-group">
-            <button
-              class="hold-button"
-              style={`--p:${restoreProgress}`}
-              onpointerdown={() => startHold('restore')}
-              onpointerup={() => cancelHold('restore')}
-              onpointerleave={() => cancelHold('restore')}
-              onpointercancel={() => cancelHold('restore')}
-            >
-              <span class="progress-ring"></span>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3v10M7 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-              <span>Restore</span>
-            </button>
-            <input class="timestamp-input" value={restoreTimestamp} readonly />
-          </div>
+        <div class="backup-group">
+          <button
+            class="hold-button"
+            style={`--p:${restoreProgress}`}
+            onpointerdown={() => startHold('restore')}
+            onpointerup={() => cancelHold('restore')}
+            onpointerleave={() => cancelHold('restore')}
+            onpointercancel={() => cancelHold('restore')}
+          >
+            <span class="progress-ring"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v10M7 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Restore</span>
+          </button>
+          <input class="timestamp-input" value={restoreTimestamp} readonly />
         </div>
       </div>
     </section>
@@ -407,30 +401,31 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Page optimized for 1024x600 */
+  /* STRICT 1024x600 with calculated spacing to fit everything */
   .page {
     width: 1024px;
     height: 600px;
-    padding: 20px 24px;
+    padding: 16px 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     background: var(--bg-page);
     overflow: hidden;
     margin: 0 auto;
   }
 
-  /* Header with natural spacing */
+  /* Compact Header - 65px total */
   .topbar {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
     flex-shrink: 0;
+    height: 50px;
   }
 
   .iconbtn {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -453,16 +448,16 @@
   }
 
   .h1 {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
     color: var(--primary);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   .meta {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--secondary);
     display: flex;
     flex-wrap: wrap;
@@ -482,36 +477,36 @@
     flex-shrink: 0;
   }
 
-  /* Grid Layout - Optimized for 1024x600 */
+  /* Grid - calculated to fit exactly */
   .content-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    gap: 12px;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
-    grid-template-rows: 1fr 1fr auto;
+    max-height: 505px;
+    grid-template-rows: repeat(2, 1fr) auto;
     grid-template-areas:
       "language brightness"
       "network logs"
       "backup backup";
   }
 
-  .card-language { grid-area: language; }
-  .card-brightness { grid-area: brightness; }
-  .card-network { grid-area: network; }
-  .card-logs { grid-area: logs; }
-  .card-backup { grid-area: backup; }
+  .card:nth-child(1) { grid-area: language; }
+  .card:nth-child(2) { grid-area: brightness; }
+  .card:nth-child(3) { grid-area: network; }
+  .card:nth-child(4) { grid-area: logs; }
+  .card:nth-child(5) { grid-area: backup; }
 
-  /* Card with proper content structure */
+  /* Compact Card */
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 16px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     min-height: 0;
     overflow: hidden;
@@ -520,22 +515,12 @@
   .card-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-shrink: 0;
-    margin-bottom: 14px;
   }
 
-  .card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 0;
-  }
-
-  /* BIGGER card titles */
   .card-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     margin: 0;
     color: var(--primary);
@@ -543,41 +528,42 @@
   }
 
   .icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
   }
 
   .lock-icon {
     margin-left: auto;
     opacity: 0.5;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
-  /* Language Section */
+  /* Language */
   .lang-toggle {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     flex: 1;
+    min-height: 0;
   }
 
   .lang-btn {
     flex: 1;
     min-height: 0;
-    padding: 0 14px;
+    padding: 0 12px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
     background: var(--bg-card);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     transition: all 0.2s;
   }
 
@@ -593,8 +579,8 @@
   }
 
   .check-dot {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: var(--brand);
     display: flex;
@@ -602,21 +588,20 @@
     justify-content: center;
   }
 
-  /* Brightness Slider */
-  .slider-container {
-    width: 100%;
+  /* Brightness */
+  .slider-wrapper {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding: 4px 0;
   }
 
   .slider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 8px;
-    border-radius: 8px;
+    height: 7px;
+    border-radius: 7px;
     outline: none;
     cursor: pointer;
   }
@@ -624,8 +609,8 @@
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     background: var(--slider-thumb) center/contain no-repeat;
     border: 0;
     cursor: pointer;
@@ -637,20 +622,27 @@
   }
 
   .slider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     background: var(--slider-thumb) center/contain no-repeat;
     border: 0;
     cursor: pointer;
     transition: transform 0.1s;
   }
 
-  /* Network Section */
+  /* Network */
+  .network-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+  }
+
   .section-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--primary);
-    margin-bottom: 4px;
   }
 
   .ip-wrapper {
@@ -661,27 +653,27 @@
 
   .ip-input {
     width: 100%;
-    height: 38px;
-    padding: 0 44px 0 12px;
+    height: 36px;
+    padding: 0 42px 0 10px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 7px;
     background: var(--bg-card);
-    font-size: 13px;
+    font-size: 12px;
     color: var(--secondary);
     font-family: "Inter", monospace;
   }
 
   .reveal-btn {
     position: absolute;
-    right: 6px;
-    width: 32px;
-    height: 32px;
+    right: 4px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     background: transparent;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background 0.2s;
   }
@@ -699,88 +691,28 @@
     color: var(--primary);
   }
 
-  /* Backup Section - Compact */
-  .card-backup .card-content {
-    gap: 8px;
-  }
-
-  .help-text {
-    font-size: 12px;
-    color: var(--secondary);
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  .backup-row {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
-
-  .backup-group {
+  /* Logs */
+  .logs-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .hold-button {
-    width: 100%;
-    height: 36px;
-    padding: 0 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-card);
-    display: flex;
-    align-items: center;
     gap: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--primary);
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s;
+    flex: 1;
+    justify-content: center;
   }
 
-  .hold-button:hover {
-    border-color: var(--secondary);
-    background: var(--bg-page);
-  }
-
-  .progress-ring {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: conic-gradient(var(--brand) calc(var(--p, 0) * 360deg), var(--track-rest) 0);
-    flex-shrink: 0;
-  }
-
-  .timestamp-input {
-    width: 100%;
-    height: 32px;
-    padding: 0 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-page);
-    font-size: 11px;
-    color: var(--secondary);
-    font-family: "Inter", monospace;
-  }
-
-  /* Logs Section */
   .log-tabs {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
   }
 
   .log-tab {
-    height: 34px;
-    padding: 0 12px;
+    height: 32px;
+    padding: 0 10px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 7px;
     background: var(--bg-card);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: var(--secondary);
     cursor: pointer;
@@ -801,24 +733,21 @@
 
   .log-actions {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: auto;
+    gap: 8px;
   }
 
   .action-btn {
     flex: 1;
-    min-width: 0;
-    height: 38px;
-    padding: 0 12px;
+    height: 36px;
+    padding: 0 10px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 7px;
     background: var(--bg-card);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 6px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--primary);
     cursor: pointer;
@@ -828,5 +757,73 @@
   .action-btn:hover {
     border-color: var(--secondary);
     background: var(--bg-page);
+  }
+
+  /* Backup - Compact */
+  .card-backup {
+    gap: 8px;
+    max-height: 115px;
+  }
+
+  .help-text {
+    font-size: 11px;
+    color: var(--secondary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .backup-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .backup-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .hold-button {
+    width: 100%;
+    height: 32px;
+    padding: 0 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--primary);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .hold-button:hover {
+    border-color: var(--secondary);
+    background: var(--bg-page);
+  }
+
+  .progress-ring {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: conic-gradient(var(--brand) calc(var(--p, 0) * 360deg), var(--track-rest) 0);
+    flex-shrink: 0;
+  }
+
+  .timestamp-input {
+    width: 100%;
+    height: 28px;
+    padding: 0 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg-page);
+    font-size: 10px;
+    color: var(--secondary);
+    font-family: "Inter", monospace;
   }
 </style>

@@ -204,6 +204,76 @@
   const movementController = new MovementController();
 
   // ============================================================================
+  // CAMERA ANIMATION SYSTEM
+  // ============================================================================
+  type CameraAnimationData = {
+    startPos: THREE.Vector3;
+    targetPos: THREE.Vector3;
+    startTime: number;
+    duration: number;
+    onComplete: () => void;
+  };
+
+  class CameraController {
+    private activeAnimation: CameraAnimationData | null = null;
+
+    moveCameraToPreset(
+      targetPos: { x: number; y: number; z: number },
+      duration = 1000
+    ) {
+      return new Promise<void>((resolve) => {
+        this.activeAnimation = {
+          startPos: camera.position.clone(),
+          targetPos: new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z),
+          startTime: performance.now(),
+          duration,
+          onComplete: resolve
+        };
+
+        // Disable user controls during animation
+        controls.enabled = false;
+      });
+    }
+
+    update() {
+      if (!this.activeAnimation) return;
+
+      const now = performance.now();
+      const elapsed = now - this.activeAnimation.startTime;
+      const progress = Math.min(1, elapsed / this.activeAnimation.duration);
+
+      // Easing function (ease-in-out cubic)
+      const eased = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      // Interpolate position
+      camera.position.lerpVectors(
+        this.activeAnimation.startPos,
+        this.activeAnimation.targetPos,
+        eased
+      );
+
+      // Always look at the scene center (origin)
+      camera.lookAt(0, 50, 0);
+
+      if (progress >= 1) {
+        const onComplete = this.activeAnimation.onComplete;
+        this.activeAnimation = null;
+        controls.enabled = true;
+        controls.target.set(0, 50, 0);
+        onComplete();
+      }
+    }
+
+    isAnimating() {
+      return this.activeAnimation !== null;
+    }
+  }
+
+  const cameraController = new CameraController();
+
+  // ============================================================================
   // VISUAL HELPERS
   // ============================================================================
   function forEachMaterial(object: THREE.Object3D, callback: (mat: THREE.Material) => void) {
@@ -827,9 +897,29 @@
     }
 
     movementController.update(delta);
+    cameraController.update();
 
     controls.update();
     renderer.render(scene, camera);
+  }
+
+  // ============================================================================
+  // COMPASS CAMERA CONTROLS
+  // ============================================================================
+  const CAMERA_DISTANCE = 500;
+  const CAMERA_HEIGHT = 100;
+
+  const CAMERA_PRESETS = {
+    north: { x: 0, y: CAMERA_HEIGHT, z: CAMERA_DISTANCE },      // Front view
+    east: { x: CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 },       // Right view
+    south: { x: 0, y: CAMERA_HEIGHT, z: -CAMERA_DISTANCE },     // Back view
+    west: { x: -CAMERA_DISTANCE, y: CAMERA_HEIGHT, z: 0 }       // Left view
+  };
+
+  async function rotateCameraTo(direction: 'north' | 'east' | 'south' | 'west') {
+    if (cameraController.isAnimating()) return;
+    const targetPos = CAMERA_PRESETS[direction];
+    await cameraController.moveCameraToPreset(targetPos);
   }
 
   // ============================================================================
@@ -889,6 +979,25 @@
 <div class="digital-twin-root">
   <div id="container3D" bind:this={container3DEl}></div>
 
+  <!-- Compass UI -->
+  <div class="compass-ui">
+    <button class="compass-btn north" on:click={() => rotateCameraTo('north')} title="North View">
+      N
+    </button>
+    <div class="compass-row">
+      <button class="compass-btn west" on:click={() => rotateCameraTo('west')} title="West View">
+        W
+      </button>
+      <div class="compass-center"></div>
+      <button class="compass-btn east" on:click={() => rotateCameraTo('east')} title="East View">
+        E
+      </button>
+    </div>
+    <button class="compass-btn south" on:click={() => rotateCameraTo('south')} title="South View">
+      S
+    </button>
+  </div>
+
   <div class="control-panel">
     <div class="panel-title">Select Box</div>
     <div class="box-list" bind:this={boxListEl}></div>
@@ -947,6 +1056,74 @@
     height: 100% !important;
     display: block;
     background: #EBEBEB;
+  }
+
+  /* Compass UI Styles */
+  .compass-ui {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .compass-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .compass-center {
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle, rgba(255, 171, 60, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .compass-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compass-btn:hover {
+    background: linear-gradient(135deg, #FF5622 0%, #FF8A50 100%);
+    color: white;
+    border-color: #FF5622;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(255, 86, 34, 0.3);
+  }
+
+  .compass-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .compass-btn.north,
+  .compass-btn.south {
+    align-self: center;
   }
 
   .control-panel {
