@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-# ==================== LLM Service (Ollama + Gemma 3) ====================
+# ==================== LLM Service (Ollama) ====================
 
 import time
 from typing import List, Tuple, Optional
 import re
-from .config import OLLAMA_MODEL_EN, OLLAMA_MODEL_AR
 
-# Global singletons
+# --- Imports moved to top and corrected ---
+from .config import (
+    OLLAMA_MODEL_EN, OLLAMA_MODEL_AR, LLM_TIMEOUT_S, 
+    LLM_RETRIES, LLM_MAX_CHARS, LLM_USE_MEMORY_TURNS
+)
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+
+# --- Global singletons ---
 _LLM_CACHE = {} 
-_PROMPT_TMPL = None
 _USE_LLM = True
-
-# Limits and behavior
-LLM_TIMEOUT_S = 25
-LLM_RETRIES = 2
-LLM_MAX_CHARS = 2000
-LLM_USE_MEMORY_TURNS = 4  # number of (user,bot) pairs to keep
 
 # Detect Arabic automatically
 _ARABIC_RE = re.compile(r'[\u0600-\u06FF]')
@@ -23,7 +23,6 @@ _ARABIC_RE = re.compile(r'[\u0600-\u06FF]')
 
 # ------------------ Language helpers ------------------
 
-# --- add this helper near the top of llm.py ---
 def _normalize_history(history):
     """Return a list of (user, bot) strings; drop malformed items."""
     norm = []
@@ -44,19 +43,25 @@ def detect_lang(text: str) -> str:
 
 
 def build_prompt_for_lang(lang_code: str) -> str:
-    """Language-specific style instructions."""
+    """Creates the system prompt with language-specific instructions."""
+    
     if lang_code == "ar":
         return (
-            "أنت مساعد افتراضي. يجب أن ترد باللغة العربية فقط. "
-            "يجب أن تكون إجابتك بأكملها باللغة العربية. "
-            "لا تستخدم أي أحرف أو كلمات أو أرقام إنجليزية. "
-            "كن ودوداً ومختصراً."
+            "أنت مساعد مستودع ذكي طورته ايدج. أنت ودود ومهذب ومساعد.\n"
+            "- هدفك الأساسي هو الإجابة على الأسئلة المتعلقة بنظام المخزون.\n"
+            "- يمكنك أيضًا الإجابة على الأسئلة العامة وإجراء محادثة.\n"
+            "- كن دائمًا مختصرًا ومحترفًا.\n"
+            "- يجب أن ترد باللغة العربية فقط.\n"
+            "- لا تستخدم أي أحرف أو كلمات إنجليزية."
         )
 
     else:
         return (
-            "Reply only in English. "
-            "Start your very first response with the exact greeting: 'I am a smart digital warehouse developed by EDGE. How can I help you' "
+            "You are a smart warehouse assistant developed by EDGE. You are friendly, polite, and helpful.\n"
+            "- Your main purpose is to answer questions about the inventory system.\n"
+            "- You can also answer general questions and make conversation.\n"
+            "- Always be concise and professional.\n"
+            "- You MUST reply in English only."
         )
 
 
@@ -71,19 +76,14 @@ def _get_llm_for_lang(lang_code: str):
     if not _USE_LLM:
         return None
 
-    # If model is already loaded, return it from the cache
     if lang_code in _LLM_CACHE:
         return _LLM_CACHE[lang_code]
 
-    # Select the correct model name
     model_name = OLLAMA_MODEL_EN if lang_code == 'en' else OLLAMA_MODEL_AR
 
     try:
-        from langchain_ollama import ChatOllama
         print(f"[LLM] Loading model for language '{lang_code}': {model_name}")
         llm_instance = ChatOllama(model=model_name, request_timeout=LLM_TIMEOUT_S)
-
-        # Save the new model instance to the cache
         _LLM_CACHE[lang_code] = llm_instance
         return llm_instance
     except Exception as e:
@@ -109,27 +109,21 @@ def llm_reply(user_text: str,
     lang_code = detect_lang(user_text)
     user_text = _truncate(user_text, LLM_MAX_CHARS)
 
-    # Get the correct LLM for the detected language
     llm = _get_llm_for_lang(lang_code)
 
-    # Fallback if LLM is unavailable
     if not llm:
         fallback = ("I am the smart inventory system." if lang_code == "en" 
                     else "أنا نظام إدارة المخزون الذكي")
         return f"{fallback} You said: {user_text}", lang_code
 
-    # --- The rest of the logic remains the same ---
-    from langchain_core.prompts import ChatPromptTemplate
-
     memory_pairs = _normalize_history(history)
     memory_pairs = memory_pairs[-LLM_USE_MEMORY_TURNS:] if LLM_USE_MEMORY_TURNS > 0 else []
 
-    # Build prompt
-    control_msg = build_prompt_for_lang(lang_code)
+    system_prompt = build_prompt_for_lang(lang_code)
     dyn_msgs = [
-        ("system", "You are a smart warehouse developed by EDGE. You are a friendly and concise assistant."),
-        ("system", control_msg),
+        ("system", system_prompt)
     ]
+
     for u, a in memory_pairs:
         dyn_msgs.append(("human", _truncate(u, 300)))
         dyn_msgs.append(("ai", _truncate(a, 300)))
@@ -144,6 +138,11 @@ def llm_reply(user_text: str,
         try:
             out = llm.invoke(msgs)
             content = getattr(out, "content", "") or ""
+            
+            if not content.strip():
+                print("[LLM ERROR] LLM returned an empty response.")
+                raise Exception("LLM returned an empty response.")
+
             return content.strip(), lang_code
         except Exception as e:
             last_err = e
@@ -151,8 +150,8 @@ def llm_reply(user_text: str,
 
     _USE_LLM = False
     print(f"[LLM ERROR] {last_err}")
-    fallback = ("An error occurred." if lang_code == "ar" 
-                else "حدث خطأ في النظام.")
+    fallback = ("An error occurred. Please try again." if lang_code == "en" 
+                else "حدث خطأ في النظام. يرجى المحاولة مرة أخرى.")
     return fallback, lang_code
 
 # ------------------ Quick test ------------------

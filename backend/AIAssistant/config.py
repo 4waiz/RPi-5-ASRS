@@ -26,7 +26,8 @@ VOSK_MODELS = {
 }
 # ---- Ollama / LLM (Optional) ----
 USE_LLM = True
-OLLAMA_MODEL_EN = "gemma3:1b"
+OLLAMA_MODEL_EN = "falcon3:3b"
+
 #OLLAMA_MODEL_EN = "qwen2.5:0.5b" 
 OLLAMA_MODEL_AR = "command-r7b-arabic:latest"
 LLM_TIMEOUT_S = 25
