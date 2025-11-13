@@ -88,10 +88,14 @@
         justify-content: space-between;
         align-items: flex-start;
         width: 190px;
-        height: 100%;
-        padding: 32px 16px;
+        min-height: 100vh;
+        padding: 32px 16px 48px;
         background-color: #fff;
         flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        border-right: 1px solid #ebebeb;
+        overflow-y: auto;
     }
 
     .logo-section {

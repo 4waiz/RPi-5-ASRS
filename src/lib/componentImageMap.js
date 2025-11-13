@@ -1,6 +1,6 @@
 // Component Image Mapping Configuration
 // Maps ALL component names from your Excel to the 10 images you have
-const componentImageModules = import.meta.glob('../assets/alertpage/*', {
+const componentImageModules = import.meta.glob('../assets/alertsPage/*', {
   eager: true,
   import: 'default'
 });

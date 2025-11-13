@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import SideBar from "../lib/side-bar.svelte";
 
   import arrowBackIcon     from "../assets/settingPage/arrow-1.svg";
@@ -16,6 +17,17 @@
 
   import { myVariable } from "../store";
   import Home from "./Home.svelte";
+
+  let previousBodyOverflow = "";
+  onMount(() => {
+    if (typeof document === "undefined") return;
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow || "";
+    };
+  });
 
   // Prevent browser zoom
   $effect(() => {
@@ -299,7 +311,6 @@
     font:16px/1.35 "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     color:var(--ink);
     background:#fff;
-    overflow:hidden;
   }
   :global(button){ cursor:pointer; font:inherit; color:inherit; background:#fff; border:1px solid transparent; }
   :global(input){ font:inherit; }

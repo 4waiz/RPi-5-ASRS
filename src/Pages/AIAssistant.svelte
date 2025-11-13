@@ -23,7 +23,7 @@
     let botMediaEl;
 
     // The API base URL points to your Python server
-    const API_BASE = "http://localhost:8000";
+    const API_BASE = import.meta.env?.VITE_ASSISTANT_API_BASE ?? "http://localhost:8001";
 
     function resolveUrl(pathOrUrl) {
     if (!pathOrUrl) return "";

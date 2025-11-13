@@ -175,4 +175,4 @@ async def serve_audio(filename: str):
 if __name__ == "__main__":
     print(f"--- AI Assistant Server ---")
     print(f"Current working directory: {os.getcwd()}")
-    uvicorn.run("app_aiassistant:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app_aiassistant:app", host="0.0.0.0", port=8001, reload=True)
