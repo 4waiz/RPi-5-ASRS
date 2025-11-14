@@ -8,7 +8,6 @@
 </script>
 
 <div class="main">
-  <!-- Dynamically render the component based on the store's value -->
   <svelte:component this={$myVariable} />
 </div>
 
