@@ -106,7 +106,7 @@
 
     .logo-section img {
         width: 100%;
-        max-width: 120px;
+        max-width: 150px;
         height: auto;
         object-fit: contain;
     }
