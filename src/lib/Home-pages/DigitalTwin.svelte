@@ -384,12 +384,8 @@
   }
 
   function getPayloadColor(payload: string) {
-    const colors: Record<string, number> = {
-      "full": 0x00ff00,
-      "partially full": 0x808080,
-      "empty": 0xff0000
-    };
-    return colors[payload] ?? 0xffffff;
+    // All boxes use the same blue color
+    return 0x0c4cc4;
   }
 
   // ============================================================================
