@@ -523,21 +523,15 @@
   }
 
   function updateStatusCounts() {
-    let fullCount = 0;
-    let partialCount = 0;
-    let emptyCount = 0;
+    let totalInStorage = 0;
 
     boxGrid.forEach(row => {
       row.forEach(box => {
-        if (box.payload === "full") fullCount++;
-        else if (box.payload === "partially full") partialCount++;
-        else if (box.payload === "empty") emptyCount++;
+        if (box.status === "In") totalInStorage++;
       });
     });
 
-    if (fullCountEl) fullCountEl.textContent = String(fullCount);
-    if (partialCountEl) partialCountEl.textContent = String(partialCount);
-    if (emptyCountEl) emptyCountEl.textContent = String(emptyCount);
+    if (fullCountEl) fullCountEl.textContent = String(totalInStorage);
   }
 
   function updateButtonStates() {
@@ -1034,19 +1028,9 @@
 
   <div class="status-label" class:hidden={systemState.hideUI}>
     <div class="status-item">
-      <div class="color1"></div>
-      <div class="status-count full" bind:this={fullCountEl}>0</div>
-      <div class="status-text">: Full</div>
-    </div>
-    <div class="status-item">
-      <div class="color2"></div>
-      <div class="status-count partial" bind:this={partialCountEl}>0</div>
-      <div class="status-text">: Partially full.</div>
-    </div>
-    <div class="status-item">
-      <div class="color3"></div>
-      <div class="status-count empty" bind:this={emptyCountEl}>0</div>
-      <div class="status-text">Empty</div>
+      <div class="color-blue"></div>
+      <div class="status-count" bind:this={fullCountEl}>0</div>
+      <div class="status-text">: Total</div>
     </div>
   </div>
 
@@ -1344,17 +1328,12 @@
     min-width: 35px;
   }
 
-  .color1,
-  .color2,
-  .color3 {
+  .color-blue {
     width: 16px;
     height: 16px;
     border-radius: 50%;
+    background-color: #0c4cc4;
   }
-
-  .color1 { background-color: #00ff00; }
-  .color2 { background-color: #808080; }
-  .color3 { background-color: #ff0000; }
 
   .status-text {
     font-size: 14px;
