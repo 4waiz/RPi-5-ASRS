@@ -1193,16 +1193,23 @@
     background: rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     margin-bottom: 16px;
+    padding: 4px;
   }
 
   .box-item {
     padding: 10px 14px;
+    margin: 2px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    position: relative;
+    background: #FFFFFF;
+    border-radius: 6px;
   }
 
   .box-item:last-child {
@@ -1210,12 +1217,42 @@
   }
 
   .box-item:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  .box-item.selected {
-    background: rgba(255, 171, 60, 0.378);
-    border-left: 4px solid #FF5622;
+  :global(.box-item.selected) {
+    background: #333333 !important;
+  }
+
+  :global(.box-item.selected .box-name) {
+    color: #FFFFFF !important;
+  }
+
+  :global(.box-item.selected .box-status) {
+    color: #FFFFFF !important;
+  }
+
+  @keyframes pulseSelection {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+    100% {
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0.3;
+    }
   }
 
   .box-name {

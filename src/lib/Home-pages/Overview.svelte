@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from "svelte";
   import CircularProgressBar from "../Statistical charts/Circular-Progress-Bar.svelte";
   import Temperature from "../Statistical charts/Temperature.svelte";
   import NumericData from "../Statistical charts/numeric-data.svelte";
@@ -8,19 +9,79 @@
   import Full    from "../../assets/inventory/Full.svg";
   import Partial from "../../assets/inventory/Partial.svg";
 
+  const icons = { full: Full, empty: Empty, partial: Partial };
+
+  // Live reactive data
+  let carStock = $state(100);
+  let helicopterStock = $state(10);
+  let processorTemp = $state(45);
+  let ambientTemp = $state(23);
+  let energyConsumption = $state(120);
+  let humidity = $state(65);
+  let asrsUtilization = $state(25);
+
   /* demo slot states - 7 in storage, 8 out storage, 1 out of stock */
-  let slots = [
+  let slots = $state([
     "full","full","full","full","full","full","full",  // 7 in storage
     "partial","partial","partial","partial","partial","partial","partial","partial",  // 8 out storage
     "empty"  // 1 out of stock
-  ];
-
-  const icons = { full: Full, empty: Empty, partial: Partial };
+  ]);
 
   let counts = $derived({
     full: slots.filter((s) => s === "full").length,
     partial: slots.filter((s) => s === "partial").length,
     empty: slots.filter((s) => s === "empty").length,
+  });
+
+  let interval;
+
+  // Utility function to generate realistic fluctuations
+  function fluctuate(current, min, max, change = 3) {
+    const delta = (Math.random() - 0.5) * change;
+    let newValue = current + delta;
+    return Math.min(Math.max(newValue, min), max);
+  }
+
+  // Simulate live data updates
+  function updateData() {
+    // Stock levels change occasionally (0-100%)
+    if (Math.random() > 0.7) {
+      carStock = Math.round(fluctuate(carStock, 0, 100, 5));
+    }
+    if (Math.random() > 0.7) {
+      helicopterStock = Math.round(fluctuate(helicopterStock, 0, 100, 8));
+    }
+
+    // Temperatures fluctuate with wider range for more visible changes
+    processorTemp = Math.round(fluctuate(processorTemp, 20, 140, 8));
+    ambientTemp = Math.round(fluctuate(ambientTemp, 10, 80, 6));
+
+    // Energy consumption varies
+    energyConsumption = Math.round(fluctuate(energyConsumption, 80, 180, 5));
+
+    // Humidity changes slowly
+    humidity = Math.round(fluctuate(humidity, 40, 80, 2));
+
+    // ASRS utilization varies based on activity
+    asrsUtilization = Math.round(fluctuate(asrsUtilization, 10, 95, 6));
+
+    // Occasionally change inventory slots
+    if (Math.random() > 0.85) {
+      const randomIndex = Math.floor(Math.random() * slots.length);
+      const states = ["full", "partial", "empty"];
+      slots[randomIndex] = states[Math.floor(Math.random() * states.length)];
+    }
+  }
+
+  onMount(() => {
+    // Update data every 2 seconds
+    interval = setInterval(updateData, 2000);
+  });
+
+  onDestroy(() => {
+    if (interval) {
+      clearInterval(interval);
+    }
   });
 </script>
 
@@ -28,29 +89,29 @@
   <div class="row">
     <!-- Column 1 -->
     <div class="column1">
-      <CircularProgressBar Name="Car Stock" Present={100} />
+      <CircularProgressBar Name="Car Stock" Present={carStock} />
       <div class="hd"></div>
-      <Temperature Temperature={45} max={160} label="Processor Temperature" />
+      <Temperature Temperature={processorTemp} max={160} label="Processor Temperature" />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 2 -->
     <div class="column1">
-      <CircularProgressBar Name="Helicopter Stock" Present={10} />
+      <CircularProgressBar Name="Helicopter Stock" Present={helicopterStock} />
       <div class="hd"></div>
-      <Temperature Temperature={23} max={160} label="Ambient Temperature" />
+      <Temperature Temperature={ambientTemp} max={160} label="Ambient Temperature" />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 3 -->
     <div class="column2">
-      <NumericData value={120} unit="kWh" label="Energy Consumption" />
+      <NumericData value={energyConsumption} unit="kWh" label="Energy Consumption" />
       <div class="hd"></div>
-      <NumericData value={65} unit="%" label="Humidity" />
+      <NumericData value={humidity} unit="%" label="Humidity" />
       <div class="hd"></div>
-      <NumericData value={25} unit="%" label="ASRS Utilization" />
+      <NumericData value={asrsUtilization} unit="%" label="ASRS Utilization" />
     </div>
 
     <div style="flex:0 0 0px;"></div>

@@ -14,16 +14,12 @@
         }
         return arr;
     }
-
-
-    // CSS vars
-    const vars = $derived(`--level:${pct}%;`);
 </script>
 
-<div class="thermo-container" style={vars}>
+<div class="thermo-container">
     <div class="thermo">
         <div class="tube">
-            <div class="fill"></div>
+            <div class="fill" style:height="{pct}%"></div>
         </div>
 
         <div class="labels">
@@ -40,7 +36,6 @@
 </div>
 <style>
 .thermo-container {
-    --level: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,9 +69,8 @@
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: var(--level);
     background: linear-gradient(to top, #e11d48 0%, #ff6b9d 100%);
-    transition: height 0.5s ease;
+    transition: height 0.6s ease-in-out;
     box-shadow: 0 -2px 8px rgba(225, 29, 72, 0.4);
 }
 

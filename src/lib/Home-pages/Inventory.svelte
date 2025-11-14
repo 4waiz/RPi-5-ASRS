@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from "svelte";
   import InventoryImage from '../../assets/inventory/Inventory.png';
 
   // Define notification cards data
@@ -43,12 +44,34 @@
 
   const colors = ["red", "green", "grey"];
 
-  // Static color assignment - no more performance-killing interval
-  // Colors are assigned once and stay constant
   function getRandomColor() {
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
   }
+
+  let interval;
+
+  // Update colors dynamically to show liveness
+  function updateColors() {
+    // Randomly change 2-4 boxes each update
+    const numChanges = Math.floor(Math.random() * 3) + 2; // 2 to 4 changes
+
+    for (let i = 0; i < numChanges; i++) {
+      const randomIndex = Math.floor(Math.random() * colorArray.length);
+      colorArray[randomIndex] = getRandomColor();
+    }
+  }
+
+  onMount(() => {
+    // Update colors every 3 seconds
+    interval = setInterval(updateColors, 3000);
+  });
+
+  onDestroy(() => {
+    if (interval) {
+      clearInterval(interval);
+    }
+  });
 </script>
 
 <div class="main">
@@ -346,21 +369,24 @@
   .box-container svg {
     width: 56px;
     height: 22px;
-    transition: fill 0.3s ease;
     margin: 0;
     display: block;
   }
 
+  .box-container svg rect:first-of-type {
+    transition: fill 0.5s ease-in-out;
+  }
+
   /* Define the color classes */
-  .red {
-    fill: red;
+  .red rect:first-of-type {
+    fill: #ef4444 !important;
   }
 
-  .green {
-    fill: green;
+  .green rect:first-of-type {
+    fill: #22c55e !important;
   }
 
-  .grey {
-    fill: rgb(81, 81, 81);
+  .grey rect:first-of-type {
+    fill: #6b7280 !important;
   }
 </style>

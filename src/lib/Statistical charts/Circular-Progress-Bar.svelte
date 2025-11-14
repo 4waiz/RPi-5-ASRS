@@ -67,7 +67,7 @@
     fill: none;
     stroke-width: 20;
     stroke-linecap: round;
-    transition: stroke-dashoffset 0.8s ease-out, stroke 0.25s ease; /* smooth color change too */
+    transition: stroke-dashoffset 0.6s ease-in-out, stroke 0.4s ease-in-out; /* smooth color change too */
   }
   .percentage {
     position: absolute;
@@ -76,6 +76,7 @@
     transform: translate(-50%, -50%);
     font-size: 18px;
     font-weight: bold;
+    transition: color 0.3s ease;
   }
   .label {
     width: 112px;
