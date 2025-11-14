@@ -765,13 +765,16 @@
 
     renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: window.devicePixelRatio <= 1,
-      powerPreference: "high-performance"
+      antialias: false, // Disable for faster initialization
+      powerPreference: "high-performance",
+      stencil: false, // Disable unused features
+      depth: true
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.BasicShadowMap;
+    renderer.shadowMap.autoUpdate = false; // Manual updates for better performance
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     container3DEl.appendChild(renderer.domElement);
@@ -827,60 +830,105 @@
   }
 
   // ============================================================================
-  // MODEL LOADING
+  // MODEL LOADING WITH CACHING AND OPTIMIZATION
   // ============================================================================
+  let cachedModel: any = null;
+  let isLoading = false;
+
   function loadModel() {
+    // If model is already cached, use it immediately
+    if (cachedModel) {
+      setupScene(cachedModel.scene.clone());
+      return Promise.resolve();
+    }
+
+    // If already loading, wait for it
+    if (isLoading) {
+      return Promise.resolve();
+    }
+
+    isLoading = true;
     const loader = new GLTFLoader();
 
-    loader.load(
-      CONFIG.BOX_MODEL_URL,
-      function (gltf) {
-        sceneRoot = gltf.scene;
-
-        sceneRoot.traverse((child: any) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-
-        decorativeCrane = findObjectByNames(sceneRoot, CONFIG.CRANE_NAMES.decorative);
-        controllableCrane = findObjectByNames(sceneRoot, CONFIG.CRANE_NAMES.controllable);
-
-        boxGrid.forEach((row, rowIndex) => {
-          row.forEach((boxData, colIndex) => {
-            const boxMesh = sceneRoot.getObjectByName(boxData.name);
-
-            if (boxMesh) {
-              const color = getPayloadColor(boxData.payload);
-              boxMesh.traverse((child: any) => {
-                if (child.isMesh) {
-                  child.material = new THREE.MeshStandardMaterial({ color });
-                }
+    return new Promise<void>((resolve, reject) => {
+      // Use fetch with cache for faster subsequent loads
+      fetch(CONFIG.BOX_MODEL_URL)
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+          loader.parse(
+            buffer,
+            '',
+            (gltf) => {
+              cachedModel = gltf;
+              isLoading = false;
+              // Use requestAnimationFrame to avoid blocking
+              requestAnimationFrame(() => {
+                setupScene(gltf.scene);
+                resolve();
               });
+            },
+            (error) => {
+              console.error("Model parse error:", error);
+              isLoading = false;
+              reject(error);
+            }
+          );
+        })
+        .catch(error => {
+          console.error("Model fetch error:", error);
+          isLoading = false;
+          reject(error);
+        });
+    });
+  }
 
-              const initialPos = (boxData.status === "In")
-                ? calculateBoxCellPosition()
-                : calculateBoxDeliveryPosition(rowIndex, colIndex);
+  function setupScene(loadedScene: THREE.Object3D) {
+    sceneRoot = loadedScene;
 
-              (boxMesh as any).position.set(initialPos.x, initialPos.y, initialPos.z);
-              setMeshOpacity(boxMesh, boxData.status === "In" ? 1.0 : 0.0);
+    sceneRoot.traverse((child: any) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    decorativeCrane = findObjectByNames(sceneRoot, CONFIG.CRANE_NAMES.decorative);
+    controllableCrane = findObjectByNames(sceneRoot, CONFIG.CRANE_NAMES.controllable);
+
+    boxGrid.forEach((row, rowIndex) => {
+      row.forEach((boxData, colIndex) => {
+        const boxMesh = sceneRoot.getObjectByName(boxData.name);
+
+        if (boxMesh) {
+          const color = getPayloadColor(boxData.payload);
+          boxMesh.traverse((child: any) => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshStandardMaterial({ color });
             }
           });
-        });
 
-        scene.add(sceneRoot);
-        systemState.setReady(true);
+          const initialPos = (boxData.status === "In")
+            ? calculateBoxCellPosition()
+            : calculateBoxDeliveryPosition(rowIndex, colIndex);
 
-        populateBoxList();
-        updateStatusCounts();
-        updateButtonStates();
-      },
-      undefined,
-      (error) => {
-        console.error("Model load error:", error);
-      }
-    );
+          (boxMesh as any).position.set(initialPos.x, initialPos.y, initialPos.z);
+          setMeshOpacity(boxMesh, boxData.status === "In" ? 1.0 : 0.0);
+        }
+      });
+    });
+
+    scene.add(sceneRoot);
+
+    // Update shadow map once after adding model
+    if (renderer) {
+      renderer.shadowMap.needsUpdate = true;
+    }
+
+    systemState.setReady(true);
+
+    populateBoxList();
+    updateStatusCounts();
+    updateButtonStates();
   }
 
   // ============================================================================
@@ -970,8 +1018,14 @@
     updateButtonStates();
 
     initScene();
-    loadModel();
+
+    // Start animation immediately so scene is visible
     startAnimation();
+
+    // Load model in parallel (non-blocking)
+    loadModel().catch(err => {
+      console.error("Failed to load model:", err);
+    });
 
     const handleGetOut = () => {
       const selectedBox = systemState.selectedBox;

@@ -53,19 +53,19 @@
 >
   <div class="alert-icon">
     {#if alert.status === 'resolved'}
-      <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
       </svg>
     {:else if alert.severity === 'critical'}
-      <svg width="32" height="32" fill="{getSeverityColor('critical')}" viewBox="0 0 24 24">
+      <svg fill="{getSeverityColor('critical')}" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
       </svg>
     {:else if alert.severity === 'error'}
-      <svg width="32" height="32" fill="{getSeverityColor('error')}" viewBox="0 0 24 24">
+      <svg fill="{getSeverityColor('error')}" viewBox="0 0 24 24">
         <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 5v2h2v-2h-2z"/>
       </svg>
     {:else}
-      <svg width="32" height="32" fill="{getSeverityColor('warning')}" viewBox="0 0 24 24">
+      <svg fill="{getSeverityColor('warning')}" viewBox="0 0 24 24">
         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
       </svg>
     {/if}
@@ -148,10 +148,11 @@
   .alert-card {
     background: white;
     border-radius: 14px;
-    padding: 2rem;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: flex-start;
+    gap: 1.5rem;
     transition: all 0.2s;
     cursor: pointer;
     border: 3px solid transparent;
@@ -212,13 +213,17 @@
   }
 
   .alert-icon {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1.5rem;
     flex-shrink: 0;
+  }
+
+  .alert-icon svg {
+    width: 36px;
+    height: 36px;
   }
 
   .alert-content {
@@ -230,23 +235,25 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .alert-title {
     font-weight: 600;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     line-height: 1.3;
     flex: 1;
   }
 
   .severity-badge {
-    padding: 0.4rem 0.85rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
+    text-align: center;
     white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
   .severity-badge.critical {
@@ -265,23 +272,25 @@
   }
 
   .rpn-badge {
-    padding: 0.4rem 0.85rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 700;
     color: white;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
+    text-align: center;
     white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
   .alert-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-items: center;
     color: #616161;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .meta-item {
@@ -297,10 +306,10 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    padding: 1.25rem;
+    padding: 1rem 0.75rem;
     background: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     overflow: visible;
   }
 
@@ -310,17 +319,18 @@
     align-items: center;
     text-align: center;
     min-width: 0;
+    padding: 0;
   }
 
   .metric-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #757575;
     text-transform: uppercase;
     font-weight: 600;
-    margin-bottom: 0.4rem;
-    line-height: 1.1;
-    height: auto;
-    min-height: 16px;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    display: block;
   }
 
   .metric-value {
@@ -328,13 +338,14 @@
     font-weight: 700;
     color: #212121;
     line-height: 1.3;
+    white-space: nowrap;
   }
 
   .rpn-metric .metric-value {
-    font-size: 0.85rem;
-    line-height: 1.2;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    white-space: normal;
+    word-spacing: 9999px;
     max-width: 100%;
   }
 
@@ -348,28 +359,27 @@
   .right-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: stretch;
     justify-content: flex-start;
-    gap: 0.75rem;
-    margin-left: 2rem;
+    gap: 1rem;
     flex-shrink: 0;
-    width: 220px;
-    min-width: 220px;
-    max-width: 220px;
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
   }
 
   .right-section .badges {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    align-items: stretch;
     width: 100%;
   }
 
   .fix-button {
-    padding: 0.75rem 1.25rem;
-    background: white;
-    border: 2px solid #E0E0E0;
+    padding: 0.85rem 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -378,15 +388,16 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
+    color: white;
     transition: all 0.2s;
     white-space: nowrap;
     width: 100%;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   }
 
   .fix-button:hover {
-    background: #F5F5F5;
-    border-color: #BDBDBD;
-    transform: translateX(2px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 
   /* Component Visual - Larger Image */
@@ -396,7 +407,7 @@
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 0.75rem;
+    padding: 1rem;
     border: 2px solid #E0E0E0;
     width: 100%;
     transition: all 0.2s;
@@ -409,18 +420,18 @@
   }
 
   .component-visual img {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     object-fit: contain;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .component-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #424242;
     font-weight: 600;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.3;
     word-break: break-word;
     width: 100%;
   }

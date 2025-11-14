@@ -159,8 +159,8 @@
               class="cell"
               src={icons[state]}
               alt={`slot-${i}-${state}`}
-              width="27"
-              height="18"
+              width="24"
+              height="16"
             />
           {/each}
         </div>
@@ -192,15 +192,18 @@
   .main-container {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 20px;
+    padding: 0 16px;
+    max-width: 1024px;
+    box-sizing: border-box;
   }
 
   .column1 {
     display: flex;
-    width: 140px;
+    width: 130px;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
   }
 
   .hd {
@@ -211,16 +214,18 @@
 
   .column2 {
     display: flex;
-    width: 140px;
+    width: 160px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 40px;
+    gap: 32px;
   }
 
   .row {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 20px;
+    width: 100%;
+    max-width: 992px;
   }
 
   .vd {
@@ -234,6 +239,7 @@
     display: flex;
     justify-content: flex-start;
     margin-top: 0;
+    flex-shrink: 0;
   }
 
   /* Card */
@@ -242,31 +248,31 @@
     flex-direction: column;
     align-items: flex-start;
     width: fit-content;
-    padding: 16px 20px;
-    border-radius: 20px;
+    padding: 12px 16px;
+    border-radius: 16px;
     border: 1px solid rgba(0, 0, 0, 0.3);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   h3 {
     color: #000;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    margin: 0 0 14px 0;
+    margin: 0 0 10px 0;
   }
 
   /* Grid */
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 27px);
-    gap: 12px 32px;
+    grid-template-columns: repeat(4, 24px);
+    gap: 10px 24px;
     justify-content: center;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
 
   .cell {
-    width: 27px;
-    height: 18px;
+    width: 24px;
+    height: 16px;
     display: block;
   }
 
@@ -276,21 +282,21 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    margin-bottom: 14px;
+    gap: 4px;
+    margin-bottom: 10px;
   }
 
   .legend-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 6px;
+    font-size: 12px;
     color: #333;
   }
 
   .legend-icon {
-    width: 27px;
-    height: 18px;
+    width: 24px;
+    height: 16px;
     display: block;
     flex-shrink: 0;
   }
@@ -298,13 +304,12 @@
   /* Button */
   .manage-btn {
     width: 100%;
-    padding: 10px 0;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 500;
     color: #333;
     cursor: pointer;
-    border-radius: 8.76px;
     border: 1.095px solid rgba(0, 0, 0, 0.68);
     background-color: rgba(0, 0, 0, 0);
     transition: all 0.2s ease;

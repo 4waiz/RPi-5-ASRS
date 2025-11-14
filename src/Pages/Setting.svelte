@@ -24,6 +24,9 @@
     previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = previousBodyOverflow || "auto";
 
+    // Apply initial brightness
+    applyBrightness(brightness);
+
     return () => {
       document.body.style.overflow = previousBodyOverflow || "";
     };
@@ -50,6 +53,30 @@
   let language   = $state<"en"|"ar">("en");
   let brightness = $state(60);
   let activeLogTab = $state<"all"|"error"|"operation">("all");
+
+  // Apply brightness to display
+  function applyBrightness(value: number) {
+    // For web/browser: adjust opacity of a dimming overlay
+    if (typeof document !== 'undefined') {
+      // Set minimum brightness to 10% so screen is never completely black
+      const minBrightness = 10;
+      const adjustedValue = Math.max(minBrightness, value);
+      const dimValue = 1 - (adjustedValue / 100);
+      document.documentElement.style.setProperty('--screen-brightness', `${dimValue}`);
+
+      // Also try to use the Screen Brightness API if available
+      if ('setBrightness' in navigator) {
+        (navigator as any).setBrightness(adjustedValue / 100).catch(() => {
+          console.log('Screen Brightness API not available');
+        });
+      }
+    }
+  }
+
+  // Watch brightness changes and apply them
+  $effect(() => {
+    applyBrightness(brightness);
+  });
 
   // ===== Network IP (masked input with inline eye button) =====
   let ip1Value = $state("192.168.0.101");
@@ -173,6 +200,7 @@
       <div class="card-header">
         <img class="icon" src={brightnessIcon} alt="Brightness" width="18" height="18" />
         <h2 class="card-title">Display Brightness</h2>
+        <span class="brightness-value">{brightness}%</span>
       </div>
 
       <div class="slider-wrapper">
@@ -391,6 +419,21 @@
     --brand: #E54817;
     --brand-light: rgba(229, 72, 23, 0.1);
     --track-rest: #E5E7EB;
+    --screen-brightness: 0.4;
+  }
+
+  /* Brightness dimming overlay */
+  :global(body::before) {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, var(--screen-brightness));
+    pointer-events: none;
+    z-index: 9999;
+    transition: background 0.2s ease;
   }
 
   :global(body) {
@@ -597,6 +640,18 @@
   }
 
   /* Brightness */
+  .brightness-value {
+    margin-left: auto;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--brand);
+    padding: 2px 10px;
+    border-radius: 6px;
+    background: var(--brand-light);
+    min-width: 50px;
+    text-align: center;
+  }
+
   .slider-wrapper {
     flex: 1;
     display: flex;
