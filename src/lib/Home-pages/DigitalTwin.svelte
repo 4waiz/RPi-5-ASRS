@@ -91,6 +91,7 @@
     _ready = false;
     _currentOperation: string | null = null;
     _selectedBox: string | null = null;
+    _hideUI = $state(false);
 
     get ready() {
       return this._ready;
@@ -104,9 +105,11 @@
     }
     setOperation(boxName: string) {
       this._currentOperation = boxName;
+      this._hideUI = true;
     }
     clearOperation() {
       this._currentOperation = null;
+      this._hideUI = false;
     }
     isOperationInProgress() {
       return this._currentOperation !== null;
@@ -117,6 +120,10 @@
     }
     setSelectedBox(boxName: string | null) {
       this._selectedBox = boxName;
+    }
+
+    get hideUI() {
+      return this._hideUI;
     }
   }
 
@@ -1020,7 +1027,7 @@
     </button>
   </div>
 
-  <div class="control-panel">
+  <div class="control-panel" class:hidden={systemState.hideUI}>
     <div class="panel-title">Select Box</div>
     <div class="box-list" bind:this={boxListEl}></div>
     <div class="action-buttons">
@@ -1029,7 +1036,7 @@
     </div>
   </div>
 
-  <div class="status-label">
+  <div class="status-label" class:hidden={systemState.hideUI}>
     <div class="status-item">
       <div class="color1"></div>
       <div class="status-count full" bind:this={fullCountEl}>0</div>
@@ -1092,6 +1099,13 @@
     gap: 14px;
     background: transparent;
     padding: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .compass-ui.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .compass-row {
@@ -1175,6 +1189,13 @@
     border: 1px solid rgba(0, 0, 0, 0.32);
     width: 232px;
     z-index: 100;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .control-panel.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .panel-title {
@@ -1304,6 +1325,13 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .status-label.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .status-item {
