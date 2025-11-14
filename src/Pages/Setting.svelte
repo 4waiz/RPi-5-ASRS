@@ -423,7 +423,7 @@
     --screen-brightness: 0;
   }
 
-  /* Brightness dimming overlay */
+  
   :global(body::before) {
     content: '';
     position: fixed;
