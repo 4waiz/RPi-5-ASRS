@@ -765,13 +765,13 @@
 
     renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: window.devicePixelRatio <= 1,
       powerPreference: "high-performance"
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.BasicShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     container3DEl.appendChild(renderer.domElement);
@@ -789,10 +789,9 @@
     mainLight.shadow.camera.bottom = -300;
     mainLight.shadow.camera.near = 0.5;
     mainLight.shadow.camera.far = 1000;
-    mainLight.shadow.mapSize.width = 4096;
-    mainLight.shadow.mapSize.height = 4096;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
     mainLight.shadow.bias = -0.0005;
-    mainLight.shadow.radius = 2;
     scene.add(mainLight);
 
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
@@ -885,10 +884,18 @@
   }
 
   // ============================================================================
-  // ANIMATION LOOP
+  // ANIMATION LOOP WITH VISIBILITY DETECTION
   // ============================================================================
+  let isPageVisible = true;
+  let animationFrameId: number | null = null;
+
   function animate() {
-    requestAnimationFrame(animate);
+    if (!isPageVisible) {
+      animationFrameId = null;
+      return;
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
 
@@ -901,6 +908,19 @@
 
     controls.update();
     renderer.render(scene, camera);
+  }
+
+  function startAnimation() {
+    if (isPageVisible && !animationFrameId) {
+      animate();
+    }
+  }
+
+  function stopAnimation() {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
   }
 
   // ============================================================================
@@ -951,7 +971,7 @@
 
     initScene();
     loadModel();
-    animate();
+    startAnimation();
 
     const handleGetOut = () => {
       const selectedBox = systemState.selectedBox;
@@ -979,10 +999,25 @@
 
     window.addEventListener('resize', handleResize);
 
+    // Pause animation when page/tab is not visible
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isPageVisible = false;
+        stopAnimation();
+      } else {
+        isPageVisible = true;
+        startAnimation();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       getBoxOutBtnEl.removeEventListener('click', handleGetOut);
       putBoxInBtnEl.removeEventListener('click', handlePutIn);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopAnimation();
       movementController.stopAll();
       if (renderer) {
         renderer.dispose();

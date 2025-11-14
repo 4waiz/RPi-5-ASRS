@@ -5,38 +5,14 @@
   export let hideCount = false;
   export let hideArrow = false;
   const dispatch = createEventDispatcher();
-
-  const clearSelection = () => {
-    if (typeof window === 'undefined') return;
-    const selection = window.getSelection?.();
-    selection?.removeAllRanges?.();
-  };
-
-  const releaseFocus = (element) => {
-    element?.blur?.();
-    clearSelection();
-  };
-
-  const handleKeydown = (event) => {
-    const blockedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-    if (blockedKeys.includes(event.key)) {
-      event.preventDefault();
-      releaseFocus(event.currentTarget);
-    }
-  };
 </script>
 
 <button
   class="unit-card"
   class:active={active}
-  on:click={(event) => {
-    dispatch('open');
-    releaseFocus(event.currentTarget);
-  }}
-  on:focus={(event) => releaseFocus(event.currentTarget)}
-  on:keydown={handleKeydown}
+  on:click={() => dispatch('open')}
 >
-  <div class="thumb"><img src={unit.image} alt="" /></div>
+  <div class="thumb"><img src={unit.image} alt="" loading="lazy" decoding="async" /></div>
 
   <div class="meta">
     <div class="name">{unit.name}</div>

@@ -3,6 +3,7 @@ import UnitCard from "./UnitCard.svelte";
   import RightDrawer from "./RightDrawer.svelte";
   import { units } from "../catalog.js";
   import { writable } from "svelte/store";
+  import { onMount, onDestroy } from "svelte";
 
 const DEFAULT_STATUSES = {
   SM1: "Running",
@@ -14,6 +15,7 @@ const DEFAULT_STATUSES = {
   PS4: "Idle",
   JO1: "Online",
   GD1: "Idle",
+  GD2: "Running",
 };
 
 const INITIAL_STATE = {
@@ -50,25 +52,107 @@ const createStatusStore = () => {
 
 const statusStore = createStatusStore();
 
+// Define possible statuses for each component type
+const STATUS_OPTIONS = {
+  // Stepper Motors
+  SM1: ["Running", "Off", "Idle"],
+  SM2: ["Running", "Off", "Idle"],
+  SM3: ["Running", "Off", "Idle"],
+
+  // Proximity Sensors
+  PS1: ["Live", "Idle", "Detecting"],
+  PS2: ["Live", "Idle", "Detecting"],
+  PS3: ["Live", "Idle", "Detecting"],
+  PS4: ["Live", "Idle", "Detecting"],
+
+  // Jetson Orin
+  JO1: ["Online", "Processing", "Idle", "Busy"],
+
+  // DC Motors
+  GD1: ["Running", "Off", "Idle"],
+  GD2: ["Running", "Off", "Idle"],
+};
+
+let statusInterval;
+let isVisible = $state(true);
+
+// Randomly change component statuses to simulate live system
+function updateStatuses() {
+  // Randomly pick 2-5 components to update for more visible changes
+  const numChanges = Math.floor(Math.random() * 4) + 2;
+  const componentIds = Object.keys(STATUS_OPTIONS);
+
+  for (let i = 0; i < numChanges; i++) {
+    const randomId = componentIds[Math.floor(Math.random() * componentIds.length)];
+    const possibleStatuses = STATUS_OPTIONS[randomId];
+    const randomStatus = possibleStatuses[Math.floor(Math.random() * possibleStatuses.length)];
+
+    statusStore.setStatus(randomId, randomStatus);
+  }
+}
+
+onMount(() => {
+  // Start interval only when visible
+  if (isVisible) {
+    statusInterval = setInterval(updateStatuses, 2000);
+  }
+
+  // Pause/resume based on page visibility
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+      }
+      isVisible = false;
+    } else {
+      isVisible = true;
+      if (!statusInterval) {
+        statusInterval = setInterval(updateStatuses, 2000);
+      }
+    }
+  };
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    if (statusInterval) {
+      clearInterval(statusInterval);
+    }
+  };
+});
+
+onDestroy(() => {
+  if (statusInterval) {
+    clearInterval(statusInterval);
+  }
+});
+
 
   const catalog = units;
-  let open = false;
-  let selectedUnitId = null;
+  let open = $state(false);
+  let selectedUnitId = $state(null);
+  let cachedUnits = $state([]);
 
-  $: backendOnline = $statusStore.online;
+  // Derived reactive values using Svelte 5 runes
+  let backendOnline = $derived($statusStore.online);
 
-  // Memoized: Only recalculate when statusStore changes
-  $: unitsWithStatus = catalog.map((unit) => ({
-    ...unit,
-    subcomponents: unit.subcomponents.map((component) => ({
-      ...component,
-      status: backendOnline
-        ? $statusStore.statuses[component.id] ?? component.defaultStatus ?? "Unknown"
-        : "Unknown",
-    })),
-  }));
+  let unitsWithStatus = $derived(
+    catalog.map((unit) => ({
+      ...unit,
+      subcomponents: unit.subcomponents.map((component) => ({
+        ...component,
+        status: backendOnline
+          ? $statusStore.statuses[component.id] ?? component.defaultStatus ?? "Unknown"
+          : "Unknown",
+      })),
+    }))
+  );
 
-  $: selectedUnit = selectedUnitId ? unitsWithStatus.find((unit) => unit.id === selectedUnitId) : null;
+  let selectedUnit = $derived(
+    selectedUnitId ? unitsWithStatus.find((unit) => unit.id === selectedUnitId) : null
+  );
 
   const closeDrawer = () => {
     open = false;
@@ -116,11 +200,6 @@ const statusStore = createStatusStore();
     min-height: calc(100vh - 120px);
     box-sizing: border-box;
     transition: all 200ms ease;
-    user-select: none;
-    caret-color: transparent;
-  }
-
-  :global(.components-page *) {
     user-select: none;
     caret-color: transparent;
   }

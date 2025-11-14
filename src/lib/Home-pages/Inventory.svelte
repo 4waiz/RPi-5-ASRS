@@ -62,9 +62,40 @@
     }
   }
 
+  let isVisible = $state(true);
+
   onMount(() => {
-    // Update colors every 3 seconds
-    interval = setInterval(updateColors, 3000);
+    // Start interval only when visible
+    if (isVisible) {
+      interval = setInterval(updateColors, 3000);
+    }
+
+    // Pause/resume based on page visibility
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page is hidden, stop the interval
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+        isVisible = false;
+      } else {
+        // Page is visible again, restart the interval
+        isVisible = true;
+        if (!interval) {
+          interval = setInterval(updateColors, 3000);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   });
 
   onDestroy(() => {

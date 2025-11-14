@@ -24,7 +24,7 @@
   >
     <header class="hdr">
       <div class="head">
-        {#if unit?.image}<img src={unit.image} alt="" />{/if}
+        {#if unit?.image}<img src={unit.image} alt="" loading="lazy" decoding="async" />{/if}
         <div>
           <div class="title">{unit?.name ?? ""}</div>
           <div class="subtitle">{unit ? `( ID: ${unit.id} )` : ""}</div>
@@ -40,7 +40,7 @@
     <section class="list">
       {#each unit.subcomponents ?? [] as component (component.id)}
         <div class="row">
-          {#if component.image}<img src={component.image} alt="" />{/if}
+          {#if component.image}<img src={component.image} alt="" loading="lazy" decoding="async" />{/if}
           <div class="meta">
             <div class="name">{component.name}</div>
             <div class="id">{component.id}</div>
