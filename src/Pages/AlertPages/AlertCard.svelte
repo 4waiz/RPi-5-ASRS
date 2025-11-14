@@ -74,16 +74,8 @@
   <div class="alert-content">
     <div class="alert-header">
       <div class="alert-title">{alert.title}</div>
-      <div class="badges">
-        <span class="severity-badge {alert.severity}">
-          {alert.severity.toUpperCase()}
-        </span>
-        <span class="rpn-badge" style="background: {rpnLevel.color};">
-          RPN: {alert.rpn}
-        </span>
-      </div>
     </div>
-    
+
     <div class="alert-meta">
       <span class="meta-item">
         <strong>Code:</strong> {alert.code}
@@ -123,6 +115,16 @@
   </div>
 
   <div class="right-section">
+    <!-- Badges moved to top of right section -->
+    <div class="badges">
+      <span class="severity-badge {alert.severity}">
+        {alert.severity.toUpperCase()}
+      </span>
+      <span class="rpn-badge" style="background: {rpnLevel.color};">
+        RPN: {alert.rpn}
+      </span>
+    </div>
+
     {#if alert.status !== 'resolved'}
       <button class="fix-button" on:click={handleFixClick}>
         How to Fix
@@ -154,6 +156,7 @@
     cursor: pointer;
     border: 3px solid transparent;
     position: relative;
+    overflow: hidden;
   }
 
   .alert-card::before {
@@ -227,7 +230,6 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1.5rem;
     margin-bottom: 1rem;
   }
 
@@ -238,18 +240,13 @@
     flex: 1;
   }
 
-  .badges {
-    display: flex;
-    gap: 0.75rem;
-    flex-shrink: 0;
-  }
-
   .severity-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
   }
 
   .severity-badge.critical {
@@ -268,12 +265,13 @@
   }
 
   .rpn-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 700;
     color: white;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
   }
 
   .alert-meta {
@@ -298,11 +296,12 @@
   .fmea-metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    gap: 1rem;
     padding: 1.25rem;
     background: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     margin-bottom: 1rem;
+    overflow: visible;
   }
 
   .metric {
@@ -310,24 +309,33 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    min-width: 0;
   }
 
   .metric-label {
-    font-size: 0.95rem;
+    font-size: 0.7rem;
     color: #757575;
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 0.4rem;
+    line-height: 1.1;
+    height: auto;
+    min-height: 16px;
   }
 
   .metric-value {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #212121;
+    line-height: 1.3;
   }
 
   .rpn-metric .metric-value {
-    font-size: 1.1rem;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100%;
   }
 
   .alert-time {
@@ -336,29 +344,43 @@
     color: #757575;
   }
 
-  /* Right Section - Button + Image */
+  /* Right Section - Badges, Button + Image */
   .right-section {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    margin-left: 1.5rem;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    margin-left: 2rem;
     flex-shrink: 0;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+
+  .right-section .badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
   }
 
   .fix-button {
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.25rem;
     background: white;
-    border: 3px solid #E0E0E0;
+    border: 2px solid #E0E0E0;
     border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: center;
+    gap: 0.5rem;
     cursor: pointer;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     transition: all 0.2s;
     white-space: nowrap;
+    width: 100%;
   }
 
   .fix-button:hover {
@@ -374,10 +396,11 @@
     align-items: center;
     background: white;
     border-radius: 12px;
-    padding: 1rem;
+    padding: 0.75rem;
     border: 2px solid #E0E0E0;
-    min-width: 180px;
+    width: 100%;
     transition: all 0.2s;
+    box-sizing: border-box;
   }
 
   .component-visual:hover {
@@ -386,18 +409,20 @@
   }
 
   .component-visual img {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .component-label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #424242;
     font-weight: 600;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.2;
+    word-break: break-word;
+    width: 100%;
   }
 
   @media (max-width: 768px) {
