@@ -4,6 +4,7 @@
     import Setting from "../Pages/Setting.svelte";
     import Alerts from "../Pages/Alerts.svelte";
     import AI from "../Pages/AIAssistant.svelte";
+    import EdgeLogo from "../assets/Icons/Edge_logo.png";
     let { AlertsNum = 5, ActivePage } = $props();
     const totalErrors = $derived(Math.min(5, Number(AlertsNum) || 0));
     function setActive(page) {
@@ -17,7 +18,7 @@
 
 <nav class="sidebar">
     <div class="logo-section">
-        <img src="\src\assets\Icons\Edge_logo.png" alt="Egde Logo" height="50px" />
+        <img src={EdgeLogo} alt="Edge Logo" />
     </div>
 
     <div class="nav-menu">
@@ -97,6 +98,17 @@
 
     .logo-section {
         margin-bottom: 60px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-section img {
+        width: 100%;
+        max-width: 120px;
+        height: auto;
+        object-fit: contain;
     }
 
     .nav-menu {
