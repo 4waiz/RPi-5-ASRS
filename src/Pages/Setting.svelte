@@ -418,17 +418,20 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 24px;
+    gap: 12px;
+    padding: 16px 24px;
+    max-height: 100vh;
+    overflow-y: auto;
   }
 
-  /* Compact Header - 65px total */
+  /* Compact Header */
   .topbar {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     flex-shrink: 0;
-    height: 50px;
+    height: auto;
+    min-height: 40px;
   }
 
   .titleblock {
@@ -437,16 +440,16 @@
   }
 
   .h1 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
-    margin: 0 0 4px 0;
+    margin: 0 0 2px 0;
     color: var(--primary);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   .meta {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--secondary);
     display: flex;
     flex-wrap: wrap;
@@ -469,32 +472,50 @@
   .content-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
+    gap: 12px;
     width: 100%;
+    flex: 1;
+    align-content: start;
+    grid-auto-rows: minmax(min-content, max-content);
     grid-template-areas:
       "language brightness"
       "network logs"
       "backup  backup";
   }
 
-  .card-language { grid-area: language; }
-  .card-brightness { grid-area: brightness; }
-  .card-network { grid-area: network; }
-  .card-logs { grid-area: logs; }
-  .card-backup { grid-area: backup; }
+  .card-language {
+    grid-area: language;
+    align-self: stretch;
+  }
+  .card-brightness {
+    grid-area: brightness;
+    align-self: stretch;
+  }
+  .card-network {
+    grid-area: network;
+    align-self: stretch;
+  }
+  .card-logs {
+    grid-area: logs;
+    align-self: stretch;
+  }
+  .card-backup {
+    grid-area: backup;
+  }
 
   /* Compact Card */
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 18px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     min-height: 0;
     overflow: hidden;
+    height: 100%;
   }
 
   .card-header {
@@ -505,7 +526,7 @@
   }
 
   .card-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     margin: 0;
     color: var(--primary);
@@ -532,16 +553,18 @@
     gap: 8px;
     flex: 1;
     min-height: 0;
+    justify-content: space-evenly;
   }
 
   .lang-btn {
     flex: 1;
-    min-height: 0;
+    min-height: 38px;
+    height: 38px;
     padding: 0 12px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
     background: var(--bg-card);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--secondary);
     cursor: pointer;
@@ -578,6 +601,7 @@
     flex: 1;
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 4px 0;
   }
 
@@ -621,7 +645,7 @@
     flex-direction: column;
     gap: 8px;
     flex: 1;
-    justify-content: center;
+    justify-content: space-evenly;
   }
 
   .section-label {
@@ -638,12 +662,12 @@
 
   .ip-input {
     width: 100%;
-    height: 36px;
+    height: 34px;
     padding: 0 42px 0 10px;
     border: 1.5px solid var(--border);
     border-radius: 7px;
     background: var(--bg-card);
-    font-size: 12px;
+    font-size: 11px;
     color: var(--secondary);
     font-family: "Inter", monospace;
   }
@@ -682,7 +706,7 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
-    justify-content: center;
+    justify-content: space-evenly;
   }
 
   .log-tabs {
@@ -747,7 +771,7 @@
   /* Backup - Compact */
   .card-backup {
     gap: 8px;
-    max-height: 115px;
+    height: auto !important;
   }
 
   .help-text {
@@ -759,8 +783,8 @@
 
   .backup-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .backup-group {
@@ -773,15 +797,16 @@
 
   .hold-button {
     width: 100%;
-    height: 40px;
-    padding: 0 16px;
+    height: 36px;
+    padding: 0 12px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
     background: var(--bg-card);
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--primary);
     cursor: pointer;
@@ -804,12 +829,12 @@
 
   .timestamp-input {
     width: 100%;
-    height: 34px;
-    padding: 0 14px;
+    height: 32px;
+    padding: 0 10px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
     background: #f3f4f6;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--secondary);
     font-family: "Inter", monospace;
   }
