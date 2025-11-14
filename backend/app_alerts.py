@@ -38,7 +38,6 @@ if not openai.api_key:
 MODEL_NAME = 'all-MiniLM-L6-v2'
 EXCEL_PATH = 'data/machine_errors.xlsx'
 
-# Global variables
 documents = []
 doc_embeddings_global = None
 model = None
