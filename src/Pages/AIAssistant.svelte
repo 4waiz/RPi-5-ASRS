@@ -16,7 +16,7 @@
     // These paths are relative to the root '/'
     const micIcon = "static/assets/aiassistant/mic.png";
     //const talkingVideoPath = "static/assets/aiassistant/avatar_talking.mp4";
-    import talkingVideoPath from "../static/assets/aiassistant/avatar_talking.mp4";
+   // import talkingVideoPath from "../static/assets/aiassistant/avatar_talking.mp4";
     // 3D Model Paths
 
     const modelPath = "static/avatar/models/muhammad.glb";
