@@ -3,7 +3,6 @@
   import Home from './Pages/Home.svelte';
   import Setting from './Pages/Setting.svelte';
 
-  // Set the store value to the Setting component dynamically
   myVariable.set(Home);  // Now the store holds the Setting component
 </script>
 

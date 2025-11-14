@@ -8,7 +8,6 @@ from piper.voice import PiperVoice
 import soundfile as sf
 import numpy as np
 
-# Global cache to hold loaded voice models so we don't reload them
 _PIPER_VOICES_CACHE = {}
 
 def _piper_default_dirs():
