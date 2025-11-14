@@ -51,8 +51,12 @@
   const timestamp = $state("11/03/2025, 06:38:08");
 
   let language   = $state<"en"|"ar">("en");
-  // Always default to 100% brightness on page load
-  let brightness = $state(100);
+  // Load brightness from localStorage or default to 60
+  let brightness = $state(
+    typeof localStorage !== 'undefined'
+      ? parseInt(localStorage.getItem('display-brightness') || '60', 10)
+      : 60
+  );
   let activeLogTab = $state<"all"|"error"|"operation">("all");
 
   // Apply brightness to display
