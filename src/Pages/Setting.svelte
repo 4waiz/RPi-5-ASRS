@@ -51,12 +51,8 @@
   const timestamp = $state("11/03/2025, 06:38:08");
 
   let language   = $state<"en"|"ar">("en");
-  // Load brightness from localStorage or default to 60
-  let brightness = $state(
-    typeof localStorage !== 'undefined'
-      ? parseInt(localStorage.getItem('display-brightness') || '60', 10)
-      : 60
-  );
+  // Always default to 100% brightness on page load
+  let brightness = $state(100);
   let activeLogTab = $state<"all"|"error"|"operation">("all");
 
   // Apply brightness to display
@@ -68,9 +64,6 @@
       const adjustedValue = Math.max(minBrightness, value);
       const dimValue = 1 - (adjustedValue / 100);
       document.documentElement.style.setProperty('--screen-brightness', `${dimValue}`);
-
-      // Save to localStorage
-      localStorage.setItem('display-brightness', value.toString());
 
       // Also try to use the Screen Brightness API if available
       if ('setBrightness' in navigator) {
@@ -427,7 +420,7 @@
     --brand: #E54817;
     --brand-light: rgba(229, 72, 23, 0.1);
     --track-rest: #E5E7EB;
-    --screen-brightness: 0.4;
+    --screen-brightness: 0;
   }
 
   /* Brightness dimming overlay */
