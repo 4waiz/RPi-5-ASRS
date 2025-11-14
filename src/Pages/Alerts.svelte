@@ -322,32 +322,32 @@
   <SideBar AlertsNum={sidebarAlertCount} ActivePage="Alerts" />
 
   <section class="alerts-shell">
-    <!-- NEW TOP BAR - Styled like Home page navigation tabs -->
-    <div class="top-navigation-bar">
-      <div class="nav-tabs">
-        <button 
-          class="nav-tab"
+    <!-- Compact Top Bar with Filters (Left) and Actions (Right) -->
+    <div class="top-bar">
+      <div class="filter-tabs">
+        <button
+          class="filter-tab"
           class:active={filterValue === 'all'}
           on:click={() => handleFilterChange('all')}
         >
           All
         </button>
-        <button 
-          class="nav-tab"
+        <button
+          class="filter-tab"
           class:active={filterValue === 'critical'}
           on:click={() => handleFilterChange('critical')}
         >
           Critical
         </button>
-        <button 
-          class="nav-tab"
+        <button
+          class="filter-tab"
           class:active={filterValue === 'error'}
           on:click={() => handleFilterChange('error')}
         >
           Errors
         </button>
-        <button 
-          class="nav-tab"
+        <button
+          class="filter-tab"
           class:active={filterValue === 'warning'}
           on:click={() => handleFilterChange('warning')}
         >
@@ -357,13 +357,13 @@
 
       <div class="action-buttons">
         <button class="action-btn diagnosis-btn" on:click={() => (showDiagnosticModal = true)}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
           </svg>
           Start AI Diagnosis
         </button>
         <button class="action-btn voice-btn" on:click={() => (showVoiceModal = true)}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
           </svg>
           Voice Diagnosis
@@ -371,7 +371,8 @@
       </div>
     </div>
 
-    <div class="summary-row">
+    <!-- Compact Summary Cards - All in One Line -->
+    <div class="summary-bar">
       <div class="summary-card">
         <span class="summary-label">Total Alerts</span>
         <span class="summary-value">{sidebarAlertCount}</span>
@@ -455,146 +456,165 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    margin-top: 24px;
+    gap: 16px;
+    padding: 16px 24px;
   }
 
-  /* NEW TOP NAVIGATION BAR - Matches Home page style */
-  .top-navigation-bar {
+  /* Compact Top Bar */
+  .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #ffffff;
-    padding: 16px 24px;
-    border-radius: 16px;
-    margin: 0 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    gap: 20px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    gap: 16px;
     flex-wrap: wrap;
     min-width: 0;
   }
 
-  .nav-tabs {
+  /* Filter Tabs (Left - Compact) */
+  .filter-tabs {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
   }
 
-  .nav-tab {
-    padding: 12px 32px;
-    border: none;
-    background: transparent;
-    color: #757575;
-    font-size: 1rem;
+  .filter-tab {
+    padding: 8px 16px;
+    border: 1.5px solid #e0e0e0;
+    background: #ffffff;
+    color: #666;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    position: relative;
+    border-radius: 8px;
+    transition: all 0.2s ease;
     text-transform: capitalize;
   }
 
-  .nav-tab:hover {
-    background: rgba(255, 107, 53, 0.08);
+  .filter-tab:hover {
+    background: rgba(255, 107, 53, 0.05);
+    border-color: #FF6B35;
     color: #FF6B35;
   }
 
-  .nav-tab.active {
+  .filter-tab.active {
     background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba(255, 107, 53, 0.25);
   }
 
+  /* Action Buttons (Right) */
   .action-buttons {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .action-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    gap: 6px;
+    padding: 8px 14px;
     border: none;
-    border-radius: 12px;
-    font-size: 0.95rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    white-space: nowrap;
   }
 
   .diagnosis-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
   }
 
   .diagnosis-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
   }
 
   .voice-btn {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+    box-shadow: 0 2px 6px rgba(17, 153, 142, 0.25);
   }
 
   .voice-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(17, 153, 142, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(17, 153, 142, 0.35);
   }
 
-  .summary-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin: 0 24px;
+  /* Compact Summary Cards - Single Horizontal Line */
+  .summary-bar {
+    display: flex;
+    gap: 12px;
     min-width: 0;
+    width: 100%;
   }
 
   .summary-card {
     background: #fff;
-    border-radius: 16px;
-    padding: 16px 20px;
+    border-radius: 12px;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    border: 2px solid transparent;
+    border: 1.5px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .summary-card:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
   .summary-card.critical {
     border-color: #d32f2f;
+    background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
   }
 
   .summary-card.warning {
     border-color: #f9a825;
+    background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
   }
 
   .summary-card.error {
     border-color: #ff7043;
+    background: linear-gradient(135deg, #fff 0%, #fff8f5 100%);
   }
 
   .summary-label {
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     color: #757575;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
+    font-weight: 600;
   }
 
   .summary-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #212121;
+    line-height: 1;
   }
 
   .content-region {
     flex: 1;
-    margin: 0 24px 32px;
-    background: #f7f7f7;
-    border-radius: 24px;
-    padding: 24px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e0e0e0;
   }
 
   .alerts-grid {
@@ -654,6 +674,12 @@
     background: #e64a19;
   }
 
+  @media (max-width: 1024px) {
+    .summary-bar {
+      flex-wrap: wrap;
+    }
+  }
+
   @media (max-width: 820px) {
     .alerts-page {
       flex-direction: column;
@@ -661,36 +687,54 @@
     }
 
     .alerts-shell {
-      margin-top: 0;
+      padding: 12px 16px;
     }
 
-    .content-region {
-      margin: 0;
-    }
-
-    .top-navigation-bar {
+    .top-bar {
       flex-direction: column;
       align-items: stretch;
+      gap: 12px;
     }
 
-    .nav-tabs {
+    .filter-tabs {
       justify-content: center;
     }
 
     .action-buttons {
       justify-content: center;
     }
+
+    .summary-bar {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .summary-value {
+      font-size: 1.5rem;
+    }
   }
 
   @media (max-width: 640px) {
-    .nav-tab {
-      padding: 10px 20px;
-      font-size: 0.9rem;
+    .filter-tab {
+      padding: 7px 12px;
+      font-size: 0.8rem;
     }
 
     .action-btn {
-      padding: 10px 16px;
-      font-size: 0.85rem;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+    }
+
+    .summary-bar {
+      flex-direction: column;
+    }
+
+    .summary-label {
+      font-size: 0.7rem;
+    }
+
+    .summary-value {
+      font-size: 1.5rem;
     }
   }
 </style>
