@@ -43,25 +43,12 @@
 
   const colors = ["red", "green", "grey"];
 
-  // This function picks a random color from the 'colors' array
+  // Static color assignment - no more performance-killing interval
+  // Colors are assigned once and stay constant
   function getRandomColor() {
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
   }
-
-  // Add $effect to handle the 2-second interval
-  $effect(() => {
-    // Start an interval to update the array every 2 seconds
-    const intervalId = setInterval(() => {
-      // Update each item in the array to a new random color
-      for (let i = 0; i < colorArray.length; i++) {
-        colorArray[i] = getRandomColor();
-      }
-    }, 2000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  });
 </script>
 
 <div class="main">

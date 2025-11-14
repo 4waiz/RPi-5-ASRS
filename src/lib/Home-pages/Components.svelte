@@ -4,8 +4,6 @@ import UnitCard from "./UnitCard.svelte";
   import { units } from "../catalog.js";
   import { writable } from "svelte/store";
 
-const STATUS_SEQUENCE = ["Running", "Live", "Online", "Idle", "Off"];
-
 const DEFAULT_STATUSES = {
   SM1: "Running",
   SM2: "Running",
@@ -20,42 +18,12 @@ const DEFAULT_STATUSES = {
 
 const INITIAL_STATE = {
   online: true,
-  lastUpdated: new Date().toISOString(),
   statuses: DEFAULT_STATUSES,
 };
 
-const clone = (value) => JSON.parse(JSON.stringify(value));
-
+// Simplified store without the performance-killing interval
 const createStatusStore = () => {
-  const store = writable(clone(INITIAL_STATE));
-
-  if (typeof window !== "undefined") {
-    const interval = setInterval(() => {
-      store.update((state) => {
-        const nextStatuses = Object.fromEntries(
-          Object.entries(state.statuses).map(([id, status]) => [
-            id,
-            getNextStatus(status),
-          ])
-        );
-
-        return {
-          ...state,
-          lastUpdated: new Date().toISOString(),
-          statuses: nextStatuses,
-        };
-      });
-    }, 3000);
-
-    const unsubscribe = store.subscribe(() => {});
-
-    if (import.meta?.hot) {
-      import.meta.hot.dispose(() => {
-        clearInterval(interval);
-        unsubscribe();
-      });
-    }
-  }
+  const store = writable(INITIAL_STATE);
 
   return {
     subscribe: store.subscribe,
@@ -75,17 +43,9 @@ const createStatusStore = () => {
       }));
     },
     reset() {
-      store.set(clone(INITIAL_STATE));
+      store.set(INITIAL_STATE);
     },
   };
-};
-
-const getNextStatus = (current) => {
-  const index = STATUS_SEQUENCE.indexOf(current);
-  if (index === -1) {
-    return STATUS_SEQUENCE[0];
-  }
-  return STATUS_SEQUENCE[(index + 1) % STATUS_SEQUENCE.length];
 };
 
 const statusStore = createStatusStore();
@@ -95,19 +55,20 @@ const statusStore = createStatusStore();
   let open = false;
   let selectedUnitId = null;
 
-  $: statusState = $statusStore;
-  $: backendOnline = statusState?.online ?? false;
+  $: backendOnline = $statusStore.online;
+
+  // Memoized: Only recalculate when statusStore changes
   $: unitsWithStatus = catalog.map((unit) => ({
     ...unit,
     subcomponents: unit.subcomponents.map((component) => ({
       ...component,
       status: backendOnline
-        ? statusState?.statuses?.[component.id] ?? component.defaultStatus ?? "Unknown"
+        ? $statusStore.statuses[component.id] ?? component.defaultStatus ?? "Unknown"
         : "Unknown",
     })),
   }));
 
-  $: selectedUnit = unitsWithStatus.find((unit) => unit.id === selectedUnitId) ?? null;
+  $: selectedUnit = selectedUnitId ? unitsWithStatus.find((unit) => unit.id === selectedUnitId) : null;
 
   const closeDrawer = () => {
     open = false;

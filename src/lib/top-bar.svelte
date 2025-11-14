@@ -1,32 +1,18 @@
 <script>
     let { Names, Pages, Icons = [], activeIndex = $bindable(0) } = $props();
-    let classes = $state([]);
-    let selectedPage = $state(Pages[activeIndex]);
-    
-    for (let i = 0; i < Names.length; i++) {
-        if (i === activeIndex) {
-            classes[i] = "tab-active";
-        } else {
-            classes[i] = "tab";
-        }
-    }
+
+    // Derived state - recalculates only when activeIndex changes
+    let selectedPage = $derived(Pages[activeIndex]);
+
     function handleClick(n) {
-        for (let i = 0; i < Names.length; i++) {
-            if (i == n) {
-                classes[i] = "tab-active";
-                selectedPage = Pages[i];
-                activeIndex = i;
-            } else {
-                classes[i] = "tab";
-            }
-        }
+        activeIndex = n;
     }
 </script>
 
 <div class="tab-container">
     <div class="tab-bar">
         {#each Names as name, i}
-            <button class={classes[i]} on:click={() => handleClick(i)}>
+            <button class={activeIndex === i ? "tab-active" : "tab"} on:click={() => handleClick(i)}>
                 <img class="tab-icon" src={(activeIndex===i ? Icons[i]?.active : Icons[i]?.inactive) || ""} alt="" />
                 <span class="tab-text">{Names[i]}</span>
             </button>

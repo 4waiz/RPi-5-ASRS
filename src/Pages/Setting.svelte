@@ -440,7 +440,7 @@
   }
 
   .h1 {
-    font-size: 20px;
+    font-size: 32px;
     font-weight: 700;
     margin: 0 0 2px 0;
     color: var(--primary);
@@ -449,7 +449,7 @@
   }
 
   .meta {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--secondary);
     display: flex;
     flex-wrap: wrap;

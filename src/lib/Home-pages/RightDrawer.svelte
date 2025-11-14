@@ -19,8 +19,8 @@
   <aside
     class="drawer"
     aria-label="Unit details drawer"
-    in:fly={{ x: 88, duration: 320, easing: cubicOut, opacity: 0.08 }}
-    out:fly={{ x: 120, duration: 360, easing: cubicInOut, opacity: 0.02 }}
+    in:fly={{ x: 40, duration: 120, easing: cubicOut }}
+    out:fly={{ x: 40, duration: 100, easing: cubicOut }}
   >
     <header class="hdr">
       <div class="head">
