@@ -1087,7 +1087,7 @@
   <div id="container3D" bind:this={container3DEl}></div>
 
   <!-- Compass UI -->
-  <div class="compass-ui">
+  <div class="compass-ui" class:hidden={systemState.hideUI}>
     <button class="compass-btn front" onclick={() => rotateCameraTo('front')} title="Front View">
       Front
     </button>
@@ -1147,7 +1147,7 @@
     height: 100%;
   }
 
-  #container3D canvas {
+  :global(#container3D canvas) {
     width: 100% !important;
     height: 100% !important;
     display: block;
@@ -1514,7 +1514,7 @@
     width: 240px;
   }
 
-  .toast {
+  :global(.toast) {
     background: rgba(255, 255, 255, 0.98);
     padding: 12px 16px;
     border-radius: 12px;
@@ -1528,11 +1528,11 @@
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
   }
 
-  .toast.success {
+  :global(.toast.success) {
     border-left: 4px solid #667eea;
   }
 
-  .toast.info {
+  :global(.toast.info) {
     border-left: 4px solid #f093fb;
   }
 
@@ -1557,7 +1557,7 @@
     }
   }
 
-  .toast.removing {
+  :global(.toast.removing) {
     animation: slideOut 0.4s linear;
   }
 </style>

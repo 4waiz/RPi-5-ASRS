@@ -5,7 +5,7 @@
 <button
   class="unit-card"
   class:active={active}
-  onclick={onOpen}
+  onclick={() => onOpen()}
 >
   <div class="thumb"><img src={unit.image} alt="" loading="lazy" decoding="async" /></div>
 
