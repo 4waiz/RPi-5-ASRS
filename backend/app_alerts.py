@@ -16,7 +16,7 @@ os.environ['OMP_NUM_THREADS'] = '1'
 from sentence_transformers import SentenceTransformer
 import pandas as pd
 import numpy as np
-import openai
+from openai import OpenAI
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
@@ -28,8 +28,8 @@ from typing import Optional, List
 import io
 
 # --- API key setup ---
-openai.api_key = OPENAI_API_KEY
-if not openai.api_key:
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+if not OPENAI_API_KEY:
     print("=" * 80)
     print("ERROR: OPENAI_API_KEY not set!")
     print("=" * 80)
@@ -339,19 +339,19 @@ def retrieve_context(query_text, k=1):
 
 
 def generate_response(user_query, context):
-    if not openai.api_key:
+    if not OPENAI_API_KEY:
         return "OpenAI API key is not configured. Please set the OPENAI_API_KEY environment variable."
-    
+
     # DETECT GREETINGS - handle them separately without technical context
     greeting_keywords = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings']
     user_query_lower = user_query.lower().strip()
-    
+
     is_greeting = any(keyword in user_query_lower for keyword in greeting_keywords)
-    
+
     # If it's just a greeting with no technical content
     if is_greeting and len(user_query.split()) <= 5:
         return "Hello! I'm your ASRS maintenance assistant. I'm here to help you diagnose and troubleshoot any issues with the automated storage and retrieval system. What problem are you experiencing today? You can describe any alarms, unusual sounds, or equipment behavior you've noticed."
-    
+
     system_prompt = """
     You are an expert ASRS (Automated Storage and Retrieval System) maintenance assistant with a friendly, conversational tone.
     You're speaking directly to a technician who needs help, so be natural and supportive like a helpful colleague.
@@ -385,7 +385,7 @@ def generate_response(user_query, context):
     """
 
     try:
-        completion = openai.chat.completions.create(
+        completion = openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -405,9 +405,9 @@ def generate_quick_acknowledgment(user_query):
     Generate a quick, personalized acknowledgment based on the user's query
     This should be FAST (<1 second) and brief (5-10 words)
     """
-    if not openai.api_key:
+    if not OPENAI_API_KEY:
         return "Got it, let me check that for you"
-    
+
     system_prompt = """
     You are a helpful assistant that generates conversational acknowledgments to user queries.
 
@@ -431,9 +431,9 @@ def generate_quick_acknowledgment(user_query):
 
     Keep it between 15-25 words, sound helpful and engaged.
     """
-    
+
     try:
-        completion = openai.chat.completions.create(
+        completion = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -493,16 +493,13 @@ async def startup_event():
 async def test_openai():
     """Test if OpenAI API key is valid"""
     try:
-        from openai import OpenAI
-        client = OpenAI(api_key=OPENAI_API_KEY)
-        
         # Test with a simple TTS request
-        response = client.audio.speech.create(
+        response = openai_client.audio.speech.create(
             model="tts-1",
             voice="alloy",
             input="Testing one two three"
         )
-        
+
         return {"status": "success", "message": "OpenAI API key is valid"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -640,25 +637,22 @@ async def synthesize_speech(request: SpeechRequest):
     Convert text to natural-sounding speech using OpenAI TTS API
     """
     text = request.text
-    
+
     if not text:
         raise HTTPException(status_code=400, detail='Text is required')
-    
+
     try:
-        from openai import OpenAI
-        client = OpenAI(api_key=OPENAI_API_KEY)
-        
         # Use OpenAI's TTS with natural voice
-        response = client.audio.speech.create(
+        response = openai_client.audio.speech.create(
             model="tts-1",  # Use tts-1-hd for higher quality (but slower)
             voice="alloy",  # Options: alloy, echo, fable, onyx, nova, shimmer
             input=text,
             speed=1.0
         )
-        
+
         # Convert to bytes and return as streaming response
         audio_bytes = io.BytesIO(response.content)
-        
+
         return StreamingResponse(
             audio_bytes,
             media_type='audio/mpeg',
@@ -666,7 +660,7 @@ async def synthesize_speech(request: SpeechRequest):
                 'Content-Disposition': 'inline; filename="speech.mp3"'
             }
         )
-        
+
     except Exception as e:
         print(f"Error generating speech: {e}")
         raise HTTPException(status_code=500, detail=f'Error generating speech: {str(e)}')
