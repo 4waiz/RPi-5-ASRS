@@ -65,7 +65,7 @@
     </div>
   </nav>
 
-  <div class="settings-button" onclick={() => navigateTo('Settings')}>
+  <div class="settings-button" class:active={ActivePage === "Settings"} onclick={() => navigateTo('Settings')}>
     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -185,6 +185,87 @@
   .nav-icon {
     width: 28px;
     height: 28px;
+    transition: transform 0.3s ease;
+  }
+
+  /* Home icon - Bounce animation when active */
+  .nav-item.active:nth-child(1) .nav-icon {
+    animation: bounce 0.6s ease-in-out;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    25% {
+      transform: translateY(-8px);
+    }
+    50% {
+      transform: translateY(0);
+    }
+    75% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Alerts icon - Bell ring animation when active */
+  .nav-item.active:nth-child(2) .nav-icon {
+    animation: ring 0.6s ease-in-out;
+  }
+
+  @keyframes ring {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    10%, 30%, 50%, 70% {
+      transform: rotate(-15deg);
+    }
+    20%, 40%, 60% {
+      transform: rotate(15deg);
+    }
+    80% {
+      transform: rotate(-8deg);
+    }
+    90% {
+      transform: rotate(8deg);
+    }
+  }
+
+  /* AI Assistant icon - Glow pulse animation when active */
+  .nav-item.active:nth-child(3) .nav-icon {
+    animation: glow 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 87, 34, 0.6));
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 4px rgba(255, 87, 34, 0.4));
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 12px rgba(255, 87, 34, 0.8));
+      transform: scale(1.1);
+    }
+  }
+
+  /* Settings icon - Gentle rotation when active */
+  .settings-button.active .nav-icon {
+    animation: rotate 0.8s ease-in-out;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* Hover animations for all icons */
+  .nav-item:hover .nav-icon,
+  .settings-button:hover .nav-icon {
+    transform: scale(1.15);
   }
 
   .badge-group {
@@ -208,6 +289,23 @@
   .badge.alert {
     background: #FFEBEE;
     color: #D32F2F;
+    animation: alertPulse 2s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
+  }
+
+  @keyframes alertPulse {
+    0%, 100% {
+      background: #FFEBEE;
+      color: #D32F2F;
+      box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
+      transform: scale(1);
+    }
+    50% {
+      background: #D32F2F;
+      color: white;
+      box-shadow: 0 0 0 8px rgba(211, 47, 47, 0);
+      transform: scale(1.1);
+    }
   }
 
   .badge.warning {
@@ -222,8 +320,19 @@
     align-items: center;
     gap: 1.25rem;
     cursor: pointer;
-    color: #757575;
+    transition: all 0.2s;
+    color: #424242;
     font-weight: 500;
     font-size: 1.1rem;
+  }
+
+  .settings-button:hover {
+    background: #F5F5F5;
+  }
+
+  .settings-button.active {
+    background: #FFF3E0;
+    color: #FF5722;
+    border-right: 4px solid #FF5722;
   }
 </style>
