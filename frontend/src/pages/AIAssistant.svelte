@@ -1,0 +1,427 @@
+<!-- src/Pages/AIAssistant.svelte -->
+
+<script>
+    // --- Imports for the PAGE ---
+    import SideBar from "../components/shared/Sidebar.svelte";
+    
+    // --- Imports for the CHATBOT ---
+    import { onMount } from 'svelte';
+
+    // --- START OF FIX: Removed 3D, using 2D assets only ---
+    //import micIcon from "static/assets/aiassistant/mic.png";
+    //import stillAvatarPath from "static/assets/aiassistant/avatar_still.png";
+    //import talkingVideoPath from "static/assets/aiassistant/avatar_talking.mp4";
+    // --- END OF FIX ---
+    const micIcon = "static/assets/aiassistant/mic.png";
+    const stillAvatarPath = "static/assets/aiassistant/avatar_still.jpg";
+    const talkingVideoPath = "static/assets/aiassistant/avatar_talking.mp4";
+
+    // --- STATE VARIABLES ---
+    let messages = [];
+    let userInput = "";
+    let isRecording = false;
+    let sttLang = "ar"; 
+    let isPlayingTTS = false; // This will control which element is visible
+
+    // --- ELEMENT BINDINGS ---
+    let chatBoxEl;
+    let ttsPlayerEl;
+    let talkingVideoEl;  // The <video> for the talking animation
+    
+    const API_BASE = "http://localhost:8001";
+
+    // --- Standard Chat Functions ---
+    function resolveUrl(pathOrUrl) {
+        if (!pathOrUrl) return "";
+        return /^https?:\/\//i.test(pathOrUrl) ? pathOrUrl : `${API_BASE}${pathOrUrl}`;
+    }
+
+    function appendMessage(sender, text) {
+        messages = [...messages, { sender, text }];
+        setTimeout(() => {
+            if (chatBoxEl) chatBoxEl.scrollTop = chatBoxEl.scrollHeight;
+        }, 0);
+    }
+
+    function playTTS(url) {
+        console.log("[TTS] Playing:", url);
+        const audio = ttsPlayerEl;
+        audio.muted = false;
+        audio.autoplay = true;
+        audio.src = url;
+        audio.load();
+        audio.play().catch(err => {
+            console.warn("[TTS] Autoplay blocked or error:", err);
+            stopTalking(); // Call our new stop function if play fails
+        });
+    }
+
+    // This function stops the video and shows the still image
+    function stopTalking() {
+        isPlayingTTS = false;
+        if (talkingVideoEl) {
+            talkingVideoEl.pause();
+            talkingVideoEl.currentTime = 0; // Rewind the video
+        }
+    }
+
+    async function sendTextMessage() {
+        const text = userInput.trim();
+        if (!text) return;
+        
+        appendMessage("user", text);
+        userInput = ""; 
+
+        const formData = new FormData();
+        formData.append("message", text);
+        formData.append("speak", "true"); 
+
+        try {
+            const res = await fetch(resolveUrl("/api/chat"), { method: "POST", body: formData });
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            
+            const data = await res.json();
+            appendMessage("bot", data.reply || "(no reply)");
+
+            if (data.audio_url) {
+                playTTS(resolveUrl(data.audio_url));
+            }
+        } catch (err) {
+            console.error("chat error:", err);
+            appendMessage("bot", "⚠️ Error connecting to server.");
+        }
+    }
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    async function handleMicClick() {
+        if (isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs/opus" });
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = e => {
+                if (e.data && e.data.size > 0) audioChunks.push(e.data);
+            };
+
+    
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                const formData = new FormData();
+                formData.append("audio", audioBlob);
+                formData.append("lang", sttLang); 
+
+                try {
+                    const res = await fetch(resolveUrl("/api/voice"), { method: "POST", body: formData });
+                    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+                    const data = await res.json();
+
+                    appendMessage("user", `🎙️ ${data.text || "(Could not transcribe)"}`);
+                    appendMessage("bot", data.reply || "(no reply)");
+
+                    if (data.audio_url) {
+                        playTTS(resolveUrl(data.audio_url));
+                    }
+                } catch (err) {
+                    console.error("voice error:", err);
+                    appendMessage("bot", "⚠️ Voice request failed.");
+                }
+            };
+            mediaRecorder.start();
+            isRecording = true;
+        } catch (err) {
+            console.error("MIC ERROR DETAILS:", err.name, err.message);
+            alert(`Microphone Error: ${err.message}. Please check permissions.`);
+        }
+    }
+    
+    // --- ONMOUNT: Simplified to only handle TTS events ---
+    onMount(() => {
+        if (ttsPlayerEl) { 
+            ttsPlayerEl.onplay = () => {
+                isPlayingTTS = true;
+                // Use svelte's 'tick' to wait for the DOM to update
+                // and then play the video
+                import('svelte').then(({ tick }) => {
+                    tick().then(() => {
+                        if(talkingVideoEl) talkingVideoEl.play();
+                    });
+                });
+            };
+            ttsPlayerEl.onended = stopTalking;
+            ttsPlayerEl.onpause = stopTalking;
+        }
+    });
+</script>
+
+<!-- ===================== -->
+<!-- HTML MARKUP (Component) -->
+<!-- ===================== -->
+
+<div class="main">
+    <div>
+        <SideBar AlertsNum="5" ActivePage="AIAssistant" />
+    </div>
+
+    <div class="content-area">
+        <div class="chat-container">
+            <h1>EDGE InventoryBot</h1>
+
+            <!-- --- AVATAR WRAPPER (Simplified) --- -->
+            <div class="avatar-wrapper">
+                
+                <!-- Still Image (Idle State) -->
+                {#if !isPlayingTTS}
+                    <img 
+                        class="avatar-display" 
+                        src={stillAvatarPath} 
+                        alt="Bot Avatar"
+                    />
+                {/if}
+
+                <!-- Talking Video (Speaking State) -->
+                {#if isPlayingTTS}
+                    <video 
+                        class="avatar-display" 
+                        bind:this={talkingVideoEl}
+                        src={talkingVideoPath}
+                        muted
+                        loop
+                        playsinline
+                    ></video>
+                {/if}
+            </div>
+            <!-- --- END OF AVATAR WRAPPER --- -->
+
+
+            <div id="chat-box" class="chat-box" bind:this={chatBoxEl}>
+                {#each messages as msg}
+                    <div class="message {msg.sender}">
+                        {msg.text}
+                    </div>
+                {/each}
+            </div>
+
+            <div class="controls">
+                <textarea 
+                    id="user-input" 
+                    placeholder="Type your message..." 
+                    bind:value={userInput}
+                    on:keypress={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTextMessage(); } }}
+                ></textarea>
+                
+                <button id="send-btn" on:click={sendTextMessage}>Send</button>
+                
+                <button id="mic-btn" class="icon-btn" on:click={handleMicClick}>
+                    {#if isRecording}
+                        <img src={micIcon} alt="Microphone" style="opacity: 0.5;" />
+                    {:else}
+                        <img src={micIcon} alt="Microphone" />
+                    {/if}
+                </button>
+            </div>
+            
+            <div class="stt-lang">
+                <span>Speak in:</span>
+                <button 
+                    class="lang-btn" 
+                    class:active={sttLang === 'ar'}
+                    on:click={() => sttLang = 'ar'}
+                >
+                    Arabic (العربية)
+                </button>
+                <button 
+                    class="lang-btn" 
+                    class:active={sttLang === 'en'}
+                    on:click={() => sttLang = 'en'}
+                >
+                    English
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="tts-player" controls hidden bind:this={ttsPlayerEl}></audio>
+
+
+<!-- =================== -->
+<!-- SCOPED CSS (Styles) -->
+<!-- =================== -->
+<style>
+    /* This is your main page layout style */
+    .main {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        gap: 48px;
+        background-color: #ebebeb;
+        box-sizing: border-box;
+        padding-left: 220px;
+        padding-right: 32px;
+    }
+
+    /* This centers the chat container */
+    .content-area {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: auto; 
+        padding: 32px 0;
+        box-sizing: border-box;
+    }
+
+    /* All the styles for the chat component */
+    .chat-container {
+        background: #ffffff;
+        border: 1px solid #d2d2d7;
+        border-radius: 16px;
+        width: 100%; 
+        height: 100%;
+        max-width: 700px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 0 20px rgba(255, 122, 26, 0.2);
+        box-sizing: border-box;
+    }
+
+    h1 {
+        text-align: center;
+        color: #ff7a1a;
+        margin-bottom: 0.5rem; 
+    }
+
+    /* --- AVATAR STYLES (Simplified) --- */
+    
+    .avatar-wrapper {
+        width: 200px;
+        height: 200px; 
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        border: 4px solid #ff7a1a;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden; 
+        position: relative;
+        background-color: #ffffff; 
+    }
+
+    /* This one style now applies to BOTH the <img> and <video> */
+    .avatar-display {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures video/image fills the circle */
+        pointer-events: none;
+    }
+    
+    /* --- END OF AVATAR STYLES --- */
+
+    .chat-box {
+        flex: 1;
+        overflow-y: auto;
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .message {
+        margin: 0.5rem 0;
+        line-height: 1.4;
+        max-width: 85%;
+        padding: 0.5rem 0.75rem;
+        border-radius: 12px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    .message.user {
+        text-align: right;
+        color: #c59c22;
+        align-self: flex-end;
+        background-color: #f0f0f0; 
+    }
+    .message.bot {
+        text-align: left;
+        color: #1d1d1f;
+        align-self: flex-start;
+        background-color: #ebebeb; 
+    }
+    .controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+    textarea {
+        flex: 1;
+        resize: none;
+        border: 1px solid #d2d2d7;
+        border-radius: 8px;
+        padding: 0.5rem;
+        background: #f9f9f9;
+        color: #1d1d1f;
+    }
+    button {
+        background: #ff7a1a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    button:hover {
+        background: #ff923a;
+    }
+    .icon-btn {
+        padding: 0.5rem; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .icon-btn:hover {
+        background: #ff923a;
+    }
+    .icon-btn img {
+        width: 24px;  
+        height: 24px;
+    }
+    .stt-lang {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .lang-btn {
+        background: #f0f0f0;
+        color: #555;
+        border: 1px solid #d2d2d7;
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+        font-size: 0.8rem;
+        transition: all 0.2s ease-in-out;
+    }
+    .lang-btn:hover {
+        background: #e0e0e0;
+    }
+    .lang-btn.active {
+        background: #ff7a1a;
+        color: white;
+        border-color: #ff7a1a;
+    }
+</style>
