@@ -1,13 +1,5 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_385_417)">
-<path d="M22 12H17" stroke="black" stroke-opacity="0.68" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2 9H7" stroke="black" stroke-opacity="0.68" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2 15H7" stroke="black" stroke-opacity="0.68" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7 5L17 12L7 19V5Z" stroke="black" stroke-opacity="0.68" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_385_417">
-<rect width="24" height="24" fill="white"/>
-</clipPath>
-</defs>
+  <!-- Gear/cog icon for components -->
+  <circle cx="12" cy="12" r="3" stroke="#525252" stroke-width="2" fill="none"/>
+  <path d="M12 2V6M12 18V22M22 12H18M6 12H2M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="#525252" stroke-width="2" stroke-linecap="round"/>
 </svg>
