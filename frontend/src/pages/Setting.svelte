@@ -80,6 +80,50 @@
   let ip2Masked = $state(true);
   const maskIP = (s: string) => s.replace(/\d/g, "•");
 
+  // Password modal for revealing IPs
+  let showIpPasswordModal = $state(false);
+  let ipPassword = $state('');
+  let ipPasswordError = $state('');
+  let pendingIpReveal: 1 | 2 | null = $state(null);
+
+  const handleIpRevealClick = (ipNumber: 1 | 2) => {
+    const isMasked = ipNumber === 1 ? ip1Masked : ip2Masked;
+
+    // If already revealed, just hide it (no password needed)
+    if (!isMasked) {
+      if (ipNumber === 1) ip1Masked = true;
+      else ip2Masked = true;
+      return;
+    }
+
+    // If masked, ask for password to reveal
+    pendingIpReveal = ipNumber;
+    showIpPasswordModal = true;
+    ipPassword = '';
+    ipPasswordError = '';
+  };
+
+  const closeIpPasswordModal = () => {
+    showIpPasswordModal = false;
+    ipPassword = '';
+    ipPasswordError = '';
+    pendingIpReveal = null;
+  };
+
+  const handleIpPasswordSubmit = () => {
+    const CORRECT_PASSWORD = 'changeme';
+
+    if (ipPassword === CORRECT_PASSWORD) {
+      // Reveal the IP
+      if (pendingIpReveal === 1) ip1Masked = false;
+      else if (pendingIpReveal === 2) ip2Masked = false;
+      closeIpPasswordModal();
+    } else {
+      ipPasswordError = 'Incorrect password. Please try again.';
+      ipPassword = '';
+    }
+  };
+
   // ===== Backup logic (hold-to-activate) =====
   const HOLD_MS = 2000;
   let storeTimestamp = $state("--");
@@ -249,7 +293,7 @@
             class="reveal-btn"
             type="button"
             aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
-            onclick={() => (ip1Masked = !ip1Masked)}
+            onclick={() => handleIpRevealClick(1)}
           >
             <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
@@ -281,7 +325,7 @@
             class="reveal-btn"
             type="button"
             aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
-            onclick={() => (ip2Masked = !ip2Masked)}
+            onclick={() => handleIpRevealClick(2)}
           >
             <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z" 
@@ -419,6 +463,59 @@
     </div>
   </div>
 </div>
+
+<!-- IP Password Modal -->
+{#if showIpPasswordModal}
+  <div class="modal-overlay" onclick={closeIpPasswordModal}>
+    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+      <div class="modal-header">
+        <h2>Enter Password</h2>
+        <button class="close-btn" onclick={closeIpPasswordModal}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
+            <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-description">Please enter the password to reveal the IP address</p>
+
+        <div class="input-group">
+          <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input
+            type="password"
+            class="password-input"
+            class:error={ipPasswordError}
+            bind:value={ipPassword}
+            placeholder="Enter password"
+            onkeydown={(e) => e.key === 'Enter' && handleIpPasswordSubmit()}
+            autofocus
+          />
+        </div>
+
+        {#if ipPasswordError}
+          <div class="error-message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10" stroke-width="2"/>
+              <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
+              <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {ipPasswordError}
+          </div>
+        {/if}
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick={closeIpPasswordModal}>Cancel</button>
+        <button class="btn-submit" onclick={handleIpPasswordSubmit}>Submit</button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   :global(html, body) {
@@ -935,6 +1032,207 @@
     font-size: 11px;
     color: var(--secondary);
     font-family: "Inter", monospace;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlide 0.3s ease-out;
+    overflow: hidden;
+  }
+
+  @keyframes modalSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .modal-header {
+    padding: 24px 24px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #E0E0E0;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212121;
+  }
+
+  .close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #F5F5F5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #757575;
+  }
+
+  .close-btn:hover {
+    background: #EEEEEE;
+    color: #424242;
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .modal-description {
+    margin: 0 0 20px 0;
+    color: #616161;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    color: #9E9E9E;
+    pointer-events: none;
+  }
+
+  .password-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    outline: none;
+    background: #FAFAFA;
+  }
+
+  .password-input:focus {
+    border-color: var(--brand);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(229, 72, 23, 0.1);
+  }
+
+  .password-input.error {
+    border-color: #F44336;
+    background: #FFEBEE;
+  }
+
+  .password-input.error:focus {
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+  }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #FFEBEE;
+    border-radius: 8px;
+    color: #D32F2F;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: shake 0.3s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-8px);
+    }
+    75% {
+      transform: translateX(8px);
+    }
+  }
+
+  .modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel,
+  .btn-submit {
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: #F5F5F5;
+    color: #616161;
+  }
+
+  .btn-cancel:hover {
+    background: #EEEEEE;
+    color: #424242;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--brand) 0%, #F4511E 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(229, 72, 23, 0.3);
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(229, 72, 23, 0.4);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
   }
 
   @media (max-width: 840px) {
