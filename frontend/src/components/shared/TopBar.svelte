@@ -87,15 +87,45 @@
     height: 22px;
     display: block;
     flex-shrink: 0;
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+@keyframes iconGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 2px rgba(229, 72, 23, 0.3));
+    }
+    50% {
+        filter: drop-shadow(0 0 8px rgba(229, 72, 23, 0.6));
+    }
 }
 
 .tab:hover .tab-icon {
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(5deg);
+    animation: iconBounce 0.6s ease-in-out;
 }
 
 .tab-active .tab-icon {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    animation: iconGlow 2s ease-in-out infinite;
 }
 
 .tab-text {
