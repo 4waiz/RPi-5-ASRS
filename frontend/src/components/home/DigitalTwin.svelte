@@ -254,12 +254,29 @@
         ? 4 * progress * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-      // Interpolate position
-      camera.position.lerpVectors(
-        this.activeAnimation.startPos,
-        this.activeAnimation.targetPos,
-        eased
-      );
+      // Use spherical interpolation to orbit around the target
+      const startVec = this.activeAnimation.startPos.clone().sub(CAMERA_LOOK_TARGET);
+      const endVec = this.activeAnimation.targetPos.clone().sub(CAMERA_LOOK_TARGET);
+
+      // Convert to spherical coordinates
+      const startSpherical = new THREE.Spherical().setFromVector3(startVec);
+      const endSpherical = new THREE.Spherical().setFromVector3(endVec);
+
+      // Interpolate angles - choose shortest path
+      let deltaTheta = endSpherical.theta - startSpherical.theta;
+      if (deltaTheta > Math.PI) deltaTheta -= Math.PI * 2;
+      if (deltaTheta < -Math.PI) deltaTheta += Math.PI * 2;
+
+      const currentRadius = THREE.MathUtils.lerp(startSpherical.radius, endSpherical.radius, eased);
+      const currentPhi = THREE.MathUtils.lerp(startSpherical.phi, endSpherical.phi, eased);
+      const currentTheta = startSpherical.theta + deltaTheta * eased;
+
+      // Convert back to Cartesian and apply to camera
+      const newPos = new THREE.Vector3().setFromSpherical(
+        new THREE.Spherical(currentRadius, currentPhi, currentTheta)
+      ).add(CAMERA_LOOK_TARGET);
+
+      camera.position.copy(newPos);
 
       // Always look at the scene center (origin)
       camera.lookAt(CAMERA_LOOK_TARGET);
@@ -1088,21 +1105,32 @@
 
   <!-- Compass UI -->
   <div class="compass-ui" class:hidden={systemState.hideUI}>
-    <button class="compass-btn front" onclick={() => rotateCameraTo('front')} title="Front View">
-      Front
-    </button>
-    <div class="compass-row">
-      <button class="compass-btn left" onclick={() => rotateCameraTo('left')} title="Left View">
-        Left
+    <div class="gizmo-container">
+      <div class="gizmo-center"></div>
+
+      <!-- Axis lines -->
+      <div class="axis-line axis-x"></div>
+      <div class="axis-line axis-y"></div>
+      <div class="axis-line axis-z-top"></div>
+      <div class="axis-line axis-z-bottom"></div>
+
+      <!-- Axis buttons -->
+      <button class="axis-btn axis-btn-front" onclick={() => rotateCameraTo('front')} title="Front View">
+        <span class="axis-label">F</span>
       </button>
-      <div class="compass-center"></div>
-      <button class="compass-btn right" onclick={() => rotateCameraTo('right')} title="Right View">
-        Right
+
+      <button class="axis-btn axis-btn-left" onclick={() => rotateCameraTo('left')} title="Left View">
+        <span class="axis-label">L</span>
+      </button>
+
+      <button class="axis-btn axis-btn-right" onclick={() => rotateCameraTo('right')} title="Right View">
+        <span class="axis-label">R</span>
+      </button>
+
+      <button class="axis-btn axis-btn-back" onclick={() => rotateCameraTo('back')} title="Back View">
+        <span class="axis-label">B</span>
       </button>
     </div>
-    <button class="compass-btn back" onclick={() => rotateCameraTo('back')} title="Back View">
-      Back
-    </button>
   </div>
 
   <div class="control-panel" class:hidden={systemState.hideUI}>
@@ -1154,18 +1182,12 @@
     background: transparent;
   }
 
-  /* Compass UI Styles */
+  /* Compass UI Styles - Blender-style Gizmo */
   .compass-ui {
     position: absolute;
     top: 20px;
     right: 20px;
     z-index: 150;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    background: transparent;
-    padding: 0;
     transition: opacity 0.3s ease, visibility 0.3s ease;
   }
 
@@ -1175,86 +1197,185 @@
     pointer-events: none;
   }
 
-  .compass-row {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .compass-center {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 0 16px rgba(102, 126, 234, 0.6), 0 0 32px rgba(118, 75, 162, 0.4);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.1);
-      opacity: 0.8;
-    }
-  }
-
-  .compass-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.95);
-    color: #1a202c;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .gizmo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
   }
 
-  .compass-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Center sphere */
+  .gizmo-center {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+
+  /* Axis lines */
+  .axis-line {
+    position: absolute;
+    background: rgba(200, 200, 200, 0.3);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .axis-x {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .axis-y {
+    width: 1px;
+    height: 100%;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .axis-z-top {
+    width: 1px;
+    height: 50%;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .axis-z-bottom {
+    width: 1px;
+    height: 50%;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+
+  /* Axis buttons */
+  .axis-btn {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
     color: #fff;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
-    border-color: rgba(102, 126, 234, 0.3);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 5;
   }
 
-  .compass-btn:active {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+  .axis-btn .axis-label {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+  }
+
+  /* Front Button (Blue) */
+  .axis-btn-front {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3b82f6;
+  }
+
+  .axis-btn-front:hover {
+    transform: translateX(-50%) translateY(-2px) scale(1.1);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    background: #2563eb;
+  }
+
+  /* Left Button (Red) */
+  .axis-btn-left {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ef4444;
+  }
+
+  .axis-btn-left:hover {
+    transform: translateY(-50%) translateX(-2px) scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    background: #dc2626;
+  }
+
+  /* Right Button (Red) */
+  .axis-btn-right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ef4444;
+  }
+
+  .axis-btn-right:hover {
+    transform: translateY(-50%) translateX(2px) scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    background: #dc2626;
+  }
+
+  /* Back Button (Blue) */
+  .axis-btn-back {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3b82f6;
+  }
+
+  .axis-btn-back:hover {
+    transform: translateX(-50%) translateY(2px) scale(1.1);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    background: #2563eb;
+  }
+
+  .axis-btn-front:active {
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  .axis-btn-left:active {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .axis-btn-right:active {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .axis-btn-back:active {
+    transform: translateX(-50%) scale(1.05);
   }
 
   @media (max-width: 1200px), (max-height: 700px) {
     .compass-ui {
       top: 12px;
       right: 12px;
-      gap: 10px;
     }
 
-    .compass-row {
-      gap: 12px;
+    .gizmo-container {
+      width: 80px;
+      height: 80px;
     }
 
-    .compass-btn {
-      width: 50px;
-      height: 50px;
+    .gizmo-center {
+      width: 12px;
+      height: 12px;
+    }
+
+    .axis-btn {
+      width: 26px;
+      height: 26px;
       font-size: 9px;
-      letter-spacing: 0.04em;
-    }
-
-    .compass-center {
-      width: 14px;
-      height: 14px;
     }
   }
 

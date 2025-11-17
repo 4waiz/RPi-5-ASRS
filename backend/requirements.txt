@@ -1,0 +1,24 @@
+# Core web framework
+fastapi
+uvicorn[standard]
+pydantic
+
+# AI/ML dependencies
+sentence-transformers
+openai
+langchain-core
+langchain-ollama
+
+# Data processing
+pandas
+numpy
+
+# Audio processing
+pydub
+audioop-lts  # Required for Python 3.13+ (audioop was removed from stdlib)
+soundfile
+vosk
+piper-tts
+
+# CORS middleware
+python-multipart
