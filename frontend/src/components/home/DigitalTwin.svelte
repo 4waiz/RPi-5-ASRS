@@ -1270,7 +1270,7 @@
     font-size: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1292,24 +1292,12 @@
     background: #3b82f6;
   }
 
-  .axis-btn-front:hover {
-    transform: translateX(-50%) translateY(-2px) scale(1.1);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
-    background: #2563eb;
-  }
-
   /* Left Button (Red) */
   .axis-btn-left {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
     background: #ef4444;
-  }
-
-  .axis-btn-left:hover {
-    transform: translateY(-50%) translateX(-2px) scale(1.1);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-    background: #dc2626;
   }
 
   /* Right Button (Red) */
@@ -1320,40 +1308,12 @@
     background: #ef4444;
   }
 
-  .axis-btn-right:hover {
-    transform: translateY(-50%) translateX(2px) scale(1.1);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-    background: #dc2626;
-  }
-
   /* Back Button (Blue) */
   .axis-btn-back {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     background: #3b82f6;
-  }
-
-  .axis-btn-back:hover {
-    transform: translateX(-50%) translateY(2px) scale(1.1);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
-    background: #2563eb;
-  }
-
-  .axis-btn-front:active {
-    transform: translateX(-50%) scale(1.05);
-  }
-
-  .axis-btn-left:active {
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  .axis-btn-right:active {
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  .axis-btn-back:active {
-    transform: translateX(-50%) scale(1.05);
   }
 
   @media (max-width: 1200px), (max-height: 700px) {
@@ -1520,7 +1480,7 @@
     gap: 8px;
   }
 
-  button {
+  .action-buttons button {
     flex: 1;
     height: 36px;
     padding: 8px 10px;
@@ -1536,19 +1496,19 @@
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   }
 
-  button:disabled {
+  .action-buttons button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none;
   }
 
-  button:not(:disabled):hover {
+  .action-buttons button:not(:disabled):hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   }
 
-  button:not(:disabled):active {
+  .action-buttons button:not(:disabled):active {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
