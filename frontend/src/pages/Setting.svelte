@@ -2,17 +2,7 @@
   import { onMount } from "svelte";
   import SideBar from "../components/shared/Sidebar.svelte";
 
-  import arrowBackIcon     from "../assets/settingPage/arrow-1.svg";
-  import languageIcon      from "../assets/settingPage/frame6.svg";
-  import brightnessIcon    from "../assets/settingPage/frame3.svg";
-  import networkIcon       from "../assets/settingPage/frame4.svg";
-  import padlockIcon       from "../assets/settingPage/frame7.svg";
-  import revealIcon        from "../assets/settingPage/frame1.svg";
-  import logsPadlockIcon   from "../assets/settingPage/frame8.svg";
-  import logsFilterIcon    from "../assets/settingPage/frame.svg";
-  import exportIcon        from "../assets/settingPage/frame2.svg";
   import checkIcon         from "../assets/settingPage/check.svg";
-  import viewIcon          from "../assets/settingPage/arrow-6.svg";
   import sliderThumb       from "../assets/settingPage/slider.svg";
 
   import { myVariable } from "../store";
@@ -169,7 +159,12 @@
     <!-- Language -->
     <section class="card card-language">
       <div class="card-header">
-        <img class="icon" src={languageIcon} alt="Language" width="18" height="18" />
+        <svg class="icon icon-animated" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2C7 2 3 6 3 12c0 6 4 10 9 10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2c-1.5 3-2.5 7-2.5 10s1 7 2.5 10M12 2c1.5 3 2.5 7 2.5 10s-1 7-2.5 10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M2 12h20M3.5 7h17M3.5 17h17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
         <h2 class="card-title">Language</h2>
       </div>
 
@@ -203,7 +198,10 @@
     <!-- Brightness -->
     <section class="card card-brightness">
       <div class="card-header">
-        <img class="icon" src={brightnessIcon} alt="Brightness" width="18" height="18" />
+        <svg class="icon icon-animated" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2v4M12 18v4M22 12h-4M6 12H2M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83M19.07 19.07l-2.83-2.83M7.76 7.76L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
         <h2 class="card-title">Display Brightness</h2>
         <span class="brightness-value">{brightness}%</span>
       </div>
@@ -224,9 +222,17 @@
     <!-- Network -->
     <section class="card card-network">
       <div class="card-header">
-        <img class="icon" src={networkIcon} alt="Network" width="18" height="18" />
+        <svg class="icon icon-animated" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <ellipse cx="12" cy="12" rx="5" ry="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M2 12h20M12 2c-2.5 3-4 7-4 10s1.5 7 4 10M12 2c2.5 3 4 7 4 10s-1.5 7-4 10" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
         <h2 class="card-title">Network Configuration</h2>
-        <img class="icon lock-icon" src={padlockIcon} alt="Locked" width="16" height="16" />
+        <svg class="icon lock-icon" viewBox="0 0 24 24" width="16" height="16">
+          <rect x="6" y="10" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="15" r="1.5" fill="currentColor"/>
+        </svg>
       </div>
 
       <div class="network-content">
@@ -301,9 +307,15 @@
     <!-- Logs -->
     <section class="card card-logs">
       <div class="card-header">
-        <img class="icon" src={logsPadlockIcon} alt="Locked" width="18" height="18" />
+        <svg class="icon icon-animated" viewBox="0 0 24 24" width="18" height="18">
+          <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 8h8M8 12h6M8 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
         <h2 class="card-title">Machine Logs</h2>
-        <img class="icon lock-icon" src={logsFilterIcon} alt="Filter" width="16" height="16" />
+        <svg class="icon lock-icon" viewBox="0 0 24 24" width="16" height="16">
+          <path d="M3 7l9-4 9 4v10l-9 4-9-4V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M3 7l9 4m0 0l9-4m-9 4v10" stroke="currentColor" stroke-width="2"/>
+        </svg>
       </div>
 
       <div class="logs-content">
@@ -336,12 +348,16 @@
 
         <div class="log-actions">
           <button class="action-btn">
-            <img class="icon" src={exportIcon} alt="Export" width="16" height="16" />
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
             <span>Export</span>
           </button>
           <button class="action-btn">
             <span>View</span>
-            <img class="icon" src={viewIcon} alt="View" width="16" height="16" />
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -593,6 +609,27 @@
     opacity: 0.5;
     width: 16px;
     height: 16px;
+  }
+
+  /* Icon Animations */
+  .icon-animated {
+    animation: iconFloat 3s ease-in-out infinite;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes iconFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+  }
+
+  .card:hover .icon-animated {
+    animation: iconBounce 0.6s ease-in-out;
+    transform: scale(1.1);
+  }
+
+  @keyframes iconBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
   }
 
   /* Language */
