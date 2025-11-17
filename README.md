@@ -1,43 +1,47 @@
-# Svelte + Vite
+# 📁 ASRS HMI Repository – **Confidential**
 
-This template should help get you started developing with Svelte in Vite.
+## ⚠️ Confidentiality Notice
 
-## Recommended IDE Setup
+This repository contains **restricted and confidential assets**.
+Access is limited to authorized personnel only:
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+* **Eng. Mohammed Umer**
+* **Eng. Bilal Khan**
+* **Eng. Awaiz Ahmed**
+* **Eng. Mahmoud Mubarez**
 
-## Need an official Svelte framework?
+Any unauthorized access, duplication, distribution, or disclosure of the contents of this repository is strictly prohibited and may result in severe consequences. By accessing this repository, you agree to adhere to all confidentiality and security policies applicable to this project.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+---
 
-## Technical considerations
+## 🛡️ Overview
 
-**Why use this over SvelteKit?**
+This repository hosts internal resources essential for the development, maintenance, and deployment of the confidential project. The contents are highly sensitive and must be handled with the utmost care.
+No part of this repository should be shared outside the authorized engineering team.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+---
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## 🎯 Objectives
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+* Maintain a centralized and controlled environment for project assets
+* Ensure secure collaboration among approved engineers
+* Protect intellectual property and sensitive operational details
+* Facilitate streamlined development and version control
 
-**Why include `.vscode/extensions.json`?**
+## 🚀 Setup & Installation
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+1. Clone the repository (only if authorized):
 
-**Why enable `checkJs` in the JS template?**
+   ```bash
+   git clone <private-repo-url>
+   ```
+2. Install required dependencies:
 
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
+   first - npm run install:all   → Install all dependencies 
 
-**Why is HMR not preserving my local component state?**
+then u can do any one
+npm run dev           → Start the full stack (frontend + backend)
+npm run dev:frontend  → Start only the frontend
+npm run dev:backend   → Start only the backend
+npm run build         → Build the frontend for production
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
