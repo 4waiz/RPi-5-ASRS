@@ -13,6 +13,7 @@
   let password = $state('');
   let passwordError = $state('');
   let currentMode = $state('LIVE Mode');
+  let showKeyboard = $state(false);
 
   const navigateTo = (page) => {
     switch(page) {
@@ -46,6 +47,7 @@
     showPasswordModal = false;
     password = '';
     passwordError = '';
+    showKeyboard = false;
   };
 
   const handlePasswordSubmit = () => {
@@ -71,6 +73,22 @@
     if (dropdownOpen && !event.target.closest('.mode-selector')) {
       dropdownOpen = false;
     }
+  };
+
+  // Virtual Keyboard Functions
+  const handleKeyPress = (key) => {
+    if (key === 'backspace') {
+      password = password.slice(0, -1);
+    } else if (key === 'clear') {
+      password = '';
+    } else {
+      password += key;
+    }
+    passwordError = ''; // Clear error when typing
+  };
+
+  const showVirtualKeyboard = () => {
+    showKeyboard = true;
   };
 </script>
 
@@ -160,7 +178,7 @@
 <!-- Password Modal -->
 {#if showPasswordModal}
   <div class="modal-overlay" onclick={closePasswordModal}>
-    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+    <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
         <h2>Enter Password</h2>
         <button class="close-btn" onclick={closePasswordModal}>
@@ -186,6 +204,8 @@
             bind:value={password}
             placeholder="Enter password"
             onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+            onfocus={showVirtualKeyboard}
+            onclick={showVirtualKeyboard}
             autofocus
           />
         </div>
@@ -206,6 +226,64 @@
         <button class="btn-cancel" onclick={closePasswordModal}>Cancel</button>
         <button class="btn-submit" onclick={handlePasswordSubmit}>Submit</button>
       </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Virtual Keyboard at Bottom of Screen -->
+{#if showKeyboard}
+  <div class="virtual-keyboard">
+    <div class="keyboard-row">
+      <button class="key" onclick={() => handleKeyPress('1')}>1</button>
+      <button class="key" onclick={() => handleKeyPress('2')}>2</button>
+      <button class="key" onclick={() => handleKeyPress('3')}>3</button>
+      <button class="key" onclick={() => handleKeyPress('4')}>4</button>
+      <button class="key" onclick={() => handleKeyPress('5')}>5</button>
+      <button class="key" onclick={() => handleKeyPress('6')}>6</button>
+      <button class="key" onclick={() => handleKeyPress('7')}>7</button>
+      <button class="key" onclick={() => handleKeyPress('8')}>8</button>
+      <button class="key" onclick={() => handleKeyPress('9')}>9</button>
+      <button class="key" onclick={() => handleKeyPress('0')}>0</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key" onclick={() => handleKeyPress('Q')}>Q</button>
+      <button class="key" onclick={() => handleKeyPress('W')}>W</button>
+      <button class="key" onclick={() => handleKeyPress('E')}>E</button>
+      <button class="key" onclick={() => handleKeyPress('R')}>R</button>
+      <button class="key" onclick={() => handleKeyPress('T')}>T</button>
+      <button class="key" onclick={() => handleKeyPress('Y')}>Y</button>
+      <button class="key" onclick={() => handleKeyPress('U')}>U</button>
+      <button class="key" onclick={() => handleKeyPress('I')}>I</button>
+      <button class="key" onclick={() => handleKeyPress('O')}>O</button>
+      <button class="key" onclick={() => handleKeyPress('P')}>P</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key" onclick={() => handleKeyPress('A')}>A</button>
+      <button class="key" onclick={() => handleKeyPress('S')}>S</button>
+      <button class="key" onclick={() => handleKeyPress('D')}>D</button>
+      <button class="key" onclick={() => handleKeyPress('F')}>F</button>
+      <button class="key" onclick={() => handleKeyPress('G')}>G</button>
+      <button class="key" onclick={() => handleKeyPress('H')}>H</button>
+      <button class="key" onclick={() => handleKeyPress('J')}>J</button>
+      <button class="key" onclick={() => handleKeyPress('K')}>K</button>
+      <button class="key" onclick={() => handleKeyPress('L')}>L</button>
+      <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke-width="2"/>
+          <line x1="18" y1="9" x2="12" y2="15" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="9" x2="18" y2="15" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key" onclick={() => handleKeyPress('Z')}>Z</button>
+      <button class="key" onclick={() => handleKeyPress('X')}>X</button>
+      <button class="key" onclick={() => handleKeyPress('C')}>C</button>
+      <button class="key" onclick={() => handleKeyPress('V')}>V</button>
+      <button class="key" onclick={() => handleKeyPress('B')}>B</button>
+      <button class="key" onclick={() => handleKeyPress('N')}>N</button>
+      <button class="key" onclick={() => handleKeyPress('M')}>M</button>
+      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
     </div>
   </div>
 {/if}
@@ -415,6 +493,11 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: modalSlide 0.3s ease-out;
     overflow: hidden;
+  }
+
+  .modal-content.with-keyboard {
+    transform: translateY(-150px);
+    transition: transform 0.3s ease;
   }
 
   @keyframes modalSlide {
@@ -762,5 +845,80 @@
     background: #FFF3E0;
     color: #FF5722;
     border-right: 4px solid #FF5722;
+  }
+
+  /* Virtual Keyboard Styles */
+  .virtual-keyboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10001;
+  }
+
+  .keyboard-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .key {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    background: #FFF3E0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #FF5722;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .key:hover {
+    background: #FFE0B2;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .key:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .key-backspace,
+  .key-clear {
+    background: #FF5722;
+    color: white;
+    min-width: 52px;
+    font-size: 1rem;
+    padding: 0 12px;
+  }
+
+  .key-backspace:hover,
+  .key-clear:hover {
+    background: #F4511E;
+    transform: scale(1.05);
+  }
+
+  .key-backspace:active,
+  .key-clear:active {
+    transform: scale(0.98);
+  }
+
+  .key-backspace svg,
+  .key-clear svg {
+    stroke: white;
   }
 </style>
