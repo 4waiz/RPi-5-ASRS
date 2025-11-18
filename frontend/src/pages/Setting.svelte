@@ -85,6 +85,7 @@
   let ipPassword = $state('');
   let ipPasswordError = $state('');
   let pendingIpReveal: 1 | 2 | null = $state(null);
+  let showKeyboard = $state(false);
 
   const handleIpRevealClick = (ipNumber: 1 | 2) => {
     const isMasked = ipNumber === 1 ? ip1Masked : ip2Masked;
@@ -105,6 +106,7 @@
 
   const closeIpPasswordModal = () => {
     showIpPasswordModal = false;
+    showKeyboard = false;
     ipPassword = '';
     ipPasswordError = '';
     pendingIpReveal = null;
@@ -122,6 +124,22 @@
       ipPasswordError = 'Incorrect password. Please try again.';
       ipPassword = '';
     }
+  };
+
+  // Virtual Keyboard Functions
+  const handleKeyPress = (key: string) => {
+    if (key === 'backspace') {
+      ipPassword = ipPassword.slice(0, -1);
+    } else if (key === 'clear') {
+      ipPassword = '';
+    } else {
+      ipPassword += key;
+    }
+    ipPasswordError = ''; // Clear error when typing
+  };
+
+  const showVirtualKeyboard = () => {
+    showKeyboard = true;
   };
 
   // ===== Backup logic (hold-to-activate) =====
@@ -467,7 +485,7 @@
 <!-- IP Password Modal -->
 {#if showIpPasswordModal}
   <div class="modal-overlay" onclick={closeIpPasswordModal}>
-    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+    <div class="modal-content" class:keyboard-visible={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
         <h2>Enter Password</h2>
         <button class="close-btn" onclick={closeIpPasswordModal}>
@@ -486,14 +504,20 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
+          <div class="password-display" class:error={ipPasswordError} onclick={showVirtualKeyboard}>
+            {#if ipPassword}
+              {'•'.repeat(ipPassword.length)}
+            {:else}
+              <span class="placeholder-text">Tap to enter password</span>
+            {/if}
+          </div>
           <input
-            type="password"
-            class="password-input"
-            class:error={ipPasswordError}
-            bind:value={ipPassword}
-            placeholder="Enter password"
-            onkeydown={(e) => e.key === 'Enter' && handleIpPasswordSubmit()}
-            autofocus
+            type="text"
+            class="password-input-hidden"
+            value={ipPassword}
+            readonly
+            onclick={showVirtualKeyboard}
+            onfocus={showVirtualKeyboard}
           />
         </div>
 
@@ -512,6 +536,75 @@
       <div class="modal-footer">
         <button class="btn-cancel" onclick={closeIpPasswordModal}>Cancel</button>
         <button class="btn-submit" onclick={handleIpPasswordSubmit}>Submit</button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Virtual Keyboard - Separate Overlay -->
+{#if showKeyboard && showIpPasswordModal}
+  <div class="keyboard-overlay">
+    <div class="virtual-keyboard">
+      <div class="keyboard-body">
+        <!-- Row 1 - Numbers -->
+        <div class="keyboard-row">
+          <button class="key" onclick={() => handleKeyPress('1')}>1</button>
+          <button class="key" onclick={() => handleKeyPress('2')}>2</button>
+          <button class="key" onclick={() => handleKeyPress('3')}>3</button>
+          <button class="key" onclick={() => handleKeyPress('4')}>4</button>
+          <button class="key" onclick={() => handleKeyPress('5')}>5</button>
+          <button class="key" onclick={() => handleKeyPress('6')}>6</button>
+          <button class="key" onclick={() => handleKeyPress('7')}>7</button>
+          <button class="key" onclick={() => handleKeyPress('8')}>8</button>
+          <button class="key" onclick={() => handleKeyPress('9')}>9</button>
+          <button class="key" onclick={() => handleKeyPress('0')}>0</button>
+        </div>
+
+        <!-- Row 2 - QWERTY -->
+        <div class="keyboard-row">
+          <button class="key" onclick={() => handleKeyPress('q')}>Q</button>
+          <button class="key" onclick={() => handleKeyPress('w')}>W</button>
+          <button class="key" onclick={() => handleKeyPress('e')}>E</button>
+          <button class="key" onclick={() => handleKeyPress('r')}>R</button>
+          <button class="key" onclick={() => handleKeyPress('t')}>T</button>
+          <button class="key" onclick={() => handleKeyPress('y')}>Y</button>
+          <button class="key" onclick={() => handleKeyPress('u')}>U</button>
+          <button class="key" onclick={() => handleKeyPress('i')}>I</button>
+          <button class="key" onclick={() => handleKeyPress('o')}>O</button>
+          <button class="key" onclick={() => handleKeyPress('p')}>P</button>
+        </div>
+
+        <!-- Row 3 - ASDFGH -->
+        <div class="keyboard-row">
+          <button class="key" onclick={() => handleKeyPress('a')}>A</button>
+          <button class="key" onclick={() => handleKeyPress('s')}>S</button>
+          <button class="key" onclick={() => handleKeyPress('d')}>D</button>
+          <button class="key" onclick={() => handleKeyPress('f')}>F</button>
+          <button class="key" onclick={() => handleKeyPress('g')}>G</button>
+          <button class="key" onclick={() => handleKeyPress('h')}>H</button>
+          <button class="key" onclick={() => handleKeyPress('j')}>J</button>
+          <button class="key" onclick={() => handleKeyPress('k')}>K</button>
+          <button class="key" onclick={() => handleKeyPress('l')}>L</button>
+          <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9l-7-9 7-9z" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="14" y1="9" x2="18" y2="13" stroke-linecap="round"/>
+              <line x1="18" y1="9" x2="14" y2="13" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Row 4 - ZXCVBN -->
+        <div class="keyboard-row">
+          <button class="key" onclick={() => handleKeyPress('z')}>Z</button>
+          <button class="key" onclick={() => handleKeyPress('x')}>X</button>
+          <button class="key" onclick={() => handleKeyPress('c')}>C</button>
+          <button class="key" onclick={() => handleKeyPress('v')}>V</button>
+          <button class="key" onclick={() => handleKeyPress('b')}>B</button>
+          <button class="key" onclick={() => handleKeyPress('n')}>N</button>
+          <button class="key" onclick={() => handleKeyPress('m')}>M</button>
+          <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1063,10 +1156,25 @@
     background: white;
     border-radius: 20px;
     width: 90%;
-    max-width: 420px;
+    max-width: 450px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: modalSlide 0.3s ease-out;
     overflow: hidden;
+    transition: transform 0.3s ease-out;
+  }
+
+  .modal-content.keyboard-visible {
+    transform: translateY(-40vh);
+    animation: modalSlideUp 0.3s ease-out;
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-40vh);
+    }
   }
 
   @keyframes modalSlide {
@@ -1139,31 +1247,54 @@
     pointer-events: none;
   }
 
-  .password-input {
+  .password-input-hidden {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .password-display {
     width: 100%;
     padding: 14px 16px 14px 48px;
     border: 2px solid #E0E0E0;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    outline: none;
     background: #FAFAFA;
+    cursor: pointer;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 4px;
+    color: #212121;
+    transition: all 0.2s ease;
   }
 
-  .password-input:focus {
+  .password-display:hover {
     border-color: var(--brand);
     background: white;
     box-shadow: 0 0 0 3px rgba(229, 72, 23, 0.1);
   }
 
-  .password-input.error {
+  .password-display.error {
     border-color: #F44336;
     background: #FFEBEE;
+    animation: shake 0.3s ease-in-out;
   }
 
-  .password-input.error:focus {
+  .password-display.error:hover {
     box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+  }
+
+  .placeholder-text {
+    font-size: 0.95rem;
+    color: #9E9E9E;
+    letter-spacing: normal;
+    font-weight: 400;
+  }
+
+  .input-group:has(.password-display) {
+    position: relative;
   }
 
   .error-message {
@@ -1233,6 +1364,133 @@
 
   .btn-submit:active {
     transform: translateY(0);
+  }
+
+  /* Virtual Keyboard Overlay */
+  .keyboard-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10001;
+    animation: slideUpKeyboard 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes slideUpKeyboard {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .virtual-keyboard {
+    background: transparent;
+    padding: 16px;
+  }
+
+  .keyboard-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .key {
+    flex: 1;
+    max-width: 50px;
+    height: 45px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFE0B2 100%);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #E64A19;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+
+  .key:hover {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFCC80 100%);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2),
+                0 0 0 3px rgba(255, 152, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .key:active {
+    transform: translateY(0) scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #FFCC80 0%, #FFB74D 100%);
+  }
+
+  .key-backspace {
+    background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
+    color: white;
+  }
+
+  .key-backspace:hover {
+    background: linear-gradient(135deg, #F4511E 0%, #E64A19 100%);
+    box-shadow: 0 6px 16px rgba(230, 74, 25, 0.3),
+                0 0 0 3px rgba(230, 74, 25, 0.2);
+  }
+
+  .key-backspace:active {
+    background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
+  }
+
+  .key-clear {
+    flex: 2;
+    max-width: 110px;
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .key-backspace svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .key-clear:hover {
+    background: linear-gradient(135deg, #FF8F00 0%, #FF6F00 100%);
+    box-shadow: 0 6px 16px rgba(255, 111, 0, 0.3),
+                0 0 0 3px rgba(255, 111, 0, 0.2);
+  }
+
+  .key-clear:active {
+    background: linear-gradient(135deg, #E65100 0%, #BF360C 100%);
+  }
+
+  /* Modal positioning when keyboard is visible */
+  .modal-content.keyboard-visible {
+    transform: translateY(-25vh);
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-25vh);
+    }
   }
 
   @media (max-width: 840px) {
