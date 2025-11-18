@@ -322,7 +322,7 @@ def generate_alerts_from_excel():
     return alerts
 
 
-def retrieve_context(query_text, k=1):
+def retrieve_context(query_text, k=3):
     global doc_embeddings_global, model
     if doc_embeddings_global is None or model is None:
         raise Exception("RAG pipeline not initialized.")
@@ -353,46 +353,66 @@ def generate_response(user_query, context):
         return "Hello! I'm your ASRS maintenance assistant. I'm here to help you diagnose and troubleshoot any issues with the automated storage and retrieval system. What problem are you experiencing today? You can describe any alarms, unusual sounds, or equipment behavior you've noticed."
 
     system_prompt = """
-    You are an expert ASRS (Automated Storage and Retrieval System) maintenance assistant with a friendly, conversational tone.
-    You're speaking directly to a technician who needs help, so be natural and supportive like a helpful colleague.
+    You are an expert ASRS (Automated Storage and Retrieval System) maintenance assistant with deep knowledge of industrial automation.
 
-    IMPORTANT: Your response will be converted to speech, so:
-    - Speak naturally as if talking to someone, not writing a formal document
-    - Use conversational phrases like "Alright, let me help you with that" or "Okay, so here's what I think is happening"
-    - Avoid using markdown symbols like ** or # - just speak naturally
-    - Don't say "number 1, number 2" - instead say "first", "second", "then"
-    - Keep sentences concise and clear for spoken audio
-    - Use pauses naturally by ending sentences, not with dashes or special formatting
+    ASRS SYSTEM COMPONENTS YOU KNOW ABOUT:
+    - Conveyor System: Motors, belts, encoders (E1), photoeyes (PE1), rollers, drive controllers
+    - Elevator/Lift: Motors, cables, brakes, position sensors, limit switches
+    - Gantry/Crane: X/Y/Z-axis motors, gripper mechanisms, cable chains
+    - Storage Racks: Rack structures, bin sensors, location markers, access doors
+    - Safety Systems: Emergency stops, light curtains, interlocks, safety relays
+    - PLC/Network: PLC modules, network switches, I/O cards, power supplies
+    - QC/Vision: Cameras, barcode scanners, vision processors, lighting systems
+    - Pneumatics: Compressors, valves, cylinders, air lines, pressure sensors
+    - HMI/Interface: Touch panels, displays, control boards, ethernet cables
 
-    Structure your spoken response:
-    1. Acknowledge the issue with empathy
-    2. Explain what's likely happening in simple terms
-    3. Walk them through the steps to fix it conversationally
-    4. Mention how to prevent it next time
+    IMPORTANT GUIDELINES:
+    - Use your expert knowledge of ASRS systems to diagnose issues, even if not in the provided context
+    - Think through the mechanical, electrical, and logical causes based on symptoms
+    - If someone describes a noise, analyze which components could make that sound
+    - Consider all possible root causes, not just what's in historical logs
+    - Your response will be converted to speech, so speak naturally and conversationally
+    - Use phrases like "Based on what you're describing" or "That sound typically indicates"
+    - Avoid markdown symbols (**, #) - speak naturally instead
+    - Say "first", "second", "then" instead of "number 1, number 2"
 
-    Example tone: "Okay, so the conveyor belt issue - I've seen this before. It's usually a tension problem. Here's what you should do first: check if the belt feels loose when you press on it. If it does, you'll need to adjust the tensioner. Let me walk you through it..."
+    Structure your response:
+    1. Acknowledge the issue and what it likely indicates
+    2. Explain the probable causes with technical reasoning
+    3. Provide diagnostic steps and troubleshooting
+    4. Include safety warnings and verification procedures
+    5. Mention preventive measures
+
+    Example: "Okay, hearing a grinding noise from one of the sensors is actually unusual, because sensors themselves don't typically make noise. Based on your description, I think what you're actually hearing is probably coming from a nearby mechanical component. In ASRS systems, grinding sounds usually point to one of three things: a bearing that's failing in a motor, a misaligned belt or pulley rubbing against its housing, or debris caught in a moving part. Since you mentioned it's near a sensor, I'd check the conveyor motor bearings first - those photoeye sensors are usually mounted close to the conveyor assemblies. Here's what to do: power down the system, then manually rotate the conveyor rollers and motor shafts. Feel for any roughness or hear for grinding. Also inspect around the sensor mounting area for any loose brackets or debris. If the bearing's the issue, you'll need to replace it before it seizes up completely."
+    """
+
+    # Build the human prompt with optional context
+    context_section = ""
+    if context and context.strip():
+        context_section = f"""
+
+    Context from Past Incidents (use if relevant, but rely on your expertise first):
+    ---
+    {context}
+    ---
     """
 
     human_prompt = f"""
     Technician's Query: "{user_query}"
+    {context_section}
 
-    Context from Past Incidents:
-    ---
-    {context}
-    ---
-
-    Please provide your expert analysis and recommendations based on the instructions.
+    Analyze this issue using your expert knowledge of ASRS systems. Consider the symptoms, likely causes, and provide practical troubleshooting steps. Don't just rely on historical data - think through what could mechanically, electrically, or logically cause this problem.
     """
 
     try:
         completion = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",  # Faster and cheaper than gpt-3.5-turbo
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": human_prompt}
             ],
             temperature=0.2,
-            max_tokens=400,
+            max_tokens=500,  # Enough for detailed but not overly long responses
         )
         return completion.choices[0].message.content
     except Exception as e:
