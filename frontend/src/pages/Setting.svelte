@@ -5,7 +5,7 @@
   import checkIcon         from "../assets/settingPage/check.svg";
   import sliderThumb       from "../assets/settingPage/slider.svg";
 
-  import { myVariable } from "../store";
+  import { myVariable, currentMode } from "../store";
   import Home from "./Home.svelte";
 
   let previousBodyOverflow = "";
@@ -258,7 +258,7 @@
     </section>
 
     <!-- Brightness -->
-    <section class="card card-brightness">
+    <section class="card card-brightness" class:disabled={$currentMode !== 'Edit Mode'}>
       <div class="card-header">
         <svg class="icon icon-animated" viewBox="0 0 24 24" width="18" height="18">
           <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -266,6 +266,13 @@
         </svg>
         <h2 class="card-title">Display Brightness</h2>
         <span class="brightness-value">{brightness}%</span>
+        {#if $currentMode !== 'Edit Mode'}
+          <svg class="lock-icon" viewBox="0 0 24 24" width="16" height="16">
+            <rect x="6" y="10" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="15" r="1.5" fill="currentColor"/>
+          </svg>
+        {/if}
       </div>
 
       <div class="slider-wrapper">
@@ -277,6 +284,7 @@
           bind:value={brightness}
           style={sliderStyle}
           aria-label="Brightness"
+          disabled={$currentMode !== 'Edit Mode'}
         />
       </div>
     </section>
@@ -741,10 +749,22 @@
   .card-language {
     grid-area: language;
     align-self: stretch;
+    max-height: 140px;
   }
   .card-brightness {
     grid-area: brightness;
     align-self: stretch;
+  }
+
+  .card-brightness.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    background: #F9F9F9;
+  }
+
+  .card-brightness.disabled .slider {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
   .card-network {
     grid-area: network;
@@ -826,7 +846,7 @@
   .lang-toggle {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
     min-height: 0;
     justify-content: space-evenly;
@@ -834,20 +854,20 @@
 
   .lang-btn {
     flex: 1;
-    min-height: 38px;
-    height: 38px;
-    padding: 0 12px;
+    min-height: 32px;
+    height: 32px;
+    padding: 0 10px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 7px;
     background: var(--bg-card);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: var(--secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 5px;
     transition: all 0.2s;
   }
 
@@ -863,13 +883,18 @@
   }
 
   .check-dot {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--brand);
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .check-dot img {
+    width: 8px;
+    height: 8px;
   }
 
   /* Brightness */

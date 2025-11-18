@@ -1,5 +1,5 @@
 <script>
-  import { myVariable } from '../../store.js';
+  import { myVariable, currentMode } from '../../store.js';
   import Home from '../../pages/Home.svelte';
   import Alerts from '../../pages/Alerts.svelte';
   import AIAssistant from '../../pages/AIAssistant.svelte';
@@ -12,7 +12,6 @@
   let showPasswordModal = $state(false);
   let password = $state('');
   let passwordError = $state('');
-  let currentMode = $state('LIVE Mode');
   let showKeyboard = $state(false);
 
   const navigateTo = (page) => {
@@ -55,7 +54,7 @@
     const CORRECT_PASSWORD = 'changeme';
 
     if (password === CORRECT_PASSWORD) {
-      currentMode = 'Edit Mode';
+      currentMode.set('Edit Mode');
       closePasswordModal();
     } else {
       passwordError = 'Incorrect password. Please try again.';
@@ -64,7 +63,7 @@
   };
 
   const selectLiveMode = () => {
-    currentMode = 'LIVE Mode';
+    currentMode.set('LIVE Mode');
     dropdownOpen = false;
   };
 
@@ -101,8 +100,8 @@
 
   <div class="mode-selector-container">
     <button class="mode-selector" onclick={toggleDropdown}>
-      <div class="mode-dot" class:edit-mode={currentMode === 'Edit Mode'}></div>
-      <span class="mode-text">{currentMode}</span>
+      <div class="mode-dot" class:edit-mode={$currentMode === 'Edit Mode'}></div>
+      <span class="mode-text">{$currentMode}</span>
       <span class="dropdown-arrow" class:open={dropdownOpen}>▼</span>
     </button>
 
@@ -110,12 +109,12 @@
       <div class="mode-dropdown">
         <button
           class="mode-option"
-          class:active={currentMode === 'LIVE Mode'}
+          class:active={$currentMode === 'LIVE Mode'}
           onclick={selectLiveMode}
         >
           <div class="option-dot live"></div>
           <span>LIVE Mode</span>
-          {#if currentMode === 'LIVE Mode'}
+          {#if $currentMode === 'LIVE Mode'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -123,12 +122,12 @@
         </button>
         <button
           class="mode-option"
-          class:active={currentMode === 'Edit Mode'}
+          class:active={$currentMode === 'Edit Mode'}
           onclick={selectEditMode}
         >
           <div class="option-dot edit"></div>
           <span>Edit Mode</span>
-          {#if currentMode === 'Edit Mode'}
+          {#if $currentMode === 'Edit Mode'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
