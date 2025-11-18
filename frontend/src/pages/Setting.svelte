@@ -8,6 +8,9 @@
   import { myVariable } from "../store";
   import Home from "./Home.svelte";
 
+  // i18n imports
+  import { t, currentLanguage, setLanguage } from "../lib/i18n";
+
   let previousBodyOverflow = "";
   onMount(() => {
     if (typeof document === "undefined") return;
@@ -40,7 +43,6 @@
   const runtime   = $state("00:08:20");
   const timestamp = $state("11/03/2025, 06:38:08");
 
-  let language   = $state<"en"|"ar">("en");
   // Load brightness from localStorage or default to 100
   let brightness = $state(
     typeof localStorage !== 'undefined'
@@ -48,6 +50,11 @@
       : 100
   );
   let activeLogTab = $state<"all"|"error"|"operation">("all");
+
+  // Language handler
+  const handleLanguageChange = (lang: 'en' | 'ar') => {
+    setLanguage(lang);
+  };
 
   // Apply brightness to display
   function applyBrightness(value: number) {
@@ -121,7 +128,8 @@
       else if (pendingIpReveal === 2) ip2Masked = false;
       closeIpPasswordModal();
     } else {
-      ipPasswordError = 'Incorrect password. Please try again.';
+      // Set error flag (message will be translated in template)
+      ipPasswordError = 'error';
       ipPassword = '';
     }
   };
@@ -140,6 +148,22 @@
 
   const showVirtualKeyboard = () => {
     showKeyboard = true;
+  };
+
+  // Animation for key press
+  const animateKeyPress = (event: MouseEvent) => {
+    const button = event.currentTarget as HTMLElement;
+    button.classList.add('key-pressed');
+
+    // Create ripple effect
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    button.appendChild(ripple);
+
+    setTimeout(() => {
+      button.classList.remove('key-pressed');
+      ripple.remove();
+    }, 600);
   };
 
   // ===== Backup logic (hold-to-activate) =====
@@ -205,11 +229,11 @@
     <div class="topbar">
 
       <div class="titleblock">
-        <h1 class="h1">System Setting</h1>
+        <h1 class="h1">{$t('settings.title')}</h1>
       <div class="meta">
-        <span class="meta-label">ASRS ID:</span>&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
-        <span class="meta-label">Runtime:</span>&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
-        <span class="meta-label">Timestamp:</span>&nbsp;{timestamp}
+        <span class="meta-label">{$t('settings.asrsId')}:</span>&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
+        <span class="meta-label">{$t('settings.runtime')}:</span>&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
+        <span class="meta-label">{$t('settings.timestamp')}:</span>&nbsp;{timestamp}
       </div>
     </div>
   </div>
@@ -227,32 +251,32 @@
           <path d="M12 2c-1.5 3-2.5 7-2.5 10s1 7 2.5 10M12 2c1.5 3 2.5 7 2.5 10s-1 7-2.5 10" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M2 12h20M3.5 7h17M3.5 17h17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <h2 class="card-title">Language</h2>
+        <h2 class="card-title">{$t('settings.language')}</h2>
       </div>
 
       <div class="lang-toggle">
-        <button 
-          type="button" 
-          class="lang-btn {language==='en' ? 'active' : ''}" 
-          aria-pressed={language==='en'} 
-          onclick={() => (language = 'en')}
+        <button
+          type="button"
+          class="lang-btn {$currentLanguage==='en' ? 'active' : ''}"
+          aria-pressed={$currentLanguage==='en'}
+          onclick={() => handleLanguageChange('en')}
         >
-          {#if language==='en'}
+          {#if $currentLanguage==='en'}
             <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
           {/if}
-          English
+          {$t('settings.english')}
         </button>
 
-        <button 
-          type="button" 
-          class="lang-btn {language==='ar' ? 'active' : ''}" 
-          aria-pressed={language==='ar'} 
-          onclick={() => (language = 'ar')}
+        <button
+          type="button"
+          class="lang-btn {$currentLanguage==='ar' ? 'active' : ''}"
+          aria-pressed={$currentLanguage==='ar'}
+          onclick={() => handleLanguageChange('ar')}
         >
-          {#if language==='ar'}
+          {#if $currentLanguage==='ar'}
             <span class="check-dot"><img src={checkIcon} alt="" width="10" height="10" /></span>
           {/if}
-          عربي / Arabic
+          {$t('settings.arabic')}
         </button>
       </div>
     </section>
@@ -264,7 +288,7 @@
           <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M12 2v4M12 18v4M22 12h-4M6 12H2M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83M19.07 19.07l-2.83-2.83M7.76 7.76L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <h2 class="card-title">Display Brightness</h2>
+        <h2 class="card-title">{$t('settings.brightness')}</h2>
         <span class="brightness-value">{brightness}%</span>
       </div>
 
@@ -289,7 +313,7 @@
           <ellipse cx="12" cy="12" rx="5" ry="10" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M2 12h20M12 2c-2.5 3-4 7-4 10s1.5 7 4 10M12 2c2.5 3 4 7 4 10s-1.5 7-4 10" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <h2 class="card-title">Network Configuration</h2>
+        <h2 class="card-title">{$t('settings.network')}</h2>
         <svg class="icon lock-icon" viewBox="0 0 24 24" width="16" height="16">
           <rect x="6" y="10" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -298,7 +322,7 @@
       </div>
 
       <div class="network-content">
-        <div class="section-label">Machine IPs:</div>
+        <div class="section-label">{$t('settings.machineIps')}</div>
 
         <div class="ip-wrapper">
           <input
@@ -373,7 +397,7 @@
           <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M8 8h8M8 12h6M8 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <h2 class="card-title">Machine Logs</h2>
+        <h2 class="card-title">{$t('settings.logs')}</h2>
         <svg class="icon lock-icon" viewBox="0 0 24 24" width="16" height="16">
           <path d="M3 7l9-4 9 4v10l-9 4-9-4V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           <path d="M3 7l9 4m0 0l9-4m-9 4v10" stroke="currentColor" stroke-width="2"/>
@@ -382,29 +406,29 @@
 
       <div class="logs-content">
         <div class="log-tabs">
-          <button 
-            type="button" 
-            class="log-tab {activeLogTab==='all' ? 'active' : ''}" 
-            aria-pressed={activeLogTab==='all'} 
+          <button
+            type="button"
+            class="log-tab {activeLogTab==='all' ? 'active' : ''}"
+            aria-pressed={activeLogTab==='all'}
             onclick={() => (activeLogTab='all')}
           >
-            All
+            {$t('settings.all')}
           </button>
-          <button 
-            type="button" 
-            class="log-tab {activeLogTab==='error' ? 'active' : ''}" 
-            aria-pressed={activeLogTab==='error'} 
+          <button
+            type="button"
+            class="log-tab {activeLogTab==='error' ? 'active' : ''}"
+            aria-pressed={activeLogTab==='error'}
             onclick={() => (activeLogTab='error')}
           >
-            Errors
+            {$t('settings.errors')}
           </button>
-          <button 
-            type="button" 
-            class="log-tab {activeLogTab==='operation' ? 'active' : ''}" 
-            aria-pressed={activeLogTab==='operation'} 
+          <button
+            type="button"
+            class="log-tab {activeLogTab==='operation' ? 'active' : ''}"
+            aria-pressed={activeLogTab==='operation'}
             onclick={() => (activeLogTab='operation')}
           >
-            Operations
+            {$t('settings.operations')}
           </button>
         </div>
 
@@ -413,10 +437,10 @@
             <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
-            <span>Export</span>
+            <span>{$t('settings.export')}</span>
           </button>
           <button class="action-btn">
-            <span>View</span>
+            <span>{$t('settings.view')}</span>
             <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
               <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
@@ -433,10 +457,10 @@
           <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
           <rect x="7" y="13" width="10" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <h2 class="card-title">Backup</h2>
+        <h2 class="card-title">{$t('settings.backup')}</h2>
       </div>
 
-      <p class="help-text">Hold 2s to save/restore</p>
+      <p class="help-text">{$t('settings.holdToSaveRestore')}</p>
 
       <div class="backup-row">
         <div class="backup-group">
@@ -453,7 +477,7 @@
               <path d="M5 3h11l5 5v13H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/>
               <rect x="7" y="3" width="8" height="5" fill="none" stroke="currentColor" stroke-width="2"/>
             </svg>
-            <span>Store</span>
+            <span>{$t('settings.store')}</span>
           </button>
           <input class="timestamp-input" value={storeTimestamp} readonly />
         </div>
@@ -472,7 +496,7 @@
               <path d="M12 3v10M7 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <span>Restore</span>
+            <span>{$t('settings.restore')}</span>
           </button>
           <input class="timestamp-input" value={restoreTimestamp} readonly />
         </div>
@@ -487,7 +511,7 @@
   <div class="modal-overlay" onclick={closeIpPasswordModal}>
     <div class="modal-content" class:keyboard-visible={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
-        <h2>Enter Password</h2>
+        <h2>{$t('settings.passwordModal.title')}</h2>
         <button class="close-btn" onclick={closeIpPasswordModal}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -497,7 +521,7 @@
       </div>
 
       <div class="modal-body">
-        <p class="modal-description">Please enter the password to reveal the IP address</p>
+        <p class="modal-description">{$t('settings.passwordModal.description')}</p>
 
         <div class="input-group">
           <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -508,7 +532,7 @@
             {#if ipPassword}
               {'•'.repeat(ipPassword.length)}
             {:else}
-              <span class="placeholder-text">Tap to enter password</span>
+              <span class="placeholder-text">{$t('settings.passwordModal.placeholder')}</span>
             {/if}
           </div>
           <input
@@ -528,14 +552,14 @@
               <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
               <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            {ipPasswordError}
+            {$t('settings.passwordModal.error')}
           </div>
         {/if}
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" onclick={closeIpPasswordModal}>Cancel</button>
-        <button class="btn-submit" onclick={handleIpPasswordSubmit}>Submit</button>
+        <button class="btn-cancel" onclick={closeIpPasswordModal}>{$t('common.cancel')}</button>
+        <button class="btn-submit" onclick={handleIpPasswordSubmit}>{$t('common.submit')}</button>
       </div>
     </div>
   </div>
@@ -548,44 +572,44 @@
       <div class="keyboard-body">
         <!-- Row 1 - Numbers -->
         <div class="keyboard-row">
-          <button class="key" onclick={() => handleKeyPress('1')}>1</button>
-          <button class="key" onclick={() => handleKeyPress('2')}>2</button>
-          <button class="key" onclick={() => handleKeyPress('3')}>3</button>
-          <button class="key" onclick={() => handleKeyPress('4')}>4</button>
-          <button class="key" onclick={() => handleKeyPress('5')}>5</button>
-          <button class="key" onclick={() => handleKeyPress('6')}>6</button>
-          <button class="key" onclick={() => handleKeyPress('7')}>7</button>
-          <button class="key" onclick={() => handleKeyPress('8')}>8</button>
-          <button class="key" onclick={() => handleKeyPress('9')}>9</button>
-          <button class="key" onclick={() => handleKeyPress('0')}>0</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('1'); }}>1</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('2'); }}>2</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('3'); }}>3</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('4'); }}>4</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('5'); }}>5</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('6'); }}>6</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('7'); }}>7</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('8'); }}>8</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('9'); }}>9</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('0'); }}>0</button>
         </div>
 
         <!-- Row 2 - QWERTY -->
         <div class="keyboard-row">
-          <button class="key" onclick={() => handleKeyPress('q')}>Q</button>
-          <button class="key" onclick={() => handleKeyPress('w')}>W</button>
-          <button class="key" onclick={() => handleKeyPress('e')}>E</button>
-          <button class="key" onclick={() => handleKeyPress('r')}>R</button>
-          <button class="key" onclick={() => handleKeyPress('t')}>T</button>
-          <button class="key" onclick={() => handleKeyPress('y')}>Y</button>
-          <button class="key" onclick={() => handleKeyPress('u')}>U</button>
-          <button class="key" onclick={() => handleKeyPress('i')}>I</button>
-          <button class="key" onclick={() => handleKeyPress('o')}>O</button>
-          <button class="key" onclick={() => handleKeyPress('p')}>P</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('q'); }}>Q</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('w'); }}>W</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('e'); }}>E</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('r'); }}>R</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('t'); }}>T</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('y'); }}>Y</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('u'); }}>U</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('i'); }}>I</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('o'); }}>O</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('p'); }}>P</button>
         </div>
 
         <!-- Row 3 - ASDFGH -->
         <div class="keyboard-row">
-          <button class="key" onclick={() => handleKeyPress('a')}>A</button>
-          <button class="key" onclick={() => handleKeyPress('s')}>S</button>
-          <button class="key" onclick={() => handleKeyPress('d')}>D</button>
-          <button class="key" onclick={() => handleKeyPress('f')}>F</button>
-          <button class="key" onclick={() => handleKeyPress('g')}>G</button>
-          <button class="key" onclick={() => handleKeyPress('h')}>H</button>
-          <button class="key" onclick={() => handleKeyPress('j')}>J</button>
-          <button class="key" onclick={() => handleKeyPress('k')}>K</button>
-          <button class="key" onclick={() => handleKeyPress('l')}>L</button>
-          <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('a'); }}>A</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('s'); }}>S</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('d'); }}>D</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('f'); }}>F</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('g'); }}>G</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('h'); }}>H</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('j'); }}>J</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('k'); }}>K</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('l'); }}>L</button>
+          <button class="key key-backspace" onclick={(e) => { animateKeyPress(e); handleKeyPress('backspace'); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9l-7-9 7-9z" stroke-linecap="round" stroke-linejoin="round"/>
               <line x1="14" y1="9" x2="18" y2="13" stroke-linecap="round"/>
@@ -596,14 +620,14 @@
 
         <!-- Row 4 - ZXCVBN -->
         <div class="keyboard-row">
-          <button class="key" onclick={() => handleKeyPress('z')}>Z</button>
-          <button class="key" onclick={() => handleKeyPress('x')}>X</button>
-          <button class="key" onclick={() => handleKeyPress('c')}>C</button>
-          <button class="key" onclick={() => handleKeyPress('v')}>V</button>
-          <button class="key" onclick={() => handleKeyPress('b')}>B</button>
-          <button class="key" onclick={() => handleKeyPress('n')}>N</button>
-          <button class="key" onclick={() => handleKeyPress('m')}>M</button>
-          <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('z'); }}>Z</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('x'); }}>X</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('c'); }}>C</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('v'); }}>V</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('b'); }}>B</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('n'); }}>N</button>
+          <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('m'); }}>M</button>
+          <button class="key key-clear" onclick={(e) => { animateKeyPress(e); handleKeyPress('clear'); }}>{$t('settings.passwordModal.clear')}</button>
         </div>
       </div>
     </div>
@@ -654,6 +678,11 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow-y: auto;
+  }
+
+  /* Arabic font support */
+  :global(html[lang="ar"] body) {
+    font-family: "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .page {
@@ -1425,6 +1454,7 @@
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
     position: relative;
+    overflow: hidden;
   }
 
   .key:hover {
@@ -1440,9 +1470,57 @@
     background: linear-gradient(135deg, #FFCC80 0%, #FFB74D 100%);
   }
 
+  /* Key press animation */
+  .key-pressed {
+    animation: keyPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes keyPop {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15) rotate(2deg);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Ripple effect */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    width: 10px;
+    height: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: rippleEffect 0.6s ease-out;
+    pointer-events: none;
+  }
+
+  @keyframes rippleEffect {
+    0% {
+      width: 10px;
+      height: 10px;
+      opacity: 1;
+    }
+    100% {
+      width: 80px;
+      height: 80px;
+      opacity: 0;
+    }
+  }
+
   .key-backspace {
     background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
     color: white;
+  }
+
+  .key-backspace .ripple {
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .key-backspace:hover {
@@ -1462,6 +1540,10 @@
     color: white;
     font-size: 0.95rem;
     font-weight: 800;
+  }
+
+  .key-clear .ripple {
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .key-backspace svg {

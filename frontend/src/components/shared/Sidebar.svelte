@@ -5,6 +5,7 @@
   import AIAssistant from '../../pages/AIAssistant.svelte';
   import Setting from '../../pages/Setting.svelte';
   import EdgeLogo from '../../assets/Icons/Edge_logo.png?url';
+  import { t } from '../../lib/i18n';
 
   let { AlertsNum = 0, ActivePage = "Home" } = $props();
 
@@ -12,7 +13,7 @@
   let showPasswordModal = $state(false);
   let password = $state('');
   let passwordError = $state('');
-  let currentMode = $state('LIVE Mode');
+  let currentMode = $state('live');
   let showKeyboard = $state(false);
 
   const navigateTo = (page) => {
@@ -55,16 +56,16 @@
     const CORRECT_PASSWORD = 'changeme';
 
     if (password === CORRECT_PASSWORD) {
-      currentMode = 'Edit Mode';
+      currentMode = 'edit';
       closePasswordModal();
     } else {
-      passwordError = 'Incorrect password. Please try again.';
+      passwordError = $t('sidebar.editPasswordModal.error');
       password = '';
     }
   };
 
   const selectLiveMode = () => {
-    currentMode = 'LIVE Mode';
+    currentMode = 'live';
     dropdownOpen = false;
   };
 
@@ -101,8 +102,8 @@
 
   <div class="mode-selector-container">
     <button class="mode-selector" onclick={toggleDropdown}>
-      <div class="mode-dot" class:edit-mode={currentMode === 'Edit Mode'}></div>
-      <span class="mode-text">{currentMode}</span>
+      <div class="mode-dot" class:edit-mode={currentMode === 'edit'}></div>
+      <span class="mode-text">{currentMode === 'live' ? $t('sidebar.liveMode') : $t('sidebar.editMode')}</span>
       <span class="dropdown-arrow" class:open={dropdownOpen}>▼</span>
     </button>
 
@@ -110,12 +111,12 @@
       <div class="mode-dropdown">
         <button
           class="mode-option"
-          class:active={currentMode === 'LIVE Mode'}
+          class:active={currentMode === 'live'}
           onclick={selectLiveMode}
         >
           <div class="option-dot live"></div>
-          <span>LIVE Mode</span>
-          {#if currentMode === 'LIVE Mode'}
+          <span>{$t('sidebar.liveMode')}</span>
+          {#if currentMode === 'live'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -123,12 +124,12 @@
         </button>
         <button
           class="mode-option"
-          class:active={currentMode === 'Edit Mode'}
+          class:active={currentMode === 'edit'}
           onclick={selectEditMode}
         >
           <div class="option-dot edit"></div>
-          <span>Edit Mode</span>
-          {#if currentMode === 'Edit Mode'}
+          <span>{$t('sidebar.editMode')}</span>
+          {#if currentMode === 'edit'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -143,14 +144,14 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
       </svg>
-      <span>Home</span>
+      <span>{$t('sidebar.home')}</span>
     </div>
 
     <div class="nav-item" class:active={ActivePage === "Alerts"} onclick={() => navigateTo('Alerts')}>
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
       </svg>
-      <span>Alerts</span>
+      <span>{$t('sidebar.alerts')}</span>
       <div class="badge-group">
         {#if AlertsNum > 0}
           <div class="badge alert">{AlertsNum}</div>
@@ -162,7 +163,7 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
       </svg>
-      <span>AI Assistant</span>
+      <span>{$t('sidebar.aiAssistant')}</span>
     </div>
   </nav>
 
@@ -171,7 +172,7 @@
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
     </svg>
-    <span>Settings</span>
+    <span>{$t('sidebar.settings')}</span>
   </div>
 </div>
 
@@ -180,7 +181,7 @@
   <div class="modal-overlay" onclick={closePasswordModal}>
     <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
-        <h2>Enter Password</h2>
+        <h2>{$t('sidebar.editPasswordModal.title')}</h2>
         <button class="close-btn" onclick={closePasswordModal}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -190,7 +191,7 @@
       </div>
 
       <div class="modal-body">
-        <p class="modal-description">Please enter the password to switch to Edit Mode</p>
+        <p class="modal-description">{$t('sidebar.editPasswordModal.description')}</p>
 
         <div class="input-group">
           <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -202,7 +203,7 @@
             class="password-input"
             class:error={passwordError}
             bind:value={password}
-            placeholder="Enter password"
+            placeholder={$t('sidebar.editPasswordModal.placeholder')}
             onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
             onfocus={showVirtualKeyboard}
             onclick={showVirtualKeyboard}
@@ -223,8 +224,8 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" onclick={closePasswordModal}>Cancel</button>
-        <button class="btn-submit" onclick={handlePasswordSubmit}>Submit</button>
+        <button class="btn-cancel" onclick={closePasswordModal}>{$t('common.cancel')}</button>
+        <button class="btn-submit" onclick={handlePasswordSubmit}>{$t('common.submit')}</button>
       </div>
     </div>
   </div>
@@ -283,7 +284,7 @@
       <button class="key" onclick={() => handleKeyPress('B')}>B</button>
       <button class="key" onclick={() => handleKeyPress('N')}>N</button>
       <button class="key" onclick={() => handleKeyPress('M')}>M</button>
-      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
+      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>{$t('settings.passwordModal.clear')}</button>
     </div>
   </div>
 {/if}

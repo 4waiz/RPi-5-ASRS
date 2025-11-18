@@ -3,6 +3,7 @@
   import CircularProgressBar from "../charts/Circular-Progress-Bar.svelte";
   import Temperature from "../charts/Temperature.svelte";
   import NumericData from "../charts/numeric-data.svelte";
+  import { t } from "../../lib/i18n";
 
   /* inventory icons (paths match your repo) */
   import Empty   from "../../assets/inventory/Empty.svg";
@@ -128,29 +129,29 @@
   <div class="row">
     <!-- Column 1 -->
     <div class="column1">
-      <CircularProgressBar Name="Car Stock" Present={carStock} />
+      <CircularProgressBar Name={$t('overview.carStock')} Present={carStock} />
       <div class="hd"></div>
-      <Temperature Temperature={processorTemp} max={160} label="Processor Temperature" />
+      <Temperature Temperature={processorTemp} max={160} label={$t('overview.processorTemperature')} />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 2 -->
     <div class="column1">
-      <CircularProgressBar Name="Helicopter Stock" Present={helicopterStock} />
+      <CircularProgressBar Name={$t('overview.helicopterStock')} Present={helicopterStock} />
       <div class="hd"></div>
-      <Temperature Temperature={ambientTemp} max={160} label="Ambient Temperature" />
+      <Temperature Temperature={ambientTemp} max={160} label={$t('overview.ambientTemperature')} />
     </div>
 
     <div class="vd"></div>
 
     <!-- Column 3 -->
     <div class="column2">
-      <NumericData value={energyConsumption} unit="kWh" label="Energy Consumption" />
+      <NumericData value={energyConsumption} unit="kWh" label={$t('overview.energyConsumption')} />
       <div class="hd"></div>
-      <NumericData value={humidity} unit="%" label="Humidity" />
+      <NumericData value={humidity} unit="%" label={$t('overview.humidity')} />
       <div class="hd"></div>
-      <NumericData value={asrsUtilization} unit="%" label="ASRS Utilization" />
+      <NumericData value={asrsUtilization} unit="%" label={$t('overview.asrsUtilization')} />
     </div>
 
     <div style="flex:0 0 0px;"></div>
@@ -159,7 +160,7 @@
     <!-- Inventory status on the RIGHT -->
     <div class="inventory-status-container">
       <div class="container">
-        <h3>Inventory status</h3>
+        <h3>{$t('overview.inventoryStatus')}</h3>
 
         <div class="grid">
           {#each slots as state, i}
@@ -176,21 +177,25 @@
         <div class="legend">
           <div class="legend-item">
             <img class="legend-icon" src={icons.full} alt="In Storage" />
-            <span><strong>{counts.full}</strong> : In Storage</span>
+            <span><strong>{counts.full}</strong> : {$t('overview.inStorage')}</span>
           </div>
 
           <div class="legend-item">
             <img class="legend-icon" src={icons.partial} alt="Out Storage" />
-            <span><strong>{counts.partial}</strong> : Out Storage</span>
+            <span><strong>{counts.partial}</strong> : {$t('overview.outStorage')}</span>
           </div>
 
           <div class="legend-item">
             <img class="legend-icon" src={icons.empty} alt="Out of stock" />
-            <span><strong>{counts.empty}</strong> : Out of stock</span>
+            <span><strong>{counts.empty}</strong> : {$t('overview.outOfStock')}</span>
           </div>
         </div>
 
+<<<<<<< Updated upstream
         <button class="manage-btn" onclick={handleManageInventory}>Managing Inventory →</button>
+=======
+        <button class="manage-btn">{$t('overview.managingInventory')} →</button>
+>>>>>>> Stashed changes
       </div>
     </div>
   </div>

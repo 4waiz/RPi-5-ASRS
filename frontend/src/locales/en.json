@@ -1,0 +1,133 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "sidebar": {
+    "home": "Home",
+    "alerts": "Alerts",
+    "aiAssistant": "AI Assistant",
+    "settings": "Settings",
+    "liveMode": "LIVE Mode",
+    "editMode": "Edit Mode",
+    "editPasswordModal": {
+      "title": "Enter Password",
+      "description": "Please enter the password to switch to Edit Mode",
+      "placeholder": "Enter password",
+      "error": "Incorrect password. Please try again."
+    }
+  },
+  "home": {
+    "title": "Storage Management System",
+    "tabs": {
+      "overview": "Overview",
+      "inventory": "Inventory",
+      "digitalTwin": "Digital Twin",
+      "components": "Components"
+    },
+    "alerts": {
+      "noStockBox8": "There is no available stock in the Bux 8 to meet the incoming orders.",
+      "supplierRejected": "The supplier item with ID 9 has been rejected as it does not meet the quality standards."
+    },
+    "status": "Status",
+    "online": "Online",
+    "offline": "Offline",
+    "storage": "Storage",
+    "items": "Items",
+    "capacity": "Capacity",
+    "utilization": "Utilization",
+    "recentActivity": "Recent Activity",
+    "viewAll": "View All"
+  },
+  "overview": {
+    "carStock": "Car Stock",
+    "helicopterStock": "Helicopter Stock",
+    "processorTemperature": "Processor Temperature",
+    "ambientTemperature": "Ambient Temperature",
+    "energyConsumption": "Energy Consumption",
+    "humidity": "Humidity",
+    "asrsUtilization": "ASRS Utilization",
+    "inventoryStatus": "Inventory status",
+    "inStorage": "In Storage",
+    "outStorage": "Out Storage",
+    "outOfStock": "Out of stock",
+    "managingInventory": "Managing Inventory"
+  },
+  "inventory": {
+    "liveOperations": "Live Operations",
+    "boxRetrieved": "Box {number} retrieved",
+    "doneAt": "Done at",
+    "full": "Full",
+    "partiallyFull": "Partially full.",
+    "empty": "Empty"
+  },
+  "digitalTwin": {
+    "selectBox": "SELECT BOX",
+    "out": "OUT",
+    "in": "IN",
+    "total": "Total",
+    "boxName": "box_{number}",
+    "statusIn": "IN",
+    "statusOut": "OUT",
+    "getOutInProgress": "Box {box} get out in progress…",
+    "getOutCompleted": "Box {box} got out completed.",
+    "putInInProgress": "Box {box} put in in progress…",
+    "putInCompleted": "Box {box} put in completed.",
+    "frontView": "Front View",
+    "leftView": "Left View",
+    "rightView": "Right View",
+    "backView": "Back View"
+  },
+  "components": {
+    "stepperMotor": "Stepper Motor",
+    "proximitySensor": "Proximity Sensor",
+    "jetsonOrinNano": "Jetson Orin Nano",
+    "greartisanDC": "Greartisan DC 24V",
+    "conveyorUnit": "Conveyor_Unit_{number}",
+    "subcomponents": "subcomponents",
+    "status": {
+      "running": "Running",
+      "live": "Live",
+      "online": "Online",
+      "idle": "Idle",
+      "off": "Off",
+      "unknown": "Unknown"
+    }
+  },
+  "settings": {
+    "title": "System Setting",
+    "asrsId": "ASRS ID",
+    "runtime": "Runtime",
+    "timestamp": "Timestamp",
+    "language": "Language",
+    "english": "English",
+    "arabic": "عربي / Arabic",
+    "brightness": "Display Brightness",
+    "network": "Network Configuration",
+    "machineIps": "Machine IPs:",
+    "showIp": "Show IP",
+    "hideIp": "Hide IP",
+    "logs": "Machine Logs",
+    "all": "All",
+    "errors": "Errors",
+    "operations": "Operations",
+    "export": "Export",
+    "view": "View",
+    "backup": "Backup",
+    "holdToSaveRestore": "Hold 2s to save/restore",
+    "store": "Store",
+    "restore": "Restore",
+    "passwordModal": {
+      "title": "Enter Password",
+      "description": "Please enter the password to reveal the IP address",
+      "placeholder": "Tap to enter password",
+      "error": "Incorrect password. Please try again.",
+      "clear": "Clear"
+    }
+  }
+}

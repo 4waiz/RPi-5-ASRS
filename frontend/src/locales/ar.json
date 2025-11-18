@@ -1,0 +1,133 @@
+{
+  "common": {
+    "cancel": "إلغاء",
+    "submit": "إرسال",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "confirm": "تأكيد"
+  },
+  "sidebar": {
+    "home": "الرئيسية",
+    "alerts": "التنبيهات",
+    "aiAssistant": "المساعد الذكي",
+    "settings": "الإعدادات",
+    "liveMode": "الوضع المباشر",
+    "editMode": "وضع التحرير",
+    "editPasswordModal": {
+      "title": "أدخل كلمة المرور",
+      "description": "الرجاء إدخال كلمة المرور للتبديل إلى وضع التحرير",
+      "placeholder": "أدخل كلمة المرور",
+      "error": "كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "home": {
+    "title": "نظام إدارة التخزين",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "inventory": "المخزون",
+      "digitalTwin": "التوأم الرقمي",
+      "components": "المكونات"
+    },
+    "alerts": {
+      "noStockBox8": "لا يوجد مخزون متاح في الصندوق 8 لتلبية الطلبات الواردة.",
+      "supplierRejected": "تم رفض العنصر المورد برقم معرف 9 لأنه لا يلبي معايير الجودة."
+    },
+    "status": "الحالة",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "storage": "التخزين",
+    "items": "العناصر",
+    "capacity": "السعة",
+    "utilization": "الاستخدام",
+    "recentActivity": "النشاط الأخير",
+    "viewAll": "عرض الكل"
+  },
+  "overview": {
+    "carStock": "مخزون السيارات",
+    "helicopterStock": "مخزون المروحيات",
+    "processorTemperature": "درجة حرارة المعالج",
+    "ambientTemperature": "درجة الحرارة المحيطة",
+    "energyConsumption": "استهلاك الطاقة",
+    "humidity": "الرطوبة",
+    "asrsUtilization": "استخدام نظام ASRS",
+    "inventoryStatus": "حالة المخزون",
+    "inStorage": "في المخزن",
+    "outStorage": "خارج المخزن",
+    "outOfStock": "نفذ من المخزون",
+    "managingInventory": "إدارة المخزون"
+  },
+  "inventory": {
+    "liveOperations": "العمليات المباشرة",
+    "boxRetrieved": "تم استرجاع الصندوق {number}",
+    "doneAt": "تم في",
+    "full": "ممتلئ",
+    "partiallyFull": "ممتلئ جزئياً",
+    "empty": "فارغ"
+  },
+  "digitalTwin": {
+    "selectBox": "اختر الصندوق",
+    "out": "إخراج",
+    "in": "إدخال",
+    "total": "الإجمالي",
+    "boxName": "صندوق_{number}",
+    "statusIn": "إدخال",
+    "statusOut": "إخراج",
+    "getOutInProgress": "جاري إخراج الصندوق {box}…",
+    "getOutCompleted": "تم إخراج الصندوق {box}.",
+    "putInInProgress": "جاري إدخال الصندوق {box}…",
+    "putInCompleted": "تم إدخال الصندوق {box}.",
+    "frontView": "المنظر الأمامي",
+    "leftView": "المنظر الأيسر",
+    "rightView": "المنظر الأيمن",
+    "backView": "المنظر الخلفي"
+  },
+  "components": {
+    "stepperMotor": "محرك متدرج",
+    "proximitySensor": "مستشعر القرب",
+    "jetsonOrinNano": "جيتسون أورين نانو",
+    "greartisanDC": "Greartisan DC 24V",
+    "conveyorUnit": "وحدة النقل_{number}",
+    "subcomponents": "المكونات الفرعية",
+    "status": {
+      "running": "يعمل",
+      "live": "مباشر",
+      "online": "متصل",
+      "idle": "خامل",
+      "off": "متوقف",
+      "unknown": "غير معروف"
+    }
+  },
+  "settings": {
+    "title": "إعدادات النظام",
+    "asrsId": "معرف النظام",
+    "runtime": "وقت التشغيل",
+    "timestamp": "الوقت والتاريخ",
+    "language": "اللغة",
+    "english": "English",
+    "arabic": "عربي / Arabic",
+    "brightness": "سطوع الشاشة",
+    "network": "إعدادات الشبكة",
+    "machineIps": "عناوين IP للأجهزة:",
+    "showIp": "إظهار العنوان",
+    "hideIp": "إخفاء العنوان",
+    "logs": "سجلات الجهاز",
+    "all": "الكل",
+    "errors": "الأخطاء",
+    "operations": "العمليات",
+    "export": "تصدير",
+    "view": "عرض",
+    "backup": "النسخ الاحتياطي",
+    "holdToSaveRestore": "اضغط لمدة ثانيتين للحفظ/الاستعادة",
+    "store": "حفظ",
+    "restore": "استعادة",
+    "passwordModal": {
+      "title": "أدخل كلمة المرور",
+      "description": "الرجاء إدخال كلمة المرور لإظهار عنوان IP",
+      "placeholder": "اضغط لإدخال كلمة المرور",
+      "error": "كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.",
+      "clear": "مسح"
+    }
+  }
+}
