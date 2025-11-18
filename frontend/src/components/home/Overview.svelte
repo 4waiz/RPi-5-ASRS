@@ -192,7 +192,11 @@
         </div>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <button class="manage-btn" onclick={handleManageInventory}>Managing Inventory →</button>
+=======
+        <button class="manage-btn">{$t('overview.managingInventory')} →</button>
+>>>>>>> Stashed changes
 =======
         <button class="manage-btn">{$t('overview.managingInventory')} →</button>
 >>>>>>> Stashed changes
