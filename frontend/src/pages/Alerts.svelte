@@ -228,9 +228,10 @@
       selectedAlertId = null;
     }
   }
-  $: criticalCount = alerts.filter((alert) => alert.severity === 'critical').length;
-  $: errorCount = alerts.filter((alert) => alert.severity === 'error').length;
-  $: warningCount = alerts.filter((alert) => alert.severity === 'warning').length;
+  // Calculate counts from cached alerts (all alerts), not filtered alerts
+  $: criticalCount = allAlertsCache.filter((alert) => alert.severity === 'critical').length;
+  $: errorCount = allAlertsCache.filter((alert) => alert.severity === 'error').length;
+  $: warningCount = allAlertsCache.filter((alert) => alert.severity === 'warning').length;
   $: totalTrackedAlerts = criticalCount + errorCount + warningCount;
   $: sidebarAlertCount =
     totalTrackedAlerts > 0 ? Math.min(MAX_ALERTS_DISPLAYED, totalTrackedAlerts) : MAX_ALERTS_DISPLAYED;
@@ -258,33 +259,47 @@
         remoteOptions.length ? remoteOptions : DEMO_DIAGNOSTIC_OPTIONS
       );
       const incomingAlerts = Array.isArray(data.alerts) ? data.alerts : [];
-      alertsData.set(prepareAlerts(incomingAlerts));
+      const prepared = prepareAlerts(incomingAlerts);
+      alertsData.set(prepared);
+      allAlertsCache = prepared; // Initialize cache
     } catch (err) {
       console.error('Failed to load initial alerts data', err);
       diagnosticOptions.set(DEMO_DIAGNOSTIC_OPTIONS);
-      alertsData.set(prepareAlerts(DEMO_ALERTS));
+      const prepared = prepareAlerts(DEMO_ALERTS);
+      alertsData.set(prepared);
+      allAlertsCache = prepared; // Initialize cache
       error = 'Unable to reach the alerts service. Showing demo data for now.';
     } finally {
       loading = false;
     }
   }
 
+  let allAlertsCache = []; // Cache all alerts for filtering
+
   async function fetchAlerts(filter) {
     loading = true;
     error = '';
     try {
-      const response = await fetch(
-        `${API_BASE}/api/alerts?filter=${encodeURIComponent(filter ?? 'all')}`
-      );
+      // Always fetch ALL alerts from backend
+      const response = await fetch(`${API_BASE}/api/alerts?filter=all`);
       if (!response.ok) {
         throw new Error(`Alerts service responded with ${response.status}`);
       }
       const data = await response.json();
-      alertsData.set(
-        prepareAlerts(Array.isArray(data.alerts) ? data.alerts : [], {
-          fillWithDemo: filter === 'all'
-        })
-      );
+      const allAlerts = prepareAlerts(Array.isArray(data.alerts) ? data.alerts : [], {
+        fillWithDemo: true
+      });
+
+      // Cache all alerts
+      allAlertsCache = allAlerts;
+
+      // Filter on frontend based on the filter parameter
+      if (filter === 'all') {
+        alertsData.set(allAlerts);
+      } else {
+        const filtered = allAlerts.filter(alert => alert.severity === filter);
+        alertsData.set(filtered);
+      }
     } catch (err) {
       console.error('Failed to refresh alerts', err);
       error = 'Could not refresh alerts. Keeping the previous list.';
@@ -296,7 +311,19 @@
   function handleFilterChange(filter) {
     currentFilter.set(filter);
     selectedAlertId = null;
-    fetchAlerts(filter);
+
+    // If we have cached alerts, filter them directly (no need to refetch)
+    if (allAlertsCache.length > 0) {
+      if (filter === 'all') {
+        alertsData.set(allAlertsCache);
+      } else {
+        const filtered = allAlertsCache.filter(alert => alert.severity === filter);
+        alertsData.set(filtered);
+      }
+    } else {
+      // Otherwise fetch from backend
+      fetchAlerts(filter);
+    }
   }
 
   function handleAlertClick(event) {
@@ -381,13 +408,13 @@
         <span class="summary-label">Critical</span>
         <span class="summary-value">{criticalCount}</span>
       </div>
-      <div class="summary-card warning">
-        <span class="summary-label">Warnings</span>
-        <span class="summary-value">{warningCount}</span>
-      </div>
       <div class="summary-card error">
         <span class="summary-label">Errors</span>
         <span class="summary-value">{errorCount}</span>
+      </div>
+      <div class="summary-card warning">
+        <span class="summary-label">Warnings</span>
+        <span class="summary-value">{warningCount}</span>
       </div>
     </div>
 
