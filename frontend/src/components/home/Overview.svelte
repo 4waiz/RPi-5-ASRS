@@ -191,19 +191,7 @@
           </div>
         </div>
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        <button class="manage-btn" onclick={handleManageInventory}>Managing Inventory →</button>
-=======
-        <button class="manage-btn">{$t('overview.managingInventory')} →</button>
->>>>>>> Stashed changes
-=======
-        <button class="manage-btn">{$t('overview.managingInventory')} →</button>
->>>>>>> Stashed changes
-=======
-        <button class="manage-btn">{$t('overview.managingInventory')} →</button>
->>>>>>> Stashed changes
+        <button class="manage-btn" onclick={handleManageInventory}>{$t('overview.managingInventory')} →</button>
       </div>
     </div>
   </div>
