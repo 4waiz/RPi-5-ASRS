@@ -1,5 +1,5 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, getContext } from "svelte";
   import CircularProgressBar from "../charts/Circular-Progress-Bar.svelte";
   import Temperature from "../charts/Temperature.svelte";
   import NumericData from "../charts/numeric-data.svelte";
@@ -10,6 +10,14 @@
   import Partial from "../../assets/inventory/Partial.svg";
 
   const icons = { full: Full, empty: Empty, partial: Partial };
+
+  // Get navigation context to navigate between tabs
+  const { navigateToTab } = getContext('navigation');
+
+  // Handler for managing inventory button
+  function handleManageInventory() {
+    navigateToTab(1); // Navigate to Inventory tab (index 1)
+  }
 
   // Live reactive data
   let carStock = $state(100);
@@ -182,7 +190,7 @@
           </div>
         </div>
 
-        <button class="manage-btn">Managing Inventory →</button>
+        <button class="manage-btn" onclick={handleManageInventory}>Managing Inventory →</button>
       </div>
     </div>
   </div>

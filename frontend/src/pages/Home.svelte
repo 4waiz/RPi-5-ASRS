@@ -1,4 +1,6 @@
 <script>
+  import { setContext } from "svelte";
+
   let activeIndex = $state(0);
   import SideBar from "../components/shared/Sidebar.svelte";
   import TopBar from "../components/shared/TopBar.svelte";
@@ -30,6 +32,13 @@
     DigitalTwinTabPage,
     ComponentsOverviewTab,
   ];
+
+  // Provide navigation context for child components
+  setContext('navigation', {
+    navigateToTab: (index) => {
+      activeIndex = index;
+    }
+  });
 </script>
 
 <div class="main">
