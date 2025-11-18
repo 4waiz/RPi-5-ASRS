@@ -4,7 +4,16 @@
 # ================== Whisper (Local) Speech-to-Text Service ==================
 
 import os
-import whisper  # <-- The main import for local Whisper
+
+# Try to import whisper, but handle gracefully if it fails on Windows
+try:
+    import whisper  # <-- The main import for local Whisper
+    WHISPER_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: Could not import whisper library: {e}")
+    print("AI Assistant speech-to-text will be disabled.")
+    WHISPER_AVAILABLE = False
+    whisper = None
 
 # We will cache the loaded model in memory
 _WHISPER_MODEL = None
@@ -13,7 +22,10 @@ _WHISPER_MODEL_NAME = None
 def _ensure_whisper_model(model_name: str):
     """Load the requested Whisper model once."""
     global _WHISPER_MODEL, _WHISPER_MODEL_NAME
-    
+
+    if not WHISPER_AVAILABLE:
+        return
+
     # If the model is not loaded or the requested model name has changed
     if _WHISPER_MODEL is None or _WHISPER_MODEL_NAME != model_name:
         print(f"Loading Whisper model: {model_name}...")
@@ -30,10 +42,13 @@ def _ensure_whisper_model(model_name: str):
             
 def transcribe_audio(wav_path: str, lang_code: str = "en", model_name: str = "base") -> str:
     """Transcribe WAV file -> text using local Whisper."""
-    
+
+    if not WHISPER_AVAILABLE:
+        return "Error: Whisper library is not available on this system."
+
     # Step 1: Load the model (e.g., "base", "small", "medium")
     _ensure_whisper_model(model_name)
-    
+
     if _WHISPER_MODEL is None:
         return "Error: Whisper model is not loaded."
 
