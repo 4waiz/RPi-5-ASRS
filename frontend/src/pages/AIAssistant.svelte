@@ -1,7 +1,9 @@
 <script>
     // --- Imports for the PAGE ---
     import SideBar from "../components/shared/Sidebar.svelte";
-    
+
+    import Avatar3D from "../components/aiassistant/Avatar3D.svelte"; 
+
     // --- Imports for the CHATBOT ---
     import { onMount } from 'svelte';
 
@@ -265,23 +267,7 @@
             <h1>EDGE InventoryBot</h1>
 
             <div class="avatar-wrapper">
-                {#if !isPlayingTTS}
-                    <img 
-                        class="avatar-display" 
-                        src={stillAvatarPath} 
-                        alt="Bot Avatar"
-                    />
-                {/if}
-                {#if isPlayingTTS}
-                    <video 
-                        class="avatar-display" 
-                        bind:this={talkingVideoEl}
-                        src={talkingVideoPath}
-                        muted
-                        loop
-                        playsinline
-                    ></video>
-                {/if}
+                <Avatar3D isTalking={isPlayingTTS} />
             </div>
 
             <div id="chat-box" class="chat-box" bind:this={chatBoxEl}>

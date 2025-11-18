@@ -30,6 +30,14 @@ from AIAssistant.tts import piper_tts_to_wav
 
 app = FastAPI(title="EDGE Inventory Chatbot")
 
+static_path = os.path.join(backend_dir, "static")
+
+if os.path.exists(static_path):
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
+    print(f"Serving static files from: {static_path}")
+else:
+    print(f"Warning: Static directory not found at {static_path}")
+
 # -------------------- CORS --------------------
 app.add_middleware(
     CORSMiddleware,
