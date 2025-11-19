@@ -8,7 +8,7 @@
   import { myVariable } from "../store";
   import Home from "./Home.svelte";
 
-  // i18n imports
+  // i18n importss
   import { t, currentLanguage, setLanguage } from "../lib/i18n";
 
   let previousBodyOverflow = "";
