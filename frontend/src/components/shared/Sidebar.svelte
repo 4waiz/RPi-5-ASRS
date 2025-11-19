@@ -65,6 +65,7 @@
     const CORRECT_PASSWORD = 'changeme';
 
     if (password === CORRECT_PASSWORD) {
+<<<<<<< Updated upstream
       if (modalType === 'editMode') {
         currentMode = 'edit';
       } else if (modalType === 'settings') {
@@ -75,6 +76,12 @@
       passwordError = modalType === 'editMode'
         ? $t('sidebar.editPasswordModal.error')
         : $t('sidebar.settingsPasswordModal.error');
+=======
+      currentMode = 'edit';
+      closePasswordModal();
+    } else {
+      passwordError = $t('sidebar.editPasswordModal.error');
+>>>>>>> Stashed changes
       password = '';
     }
   };
@@ -201,7 +208,11 @@
   <div class="modal-overlay" onclick={closePasswordModal}>
     <div class="modal-content" class:with-keyboard={showKeyboard} style:animation={showKeyboard ? 'modalSlideWithKeyboard 0.3s ease-out' : 'modalSlide 0.3s ease-out'} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
+<<<<<<< Updated upstream
         <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
+=======
+        <h2>{$t('sidebar.editPasswordModal.title')}</h2>
+>>>>>>> Stashed changes
         <button class="close-btn" onclick={closePasswordModal}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -211,7 +222,11 @@
       </div>
 
       <div class="modal-body">
+<<<<<<< Updated upstream
         <p class="modal-description">{modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}</p>
+=======
+        <p class="modal-description">{$t('sidebar.editPasswordModal.description')}</p>
+>>>>>>> Stashed changes
 
         <div class="input-group">
           <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -223,7 +238,11 @@
             class="password-input"
             class:error={passwordError}
             bind:value={password}
+<<<<<<< Updated upstream
             placeholder={modalType === 'editMode' ? $t('sidebar.editPasswordModal.placeholder') : $t('sidebar.settingsPasswordModal.placeholder')}
+=======
+            placeholder={$t('sidebar.editPasswordModal.placeholder')}
+>>>>>>> Stashed changes
             onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
             onfocus={showVirtualKeyboard}
             onclick={showVirtualKeyboard}
@@ -297,6 +316,7 @@
       </button>
     </div>
     <div class="keyboard-row">
+<<<<<<< Updated upstream
       <button class="key key-capslock" class:active={capsLock} onclick={() => handleKeyPress('capslock')}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M12 2l8 8h-5v8h-6v-8H4z" stroke-width="2" stroke-linejoin="round"/>
@@ -310,6 +330,15 @@
       <button class="key" onclick={() => handleKeyPress('B')}>{capsLock ? 'B' : 'b'}</button>
       <button class="key" onclick={() => handleKeyPress('N')}>{capsLock ? 'N' : 'n'}</button>
       <button class="key" onclick={() => handleKeyPress('M')}>{capsLock ? 'M' : 'm'}</button>
+=======
+      <button class="key" onclick={() => handleKeyPress('Z')}>Z</button>
+      <button class="key" onclick={() => handleKeyPress('X')}>X</button>
+      <button class="key" onclick={() => handleKeyPress('C')}>C</button>
+      <button class="key" onclick={() => handleKeyPress('V')}>V</button>
+      <button class="key" onclick={() => handleKeyPress('B')}>B</button>
+      <button class="key" onclick={() => handleKeyPress('N')}>N</button>
+      <button class="key" onclick={() => handleKeyPress('M')}>M</button>
+>>>>>>> Stashed changes
       <button class="key key-clear" onclick={() => handleKeyPress('clear')}>{$t('settings.passwordModal.clear')}</button>
     </div>
   </div>
