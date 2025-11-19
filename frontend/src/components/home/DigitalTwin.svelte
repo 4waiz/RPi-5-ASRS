@@ -3,6 +3,8 @@
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
   import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+  import { t } from '../../lib/i18n';
+  import { get } from 'svelte/store';
 
   // ---------- DOM refs (Svelte 5-friendly, no document.getElementById) ----------
   let container3DEl: HTMLDivElement;
@@ -569,6 +571,27 @@
     }
   }
 
+  // Helper function to translate box name (box_1 -> صندوق_1 in Arabic)
+  function translateBoxName(boxName: string): string {
+    const match = boxName.match(/box_(\d+)/);
+    if (match) {
+      const number = match[1];
+      return get(t)('digitalTwin.boxName').replace('{number}', number);
+    }
+    return boxName;
+  }
+
+  // Helper function to translate status (In/Out -> إدخال/إخراج in Arabic)
+  function translateStatus(status: string): string {
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'in') {
+      return get(t)('digitalTwin.statusIn');
+    } else if (statusLower === 'out') {
+      return get(t)('digitalTwin.statusOut');
+    }
+    return status.toUpperCase();
+  }
+
   function populateBoxList() {
     if (!boxListEl) return;
     boxListEl.innerHTML = '';
@@ -581,11 +604,11 @@
 
         const nameSpan = document.createElement('span');
         nameSpan.className = 'box-name';
-        nameSpan.textContent = box.name;
+        nameSpan.textContent = translateBoxName(box.name);
 
         const statusSpan = document.createElement('span');
         statusSpan.className = `box-status ${box.status.toLowerCase()}`;
-        statusSpan.textContent = box.status.toUpperCase();
+        statusSpan.textContent = translateStatus(box.status);
 
         item.appendChild(nameSpan);
         item.appendChild(statusSpan);
@@ -608,9 +631,15 @@
       row.forEach(box => {
         const item = boxListEl.querySelector<HTMLElement>(`[data-box-name="${box.name}"]`);
         if (item) {
+          const nameSpan = item.querySelector<HTMLSpanElement>('.box-name');
           const statusSpan = item.querySelector<HTMLSpanElement>('.box-status');
+
+          if (nameSpan) {
+            nameSpan.textContent = translateBoxName(box.name);
+          }
+
           if (statusSpan) {
-            statusSpan.textContent = box.status.toUpperCase();
+            statusSpan.textContent = translateStatus(box.status);
             statusSpan.className = `box-status ${box.status.toLowerCase()}`;
           }
         }
@@ -628,7 +657,7 @@
 
     const routingPos = calculateExitRoutingPosition(boxData.row, boxData.col);
 
-    showToast(`Box ${boxName} get out in progress…`, 'info');
+    showToast(get(t)('digitalTwin.getOutInProgress').replace('{box}', boxName), 'info');
 
     try {
       await moveCraneToStorageCell(boxName);
@@ -667,7 +696,7 @@
       boxData.data.status = "Out";
       systemState.clearOperation();
 
-      showToast(`Box ${boxName} got out completed.`, 'success');
+      showToast(get(t)('digitalTwin.getOutCompleted').replace('{box}', boxName), 'success');
       updateStatusCounts();
       updateBoxListUI();
       updateButtonStates();
@@ -691,7 +720,7 @@
     const routingPos = calculateEntryRoutingPosition(boxData.row, boxData.col);
     const cranePos = calculateCraneStoragePosition(boxData.row, boxData.col);
 
-    showToast(`Box ${boxName} put in in progress…`, 'info');
+    showToast(get(t)('digitalTwin.putInInProgress').replace('{box}', boxName), 'info');
 
     try {
       (boxMesh as any).position.set(CONFIG.POST_OUT_X, routingPos.y, routingPos.z);
@@ -731,7 +760,7 @@
       boxData.data.status = "In";
       systemState.clearOperation();
 
-      showToast(`Box ${boxName} put in completed.`, 'success');
+      showToast(get(t)('digitalTwin.putInCompleted').replace('{box}', boxName), 'success');
       updateStatusCounts();
       updateBoxListUI();
       updateButtonStates();
@@ -1115,30 +1144,30 @@
       <div class="axis-line axis-z-bottom"></div>
 
       <!-- Axis buttons -->
-      <button class="axis-btn axis-btn-front" onclick={() => rotateCameraTo('front')} title="Front View">
+      <button class="axis-btn axis-btn-front" onclick={() => rotateCameraTo('front')} title={$t('digitalTwin.frontView')}>
         <span class="axis-label">F</span>
       </button>
 
-      <button class="axis-btn axis-btn-left" onclick={() => rotateCameraTo('left')} title="Left View">
+      <button class="axis-btn axis-btn-left" onclick={() => rotateCameraTo('left')} title={$t('digitalTwin.leftView')}>
         <span class="axis-label">L</span>
       </button>
 
-      <button class="axis-btn axis-btn-right" onclick={() => rotateCameraTo('right')} title="Right View">
+      <button class="axis-btn axis-btn-right" onclick={() => rotateCameraTo('right')} title={$t('digitalTwin.rightView')}>
         <span class="axis-label">R</span>
       </button>
 
-      <button class="axis-btn axis-btn-back" onclick={() => rotateCameraTo('back')} title="Back View">
+      <button class="axis-btn axis-btn-back" onclick={() => rotateCameraTo('back')} title={$t('digitalTwin.backView')}>
         <span class="axis-label">B</span>
       </button>
     </div>
   </div>
 
   <div class="control-panel" class:hidden={systemState.hideUI}>
-    <div class="panel-title">Select Box</div>
+    <div class="panel-title">{$t('digitalTwin.selectBox')}</div>
     <div class="box-list" bind:this={boxListEl}></div>
     <div class="action-buttons">
-      <button id="getBoxOutBtn" bind:this={getBoxOutBtnEl} disabled>Out</button>
-      <button id="putBoxInBtn" bind:this={putBoxInBtnEl} disabled>In</button>
+      <button id="getBoxOutBtn" bind:this={getBoxOutBtnEl} disabled>{$t('digitalTwin.out')}</button>
+      <button id="putBoxInBtn" bind:this={putBoxInBtnEl} disabled>{$t('digitalTwin.in')}</button>
     </div>
   </div>
 
@@ -1146,7 +1175,7 @@
     <div class="status-item">
       <div class="color-blue"></div>
       <div class="status-count" bind:this={fullCountEl}>0</div>
-      <div class="status-text">: Total</div>
+      <div class="status-text">: {$t('digitalTwin.total')}</div>
     </div>
   </div>
 

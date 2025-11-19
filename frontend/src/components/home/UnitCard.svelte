@@ -1,4 +1,5 @@
 <script>
+  import { t } from "../../lib/i18n";
   let { unit, active = false, hideCount = false, hideArrow = false, onOpen = () => {} } = $props();
 </script>
 
@@ -10,13 +11,13 @@
   <div class="thumb"><img src={unit.image} alt="" loading="lazy" decoding="async" /></div>
 
   <div class="meta">
-    <div class="name">{unit.name}</div>
+    <div class="name">{unit.translatedName || unit.name}</div>
     <div class="id">( ID: {unit.id} )</div>
   </div>
 
   <div class="right">
     <span class="subcount" class:hidden={active || hideCount}>
-      {unit.subcomponents.length} subcomponent{unit.subcomponents.length === 1 ? '' : 's'}
+      {unit.subcomponents.length} {$t('components.subcomponents')}
     </span>
     <svg class="chev" class:hidden={hideArrow} width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

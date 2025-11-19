@@ -3,6 +3,38 @@ import UnitCard from "./UnitCard.svelte";
   import RightDrawer from "./RightDrawer.svelte";
   import { units } from "../../lib/catalog.js";
   import { writable } from "svelte/store";
+  import { t } from "../../lib/i18n";
+
+// Map English component names to translation keys
+const componentNameMap = {
+  "Stepper Motor 57x56mm": "components.stepperMotor",
+  "Proximity Sensor": "components.proximitySensor",
+  "Jetson Orin Nano": "components.jetsonOrinNano",
+  "Greartisan DC 24V": "components.greartisanDC"
+};
+
+// Map unit names to translation keys
+const getUnitNameKey = (name) => {
+  if (name.includes("Conveyor_Unit _1")) return "components.conveyorUnit";
+  if (name.includes("Conveyor_Unit _2")) return "components.conveyorUnit";
+  return null;
+};
+
+const getUnitNumber = (name) => {
+  if (name.includes("_1")) return "1";
+  if (name.includes("_2")) return "2";
+  return "";
+};
+
+// Map status values to translation keys (case-insensitive)
+const statusMap = {
+  "running": "components.status.running",
+  "live": "components.status.live",
+  "online": "components.status.online",
+  "idle": "components.status.idle",
+  "off": "components.status.off",
+  "unknown": "components.status.unknown"
+};
 
 const STATUS_SEQUENCE = ["Running", "Live", "Online", "Idle", "Off"];
 
@@ -97,15 +129,39 @@ const statusStore = createStatusStore();
 
   let statusState = $derived($statusStore);
   let backendOnline = $derived(statusState?.online ?? false);
-  let unitsWithStatus = $derived(catalog.map((unit) => ({
-    ...unit,
-    subcomponents: unit.subcomponents.map((component) => ({
-      ...component,
-      status: backendOnline
-        ? statusState?.statuses?.[component.id] ?? component.defaultStatus ?? "Unknown"
-        : "Unknown",
-    })),
-  })));
+  let unitsWithStatus = $derived(catalog.map((unit) => {
+    // Translate unit name
+    const unitNameKey = getUnitNameKey(unit.name);
+    const unitNumber = getUnitNumber(unit.name);
+    const translatedUnitName = unitNameKey
+      ? $t(unitNameKey).replace('{number}', unitNumber)
+      : unit.name;
+
+    return {
+      ...unit,
+      translatedName: translatedUnitName,
+      subcomponents: unit.subcomponents.map((component) => {
+        const status = backendOnline
+          ? statusState?.statuses?.[component.id] ?? component.defaultStatus ?? "Unknown"
+          : "Unknown";
+
+        // Translate component name
+        const componentNameKey = componentNameMap[component.name];
+        const translatedComponentName = componentNameKey ? $t(componentNameKey) : component.name;
+
+        // Translate status
+        const statusKey = statusMap[status.toLowerCase()];
+        const translatedStatus = statusKey ? $t(statusKey) : status;
+
+        return {
+          ...component,
+          translatedName: translatedComponentName,
+          status: status,
+          translatedStatus: translatedStatus,
+        };
+      }),
+    };
+  }));
 
   let selectedUnit = $derived(unitsWithStatus.find((unit) => unit.id === selectedUnitId) ?? null);
 

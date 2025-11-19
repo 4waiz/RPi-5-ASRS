@@ -17,9 +17,9 @@
   import orangeDigital from "../assets/TopPageIcon/orange-digitaltwin.svg?url";
   import greyComponent from "../assets/TopPageIcon/grey-component.svg?url";
   import orangeComponent from "../assets/TopPageIcon/orange-component.svg?url";
+  import { t } from "../lib/i18n";
 
   const totalErrors = 5;
-  let Names = ["Overview", "Inventory", "Digital Twin", "Components"];
   let Icons = [
     { inactive: greyOverview,  active: orangeOverview },
     { inactive: greyInventory, active: orangeInventory },
@@ -44,12 +44,12 @@
 <div class="main">
   <SideBar AlertsNum={totalErrors} ActivePage={"Home"} />
   <section class="right-con">
-    <TopBar {Names} {Pages} {Icons} bind:activeIndex>
+    <TopBar Names={[$t('home.tabs.overview'), $t('home.tabs.inventory'), $t('home.tabs.digitalTwin'), $t('home.tabs.components')]} {Pages} {Icons} bind:activeIndex>
   <svelte:fragment slot="alerts">
     {#if activeIndex === 0 || activeIndex === 1}
       <div class="alert-section">
-        <SmallAlert Massage="There is no available stock in the Bux 8 to meet the incoming orders." Type="W" Time="12:16" />
-        <SmallAlert Massage="The supplier item with ID 9 has been rejected as it does not meet the quality standards." Type="Alert" Time="10:25" />
+        <SmallAlert Massage={$t('home.alerts.noStockBox8')} Type="W" Time="12:16" />
+        <SmallAlert Massage={$t('home.alerts.supplierRejected')} Type="Alert" Time="10:25" />
       </div>
     {/if}
   </svelte:fragment>

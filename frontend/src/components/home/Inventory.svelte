@@ -1,12 +1,13 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import InventoryImage from '../../assets/inventory/Inventory.png';
+  import { t } from "../../lib/i18n";
 
-  // Define notification cards data
-  let cardNotificationData = $state([
-    { title: "Box 1 retrieved", timestamp: "12:10pm" },
-    { title: "Box 2 retrieved", timestamp: "1:45pm" },
-    { title: "Box 3 retrieved", timestamp: "3:20pm" }
+  // Define notification cards data - using computed titles for translation
+  let cardNotificationData = $derived([
+    { number: "1", timestamp: "12:10pm" },
+    { number: "2", timestamp: "1:45pm" },
+    { number: "3", timestamp: "3:20pm" }
   ]);
 
   // Define colorArray using $state() to make it reactive
@@ -107,28 +108,28 @@
 
 <div class="main">
   <div class="notifications-container">
-    <h2>Live Operations</h2>
+    <h2>{$t('inventory.liveOperations')}</h2>
     <div class="live-operations-container">
       {#each cardNotificationData as notification}
         <!-- NotificationCard component merged inline -->
         <div class="notification-card">
           <div class="icon-container">
-            <svg 
-              class="checkmark" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              class="checkmark"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               stroke-width="2.5"
             >
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          
+
           <div class="content">
-            <h3 class="title">{notification.title}</h3>
-            <p class="timestamp">Done at {notification.timestamp}</p>
+            <h3 class="title">{$t('inventory.boxRetrieved').replace('{number}', notification.number)}</h3>
+            <p class="timestamp">{$t('inventory.doneAt')} {notification.timestamp}</p>
           </div>
         </div>
       {/each}
@@ -136,15 +137,15 @@
     <div class="legend">
       <div class="legend-item">
         <span class="dot full"></span>
-        <span>{fullCount} : Full</span>
+        <span>{fullCount} : {$t('inventory.full')}</span>
       </div>
       <div class="legend-item">
         <span class="dot partially-full"></span>
-        <span>{partiallyFullCount} : Partially full.</span>
+        <span>{partiallyFullCount} : {$t('inventory.partiallyFull')}</span>
       </div>
       <div class="legend-item">
         <span class="dot empty"></span>
-        <span>{emptyCount} : Empty</span>
+        <span>{emptyCount} : {$t('inventory.empty')}</span>
       </div>
     </div>
   </div>

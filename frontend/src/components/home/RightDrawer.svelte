@@ -1,6 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { cubicOut, cubicInOut } from "svelte/easing";
+  import { t } from "../../lib/i18n";
   // Component state passed in from parent.
   let { open = false, unit = null, onClose = () => {} } = $props();
 
@@ -24,7 +25,7 @@
       <div class="head">
         {#if unit?.image}<img src={unit.image} alt="" />{/if}
         <div>
-          <div class="title">{unit?.name ?? ""}</div>
+          <div class="title">{unit?.translatedName || unit?.name || ""}</div>
           <div class="subtitle">{unit ? `( ID: ${unit.id} )` : ""}</div>
         </div>
       </div>
@@ -40,11 +41,11 @@
         <div class="row">
           {#if component.image}<img src={component.image} alt="" />{/if}
           <div class="meta">
-            <div class="name">{component.name}</div>
+            <div class="name">{component.translatedName || component.name}</div>
             <div class="id">{component.id}</div>
           </div>
           <div class="status {component.status} {isNumeric(component.status) ? "numeric" : ""}">
-            {component.status ?? "Unknown"}
+            {component.translatedStatus || component.status || $t('components.status.unknown')}
           </div>
         </div>
       {/each}
