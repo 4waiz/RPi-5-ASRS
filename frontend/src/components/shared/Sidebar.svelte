@@ -5,14 +5,17 @@
   import AIAssistant from '../../pages/AIAssistant.svelte';
   import Setting from '../../pages/Setting.svelte';
   import EdgeLogo from '../../assets/Icons/Edge_logo.png?url';
+  import { t } from '../../lib/i18n';
 
   let { AlertsNum = 0, ActivePage = "Home" } = $props();
 
   let dropdownOpen = $state(false);
   let showPasswordModal = $state(false);
+  let modalType = $state(''); // 'editMode' or 'settings'
   let password = $state('');
   let passwordError = $state('');
   let showKeyboard = $state(false);
+  let capsLock = $state(false); // Start with lowercase
 
   const navigateTo = (page) => {
     switch(page) {
@@ -26,7 +29,11 @@
         myVariable.set(AIAssistant);
         break;
       case 'Settings':
-        myVariable.set(Setting);
+        // Show password modal for Settings
+        showPasswordModal = true;
+        modalType = 'settings';
+        password = '';
+        passwordError = '';
         break;
     }
   };
@@ -38,6 +45,7 @@
   const selectEditMode = () => {
     dropdownOpen = false;
     showPasswordModal = true;
+    modalType = 'editMode';
     password = '';
     passwordError = '';
   };
@@ -47,6 +55,8 @@
     password = '';
     passwordError = '';
     showKeyboard = false;
+    capsLock = false; // Reset to lowercase
+    modalType = '';
   };
 
   const handlePasswordSubmit = () => {
@@ -54,10 +64,19 @@
     const CORRECT_PASSWORD = 'changeme';
 
     if (password === CORRECT_PASSWORD) {
-      currentMode.set('Edit Mode');
+      if (modalType === 'editMode') {
+        currentMode.set('Edit Mode');
+      } else if (modalType === 'settings') {
+        myVariable.set(Setting);
+      }
       closePasswordModal();
     } else {
-      passwordError = 'Incorrect password. Please try again.';
+      // Set error based on modal type
+      if (modalType === 'editMode') {
+        passwordError = $t('sidebar.editPasswordModal.error');
+      } else if (modalType === 'settings') {
+        passwordError = $t('sidebar.settingsPasswordModal.error');
+      }
       password = '';
     }
   };
@@ -80,8 +99,13 @@
       password = password.slice(0, -1);
     } else if (key === 'clear') {
       password = '';
+    } else if (key === 'capslock') {
+      capsLock = !capsLock;
+      return; // Don't clear error for caps lock toggle
     } else {
-      password += key;
+      // Apply caps lock transformation for letters
+      const finalKey = capsLock ? key.toUpperCase() : key.toLowerCase();
+      password += finalKey;
     }
     passwordError = ''; // Clear error when typing
   };
@@ -179,7 +203,7 @@
   <div class="modal-overlay" onclick={closePasswordModal}>
     <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
-        <h2>Enter Password</h2>
+        <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
         <button class="close-btn" onclick={closePasswordModal}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -189,7 +213,7 @@
       </div>
 
       <div class="modal-body">
-        <p class="modal-description">Please enter the password to switch to Edit Mode</p>
+        <p class="modal-description">{modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}</p>
 
         <div class="input-group">
           <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -201,7 +225,7 @@
             class="password-input"
             class:error={passwordError}
             bind:value={password}
-            placeholder="Enter password"
+            placeholder={modalType === 'editMode' ? $t('sidebar.editPasswordModal.placeholder') : $t('sidebar.settingsPasswordModal.placeholder')}
             onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
             onfocus={showVirtualKeyboard}
             onclick={showVirtualKeyboard}
@@ -222,8 +246,8 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" onclick={closePasswordModal}>Cancel</button>
-        <button class="btn-submit" onclick={handlePasswordSubmit}>Submit</button>
+        <button class="btn-cancel" onclick={closePasswordModal}>{$t('common.cancel')}</button>
+        <button class="btn-submit" onclick={handlePasswordSubmit}>{$t('common.submit')}</button>
       </div>
     </div>
   </div>
@@ -245,27 +269,27 @@
       <button class="key" onclick={() => handleKeyPress('0')}>0</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('Q')}>Q</button>
-      <button class="key" onclick={() => handleKeyPress('W')}>W</button>
-      <button class="key" onclick={() => handleKeyPress('E')}>E</button>
-      <button class="key" onclick={() => handleKeyPress('R')}>R</button>
-      <button class="key" onclick={() => handleKeyPress('T')}>T</button>
-      <button class="key" onclick={() => handleKeyPress('Y')}>Y</button>
-      <button class="key" onclick={() => handleKeyPress('U')}>U</button>
-      <button class="key" onclick={() => handleKeyPress('I')}>I</button>
-      <button class="key" onclick={() => handleKeyPress('O')}>O</button>
-      <button class="key" onclick={() => handleKeyPress('P')}>P</button>
+      <button class="key" onclick={() => handleKeyPress('q')}>{capsLock ? 'Q' : 'q'}</button>
+      <button class="key" onclick={() => handleKeyPress('w')}>{capsLock ? 'W' : 'w'}</button>
+      <button class="key" onclick={() => handleKeyPress('e')}>{capsLock ? 'E' : 'e'}</button>
+      <button class="key" onclick={() => handleKeyPress('r')}>{capsLock ? 'R' : 'r'}</button>
+      <button class="key" onclick={() => handleKeyPress('t')}>{capsLock ? 'T' : 't'}</button>
+      <button class="key" onclick={() => handleKeyPress('y')}>{capsLock ? 'Y' : 'y'}</button>
+      <button class="key" onclick={() => handleKeyPress('u')}>{capsLock ? 'U' : 'u'}</button>
+      <button class="key" onclick={() => handleKeyPress('i')}>{capsLock ? 'I' : 'i'}</button>
+      <button class="key" onclick={() => handleKeyPress('o')}>{capsLock ? 'O' : 'o'}</button>
+      <button class="key" onclick={() => handleKeyPress('p')}>{capsLock ? 'P' : 'p'}</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('A')}>A</button>
-      <button class="key" onclick={() => handleKeyPress('S')}>S</button>
-      <button class="key" onclick={() => handleKeyPress('D')}>D</button>
-      <button class="key" onclick={() => handleKeyPress('F')}>F</button>
-      <button class="key" onclick={() => handleKeyPress('G')}>G</button>
-      <button class="key" onclick={() => handleKeyPress('H')}>H</button>
-      <button class="key" onclick={() => handleKeyPress('J')}>J</button>
-      <button class="key" onclick={() => handleKeyPress('K')}>K</button>
-      <button class="key" onclick={() => handleKeyPress('L')}>L</button>
+      <button class="key" onclick={() => handleKeyPress('a')}>{capsLock ? 'A' : 'a'}</button>
+      <button class="key" onclick={() => handleKeyPress('s')}>{capsLock ? 'S' : 's'}</button>
+      <button class="key" onclick={() => handleKeyPress('d')}>{capsLock ? 'D' : 'd'}</button>
+      <button class="key" onclick={() => handleKeyPress('f')}>{capsLock ? 'F' : 'f'}</button>
+      <button class="key" onclick={() => handleKeyPress('g')}>{capsLock ? 'G' : 'g'}</button>
+      <button class="key" onclick={() => handleKeyPress('h')}>{capsLock ? 'H' : 'h'}</button>
+      <button class="key" onclick={() => handleKeyPress('j')}>{capsLock ? 'J' : 'j'}</button>
+      <button class="key" onclick={() => handleKeyPress('k')}>{capsLock ? 'K' : 'k'}</button>
+      <button class="key" onclick={() => handleKeyPress('l')}>{capsLock ? 'L' : 'l'}</button>
       <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke-width="2"/>
@@ -275,13 +299,23 @@
       </button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('Z')}>Z</button>
-      <button class="key" onclick={() => handleKeyPress('X')}>X</button>
-      <button class="key" onclick={() => handleKeyPress('C')}>C</button>
-      <button class="key" onclick={() => handleKeyPress('V')}>V</button>
-      <button class="key" onclick={() => handleKeyPress('B')}>B</button>
-      <button class="key" onclick={() => handleKeyPress('N')}>N</button>
-      <button class="key" onclick={() => handleKeyPress('M')}>M</button>
+      <button
+        class="key key-capslock"
+        class:active={capsLock}
+        onclick={() => handleKeyPress('capslock')}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3l-8 8h5v6h6v-6h5z" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="5" y1="21" x2="19" y2="21" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="key" onclick={() => handleKeyPress('z')}>{capsLock ? 'Z' : 'z'}</button>
+      <button class="key" onclick={() => handleKeyPress('x')}>{capsLock ? 'X' : 'x'}</button>
+      <button class="key" onclick={() => handleKeyPress('c')}>{capsLock ? 'C' : 'c'}</button>
+      <button class="key" onclick={() => handleKeyPress('v')}>{capsLock ? 'V' : 'v'}</button>
+      <button class="key" onclick={() => handleKeyPress('b')}>{capsLock ? 'B' : 'b'}</button>
+      <button class="key" onclick={() => handleKeyPress('n')}>{capsLock ? 'N' : 'n'}</button>
+      <button class="key" onclick={() => handleKeyPress('m')}>{capsLock ? 'M' : 'm'}</button>
       <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
     </div>
   </div>
@@ -490,13 +524,16 @@
     width: 90%;
     max-width: 420px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: modalSlide 0.3s ease-out;
     overflow: hidden;
   }
 
+  .modal-content:not(.with-keyboard) {
+    animation: modalSlide 0.3s ease-out;
+  }
+
   .modal-content.with-keyboard {
+    animation: modalSlideWithKeyboard 0.3s ease-out;
     transform: translateY(-150px);
-    transition: transform 0.3s ease;
   }
 
   @keyframes modalSlide {
@@ -507,6 +544,17 @@
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes modalSlideWithKeyboard {
+    from {
+      opacity: 0;
+      transform: translateY(-170px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-150px) scale(1);
     }
   }
 
@@ -918,6 +966,31 @@
 
   .key-backspace svg,
   .key-clear svg {
+    stroke: white;
+  }
+
+  /* Caps Lock Button */
+  .key-capslock {
+    background: #757575;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .key-capslock:hover {
+    background: #616161;
+    transform: scale(1.05);
+  }
+
+  .key-capslock.active {
+    background: #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+  }
+
+  .key-capslock.active:hover {
+    background: #45a049;
+  }
+
+  .key-capslock svg {
     stroke: white;
   }
 </style>
