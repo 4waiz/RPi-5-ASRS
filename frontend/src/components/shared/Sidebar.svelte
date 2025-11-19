@@ -1,22 +1,18 @@
 <script>
-  import { myVariable } from '../../store.js';
+  import { myVariable, currentMode } from '../../store.js';
   import Home from '../../pages/Home.svelte';
   import Alerts from '../../pages/Alerts.svelte';
   import AIAssistant from '../../pages/AIAssistant.svelte';
   import Setting from '../../pages/Setting.svelte';
   import EdgeLogo from '../../assets/Icons/Edge_logo.png?url';
-  import { t } from '../../lib/i18n';
 
   let { AlertsNum = 0, ActivePage = "Home" } = $props();
 
   let dropdownOpen = $state(false);
   let showPasswordModal = $state(false);
-  let modalType = $state(''); // 'editMode' or 'settings'
   let password = $state('');
   let passwordError = $state('');
-  let currentMode = $state('live');
   let showKeyboard = $state(false);
-  let capsLock = $state(false); // Start with lowercase letters
 
   const navigateTo = (page) => {
     switch(page) {
@@ -30,11 +26,7 @@
         myVariable.set(AIAssistant);
         break;
       case 'Settings':
-        // Show password modal before navigating to Settings
-        showPasswordModal = true;
-        modalType = 'settings';
-        password = '';
-        passwordError = '';
+        myVariable.set(Setting);
         break;
     }
   };
@@ -46,18 +38,15 @@
   const selectEditMode = () => {
     dropdownOpen = false;
     showPasswordModal = true;
-    modalType = 'editMode';
     password = '';
     passwordError = '';
   };
 
   const closePasswordModal = () => {
     showPasswordModal = false;
-    modalType = '';
     password = '';
     passwordError = '';
     showKeyboard = false;
-    capsLock = false; // Reset to lowercase when closing
   };
 
   const handlePasswordSubmit = () => {
@@ -65,22 +54,16 @@
     const CORRECT_PASSWORD = 'changeme';
 
     if (password === CORRECT_PASSWORD) {
-      if (modalType === 'editMode') {
-        currentMode = 'edit';
-      } else if (modalType === 'settings') {
-        myVariable.set(Setting);
-      }
+      currentMode.set('Edit Mode');
       closePasswordModal();
     } else {
-      passwordError = modalType === 'editMode'
-        ? $t('sidebar.editPasswordModal.error')
-        : $t('sidebar.settingsPasswordModal.error');
+      passwordError = 'Incorrect password. Please try again.';
       password = '';
     }
   };
 
   const selectLiveMode = () => {
-    currentMode = 'live';
+    currentMode.set('LIVE Mode');
     dropdownOpen = false;
   };
 
@@ -97,13 +80,8 @@
       password = password.slice(0, -1);
     } else if (key === 'clear') {
       password = '';
-    } else if (key === 'capslock') {
-      capsLock = !capsLock;
-      return; // Don't clear error or add to password
     } else {
-      // Apply caps lock - if caps lock is on, use uppercase, otherwise lowercase
-      const char = capsLock ? key.toUpperCase() : key.toLowerCase();
-      password += char;
+      password += key;
     }
     passwordError = ''; // Clear error when typing
   };
@@ -122,8 +100,8 @@
 
   <div class="mode-selector-container">
     <button class="mode-selector" onclick={toggleDropdown}>
-      <div class="mode-dot" class:edit-mode={currentMode === 'edit'}></div>
-      <span class="mode-text">{currentMode === 'live' ? $t('sidebar.liveMode') : $t('sidebar.editMode')}</span>
+      <div class="mode-dot" class:edit-mode={$currentMode === 'Edit Mode'}></div>
+      <span class="mode-text">{$currentMode}</span>
       <span class="dropdown-arrow" class:open={dropdownOpen}>▼</span>
     </button>
 
@@ -131,12 +109,12 @@
       <div class="mode-dropdown">
         <button
           class="mode-option"
-          class:active={currentMode === 'live'}
+          class:active={$currentMode === 'LIVE Mode'}
           onclick={selectLiveMode}
         >
           <div class="option-dot live"></div>
-          <span>{$t('sidebar.liveMode')}</span>
-          {#if currentMode === 'live'}
+          <span>LIVE Mode</span>
+          {#if $currentMode === 'LIVE Mode'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -144,12 +122,12 @@
         </button>
         <button
           class="mode-option"
-          class:active={currentMode === 'edit'}
+          class:active={$currentMode === 'Edit Mode'}
           onclick={selectEditMode}
         >
           <div class="option-dot edit"></div>
-          <span>{$t('sidebar.editMode')}</span>
-          {#if currentMode === 'edit'}
+          <span>Edit Mode</span>
+          {#if $currentMode === 'Edit Mode'}
             <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="20 6 9 17 4 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -164,14 +142,14 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
       </svg>
-      <span>{$t('sidebar.home')}</span>
+      <span>Home</span>
     </div>
 
     <div class="nav-item" class:active={ActivePage === "Alerts"} onclick={() => navigateTo('Alerts')}>
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
       </svg>
-      <span>{$t('sidebar.alerts')}</span>
+      <span>Alerts</span>
       <div class="badge-group">
         {#if AlertsNum > 0}
           <div class="badge alert">{AlertsNum}</div>
@@ -183,7 +161,7 @@
       <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
       </svg>
-      <span>{$t('sidebar.aiAssistant')}</span>
+      <span>AI Assistant</span>
     </div>
   </nav>
 
@@ -192,16 +170,16 @@
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
     </svg>
-    <span>{$t('sidebar.settings')}</span>
+    <span>Settings</span>
   </div>
 </div>
 
 <!-- Password Modal -->
 {#if showPasswordModal}
   <div class="modal-overlay" onclick={closePasswordModal}>
-    <div class="modal-content" class:with-keyboard={showKeyboard} style:animation={showKeyboard ? 'modalSlideWithKeyboard 0.3s ease-out' : 'modalSlide 0.3s ease-out'} onclick={(e) => e.stopPropagation()}>
+    <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
-        <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
+        <h2>Enter Password</h2>
         <button class="close-btn" onclick={closePasswordModal}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
@@ -211,7 +189,7 @@
       </div>
 
       <div class="modal-body">
-        <p class="modal-description">{modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}</p>
+        <p class="modal-description">Please enter the password to switch to Edit Mode</p>
 
         <div class="input-group">
           <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -223,7 +201,7 @@
             class="password-input"
             class:error={passwordError}
             bind:value={password}
-            placeholder={modalType === 'editMode' ? $t('sidebar.editPasswordModal.placeholder') : $t('sidebar.settingsPasswordModal.placeholder')}
+            placeholder="Enter password"
             onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
             onfocus={showVirtualKeyboard}
             onclick={showVirtualKeyboard}
@@ -244,8 +222,8 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" onclick={closePasswordModal}>{$t('common.cancel')}</button>
-        <button class="btn-submit" onclick={handlePasswordSubmit}>{$t('common.submit')}</button>
+        <button class="btn-cancel" onclick={closePasswordModal}>Cancel</button>
+        <button class="btn-submit" onclick={handlePasswordSubmit}>Submit</button>
       </div>
     </div>
   </div>
@@ -267,27 +245,27 @@
       <button class="key" onclick={() => handleKeyPress('0')}>0</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('Q')}>{capsLock ? 'Q' : 'q'}</button>
-      <button class="key" onclick={() => handleKeyPress('W')}>{capsLock ? 'W' : 'w'}</button>
-      <button class="key" onclick={() => handleKeyPress('E')}>{capsLock ? 'E' : 'e'}</button>
-      <button class="key" onclick={() => handleKeyPress('R')}>{capsLock ? 'R' : 'r'}</button>
-      <button class="key" onclick={() => handleKeyPress('T')}>{capsLock ? 'T' : 't'}</button>
-      <button class="key" onclick={() => handleKeyPress('Y')}>{capsLock ? 'Y' : 'y'}</button>
-      <button class="key" onclick={() => handleKeyPress('U')}>{capsLock ? 'U' : 'u'}</button>
-      <button class="key" onclick={() => handleKeyPress('I')}>{capsLock ? 'I' : 'i'}</button>
-      <button class="key" onclick={() => handleKeyPress('O')}>{capsLock ? 'O' : 'o'}</button>
-      <button class="key" onclick={() => handleKeyPress('P')}>{capsLock ? 'P' : 'p'}</button>
+      <button class="key" onclick={() => handleKeyPress('Q')}>Q</button>
+      <button class="key" onclick={() => handleKeyPress('W')}>W</button>
+      <button class="key" onclick={() => handleKeyPress('E')}>E</button>
+      <button class="key" onclick={() => handleKeyPress('R')}>R</button>
+      <button class="key" onclick={() => handleKeyPress('T')}>T</button>
+      <button class="key" onclick={() => handleKeyPress('Y')}>Y</button>
+      <button class="key" onclick={() => handleKeyPress('U')}>U</button>
+      <button class="key" onclick={() => handleKeyPress('I')}>I</button>
+      <button class="key" onclick={() => handleKeyPress('O')}>O</button>
+      <button class="key" onclick={() => handleKeyPress('P')}>P</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('A')}>{capsLock ? 'A' : 'a'}</button>
-      <button class="key" onclick={() => handleKeyPress('S')}>{capsLock ? 'S' : 's'}</button>
-      <button class="key" onclick={() => handleKeyPress('D')}>{capsLock ? 'D' : 'd'}</button>
-      <button class="key" onclick={() => handleKeyPress('F')}>{capsLock ? 'F' : 'f'}</button>
-      <button class="key" onclick={() => handleKeyPress('G')}>{capsLock ? 'G' : 'g'}</button>
-      <button class="key" onclick={() => handleKeyPress('H')}>{capsLock ? 'H' : 'h'}</button>
-      <button class="key" onclick={() => handleKeyPress('J')}>{capsLock ? 'J' : 'j'}</button>
-      <button class="key" onclick={() => handleKeyPress('K')}>{capsLock ? 'K' : 'k'}</button>
-      <button class="key" onclick={() => handleKeyPress('L')}>{capsLock ? 'L' : 'l'}</button>
+      <button class="key" onclick={() => handleKeyPress('A')}>A</button>
+      <button class="key" onclick={() => handleKeyPress('S')}>S</button>
+      <button class="key" onclick={() => handleKeyPress('D')}>D</button>
+      <button class="key" onclick={() => handleKeyPress('F')}>F</button>
+      <button class="key" onclick={() => handleKeyPress('G')}>G</button>
+      <button class="key" onclick={() => handleKeyPress('H')}>H</button>
+      <button class="key" onclick={() => handleKeyPress('J')}>J</button>
+      <button class="key" onclick={() => handleKeyPress('K')}>K</button>
+      <button class="key" onclick={() => handleKeyPress('L')}>L</button>
       <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke-width="2"/>
@@ -297,20 +275,14 @@
       </button>
     </div>
     <div class="keyboard-row">
-      <button class="key key-capslock" class:active={capsLock} onclick={() => handleKeyPress('capslock')}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M12 2l8 8h-5v8h-6v-8H4z" stroke-width="2" stroke-linejoin="round"/>
-          <line x1="6" y1="22" x2="18" y2="22" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <button class="key" onclick={() => handleKeyPress('Z')}>{capsLock ? 'Z' : 'z'}</button>
-      <button class="key" onclick={() => handleKeyPress('X')}>{capsLock ? 'X' : 'x'}</button>
-      <button class="key" onclick={() => handleKeyPress('C')}>{capsLock ? 'C' : 'c'}</button>
-      <button class="key" onclick={() => handleKeyPress('V')}>{capsLock ? 'V' : 'v'}</button>
-      <button class="key" onclick={() => handleKeyPress('B')}>{capsLock ? 'B' : 'b'}</button>
-      <button class="key" onclick={() => handleKeyPress('N')}>{capsLock ? 'N' : 'n'}</button>
-      <button class="key" onclick={() => handleKeyPress('M')}>{capsLock ? 'M' : 'm'}</button>
-      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>{$t('settings.passwordModal.clear')}</button>
+      <button class="key" onclick={() => handleKeyPress('Z')}>Z</button>
+      <button class="key" onclick={() => handleKeyPress('X')}>X</button>
+      <button class="key" onclick={() => handleKeyPress('C')}>C</button>
+      <button class="key" onclick={() => handleKeyPress('V')}>V</button>
+      <button class="key" onclick={() => handleKeyPress('B')}>B</button>
+      <button class="key" onclick={() => handleKeyPress('N')}>N</button>
+      <button class="key" onclick={() => handleKeyPress('M')}>M</button>
+      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
     </div>
   </div>
 {/if}
@@ -518,11 +490,13 @@
     width: 90%;
     max-width: 420px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlide 0.3s ease-out;
     overflow: hidden;
   }
 
   .modal-content.with-keyboard {
     transform: translateY(-150px);
+    transition: transform 0.3s ease;
   }
 
   @keyframes modalSlide {
@@ -533,17 +507,6 @@
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes modalSlideWithKeyboard {
-    from {
-      opacity: 0;
-      transform: translateY(-170px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(-150px) scale(1);
     }
   }
 
@@ -955,32 +918,6 @@
 
   .key-backspace svg,
   .key-clear svg {
-    stroke: white;
-  }
-
-  .key-capslock {
-    background: #9E9E9E;
-    color: white;
-    min-width: 52px;
-    padding: 0 8px;
-    transition: all 0.2s ease;
-  }
-
-  .key-capslock.active {
-    background: #4CAF50;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-  }
-
-  .key-capslock:hover {
-    background: #757575;
-    transform: scale(1.05);
-  }
-
-  .key-capslock.active:hover {
-    background: #45a049;
-  }
-
-  .key-capslock svg {
     stroke: white;
   }
 </style>
