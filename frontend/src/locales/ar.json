@@ -20,30 +20,12 @@
       "description": "الرجاء إدخال كلمة المرور للتبديل إلى وضع التحرير",
       "placeholder": "أدخل كلمة المرور",
       "error": "كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى."
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     },
     "settingsPasswordModal": {
       "title": "أدخل كلمة المرور",
       "description": "الرجاء إدخال كلمة المرور للوصول إلى الإعدادات",
       "placeholder": "أدخل كلمة المرور",
       "error": "كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى."
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
   },
   "home": {
