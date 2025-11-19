@@ -70,6 +70,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       if (modalType === 'editMode') {
         currentMode = 'edit';
       } else if (modalType === 'settings') {
@@ -80,6 +81,12 @@
       passwordError = modalType === 'editMode'
         ? $t('sidebar.editPasswordModal.error')
         : $t('sidebar.settingsPasswordModal.error');
+=======
+      currentMode = 'edit';
+      closePasswordModal();
+    } else {
+      passwordError = $t('sidebar.editPasswordModal.error');
+>>>>>>> Stashed changes
 =======
       currentMode = 'edit';
       closePasswordModal();
@@ -241,7 +248,11 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
+=======
+        <h2>{$t('sidebar.editPasswordModal.title')}</h2>
+>>>>>>> Stashed changes
 =======
         <h2>{$t('sidebar.editPasswordModal.title')}</h2>
 >>>>>>> Stashed changes
@@ -271,7 +282,11 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <p class="modal-description">{modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}</p>
+=======
+        <p class="modal-description">{$t('sidebar.editPasswordModal.description')}</p>
+>>>>>>> Stashed changes
 =======
         <p class="modal-description">{$t('sidebar.editPasswordModal.description')}</p>
 >>>>>>> Stashed changes
@@ -303,7 +318,11 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             placeholder={modalType === 'editMode' ? $t('sidebar.editPasswordModal.placeholder') : $t('sidebar.settingsPasswordModal.placeholder')}
+=======
+            placeholder={$t('sidebar.editPasswordModal.placeholder')}
+>>>>>>> Stashed changes
 =======
             placeholder={$t('sidebar.editPasswordModal.placeholder')}
 >>>>>>> Stashed changes
@@ -418,6 +437,9 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
