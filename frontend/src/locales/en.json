@@ -24,12 +24,15 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     },
     "settingsPasswordModal": {
       "title": "Enter Password",
       "description": "Please enter the password to access Settings",
       "placeholder": "Enter password",
       "error": "Incorrect password. Please try again."
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
