@@ -67,15 +67,15 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace; 
     container.appendChild(renderer.domElement);
 
-    // Professional Lighting Setup (3-Point Light)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Soft fill
+    // Professional Lighting Setup (3-Point Light) - Brightened
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Increased from 0.6 to 1.2
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8); // Increased from 1.0 to 1.8
     keyLight.position.set(1, 2, 2); // Top-right
     scene.add(keyLight);
-    
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.5);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.8); // Increased from 0.5 to 0.8
     rimLight.position.set(-2, 2, -2); // Back-left (adds depth)
     scene.add(rimLight);
   }

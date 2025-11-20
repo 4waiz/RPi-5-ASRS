@@ -509,6 +509,63 @@
           <input class="timestamp-input" value={restoreTimestamp} readonly />
         </div>
       </div>
+
+      <!-- Backup Information -->
+      <div class="backup-info-grid">
+        <div class="info-card">
+          <div class="info-icon-wrapper">
+            <svg class="info-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="none" stroke="currentColor" stroke-width="2"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">{$t('settings.backupSize')}</span>
+            <span class="info-value">2.4 MB</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon-wrapper">
+            <svg class="info-icon" viewBox="0 0 24 24" width="18" height="18">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+              <polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">{$t('settings.backupStatus')}</span>
+            <span class="info-value status-ready">{$t('settings.ready')}</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon-wrapper">
+            <svg class="info-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="9" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">{$t('settings.totalBackups')}</span>
+            <span class="info-value">12</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon-wrapper">
+            <svg class="info-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M9 11l3 3 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">{$t('settings.autoBackup')}</span>
+            <span class="info-value status-enabled">{$t('settings.enabled')}</span>
+          </div>
+        </div>
+      </div>
     </section>
     </div>
   </div>
@@ -691,6 +748,27 @@
   /* Arabic font support */
   :global(html[lang="ar"] body) {
     font-family: "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    direction: rtl;
+  }
+
+  :global(html[lang="ar"]) .page {
+    direction: rtl;
+  }
+
+  :global(html[lang="ar"]) .settings-shell {
+    direction: rtl;
+  }
+
+  :global(html[lang="ar"]) .content-grid {
+    direction: rtl;
+  }
+
+  :global(html[lang="ar"]) .card {
+    direction: rtl;
+  }
+
+  :global(html[lang="ar"]) .info-card {
+    direction: rtl;
   }
 
   .page {
@@ -710,10 +788,12 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px 24px;
+    gap: 6px;
+    padding: 8px 14px;
     max-height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
+    max-width: 1100px;
+    margin: 0 auto;
   }
 
   /* Compact Header */
@@ -764,7 +844,7 @@
   .content-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 6px;
     width: 100%;
     flex: 1;
     align-content: start;
@@ -805,6 +885,7 @@
   }
   .card-backup {
     grid-area: backup;
+    margin-top: 4px;
   }
 
   /* Compact Card */
@@ -812,10 +893,10 @@
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 14px 16px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     min-height: 0;
     overflow: hidden;
@@ -1179,6 +1260,92 @@
     font-size: 11px;
     color: var(--secondary);
     font-family: "Inter", monospace;
+  }
+
+  /* Backup Information Grid */
+  .backup-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .info-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--brand);
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F0 100%);
+  }
+
+  .info-icon-wrapper {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--brand-light) 0%, rgba(229, 72, 23, 0.05) 100%);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover .info-icon-wrapper {
+    background: linear-gradient(135deg, var(--brand) 0%, #F4511E 100%);
+  }
+
+  .info-icon {
+    color: var(--brand);
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover .info-icon {
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .info-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+
+  .info-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+
+  .status-ready {
+    color: #10B981;
+  }
+
+  .status-enabled {
+    color: #3B82F6;
   }
 
   /* Modal Styles */
@@ -1610,6 +1777,10 @@
         "logs"
         "backup";
       gap: 12px;
+    }
+
+    .backup-info-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
