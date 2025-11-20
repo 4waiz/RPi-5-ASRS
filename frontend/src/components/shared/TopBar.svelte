@@ -68,10 +68,6 @@
     transition: all 0.2s ease;
 }
 
-.tab:hover {
-    background-color: #e0e0e0;
-}
-
 .tab-active {
     border-top: 2px solid #000;
     border-right: 2px solid #000;
@@ -100,10 +96,6 @@
     display: block;
     flex-shrink: 0;
     transition: transform 0.2s ease;
-}
-
-.tab:hover .tab-icon {
-    transform: scale(1.1);
 }
 
 /* Overview tab - Slide up animation */

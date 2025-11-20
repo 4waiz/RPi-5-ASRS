@@ -79,11 +79,6 @@
     white-space: nowrap;
   }
 
-  .filter-btn:hover {
-    background: #F5F5F5;
-    border-color: #BDBDBD;
-  }
-
   .filter-btn.active {
     background: #FF5722;
     color: white;
@@ -127,11 +122,6 @@
     white-space: nowrap;
   }
 
-  .diagnosis-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-  }
-
   .voice-btn {
     padding: 1rem 1.75rem;
     background: linear-gradient(135deg, #00C853 0%, #00897B 100%);
@@ -147,11 +137,6 @@
     transition: all 0.2s;
     box-shadow: 0 3px 10px rgba(0, 200, 83, 0.3);
     white-space: nowrap;
-  }
-
-  .voice-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4);
   }
 
   @media (max-width: 1024px) {

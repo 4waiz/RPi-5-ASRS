@@ -522,12 +522,6 @@
     text-transform: capitalize;
   }
 
-  .filter-tab:hover {
-    background: rgba(255, 107, 53, 0.05);
-    border-color: #FF6B35;
-    color: #FF6B35;
-  }
-
   .filter-tab.active {
     background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     color: #ffffff;
@@ -563,20 +557,10 @@
     box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
   }
 
-  .diagnosis-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
-  }
-
   .voice-btn {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     box-shadow: 0 2px 6px rgba(17, 153, 142, 0.25);
-  }
-
-  .voice-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(17, 153, 142, 0.35);
   }
 
   /* Compact Summary Cards - Single Horizontal Line */
@@ -599,11 +583,6 @@
     transition: all 0.2s ease;
     flex: 1;
     min-width: 0;
-  }
-
-  .summary-card:hover {
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
   }
 
   .summary-card.critical {
@@ -696,10 +675,6 @@
     color: #fff;
     font-weight: 600;
     cursor: pointer;
-  }
-
-  .retry-btn:hover {
-    background: #e64a19;
   }
 
   @media (max-width: 1024px) {

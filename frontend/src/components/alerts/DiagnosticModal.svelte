@@ -278,11 +278,6 @@
     text-align: center;
   }
 
-  .option-button:hover {
-    border-color: #FF5722;
-    background: #FFF3E0;
-  }
-
   .option-button.selected {
     border-color: #FF5722;
     background: #FF5722;
@@ -315,10 +310,6 @@
     background: #424242;
     color: white;
     border: none;
-  }
-
-  .footer-button.next:hover:not(:disabled) {
-    background: #212121;
   }
 
   .footer-button:disabled {

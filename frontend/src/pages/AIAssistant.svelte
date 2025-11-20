@@ -446,17 +446,11 @@
         cursor: pointer;
         font-weight: bold;
     }
-    button:hover {
-        background: #ff923a;
-    }
     .icon-btn {
         padding: 0.5rem; 
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-    .icon-btn:hover {
-        background: #ff923a;
     }
     .icon-btn img {
         width: 24px;  
@@ -480,9 +474,6 @@
         font-family: "Poppins", sans-serif;
         font-size: 0.8rem;
         transition: all 0.2s ease-in-out;
-    }
-    .lang-btn:hover {
-        background: #e0e0e0;
     }
     .lang-btn.active {
         background: #ff7a1a;

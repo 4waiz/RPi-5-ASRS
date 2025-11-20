@@ -31,7 +31,7 @@
     box-shadow:0 2px 1px rgba(0,0,0,.04),0 16px 24px rgba(0,0,0,.05);text-align:left;cursor:pointer;
     transition:border 160ms ease, box-shadow 160ms ease, transform 120ms ease;
     touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0.08);user-select:none;caret-color:transparent}
-  .unit-card:hover{border-color:#e5e5e5}
+  
   .unit-card:active{transform:scale(.995)}
   .unit-card.active{border:2px solid #ff5b2e;box-shadow:0 0 0 2px rgba(255,91,46,0.18)}
   .thumb{width:92px;height:92px;border-radius:16px;background:#f4f4f4;display:grid;place-items:center;overflow:hidden}

@@ -323,5 +323,5 @@
     background-color: rgba(0, 0, 0, 0);
     transition: all 0.2s ease;
   }
-  .manage-btn:hover { background-color: rgba(0, 0, 0, 0.05); }
+
 </style>

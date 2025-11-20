@@ -67,11 +67,6 @@
     border: 2px solid transparent;
   }
 
-  .slot:hover {
-    transform: scale(1.1);
-    border-color: #FF5722;
-  }
-
   .slot.full {
     background: #4CAF50;
   }

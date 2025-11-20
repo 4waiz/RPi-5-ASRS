@@ -3,7 +3,11 @@
     "allow": [
       "Bash(python -m pip install:*)",
       "Bash(python -m pip:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(node test-hash.js:*)",
+      "Bash(node -e:*)",
+      "Bash(dir:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

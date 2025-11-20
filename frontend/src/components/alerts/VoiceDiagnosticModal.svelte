@@ -802,11 +802,6 @@
     z-index: 1;
   }
 
-  .close-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-  }
-
   .close-btn:active {
     transform: scale(0.95);
     transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -846,11 +841,6 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
-  }
-
-  .ptt-button:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 20px 40px rgba(255, 107, 53, 0.45), 0 8px 16px rgba(255, 107, 53, 0.25);
   }
 
   .ptt-button:active:not(:disabled),
@@ -964,12 +954,6 @@
     font-weight: 500;
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 0 2px 6px rgba(255, 107, 53, 0.25);
-  }
-
-  .retry-btn:hover {
-    background: #F7931E;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(255, 107, 53, 0.35);
   }
 
   .retry-btn:active {
@@ -1174,11 +1158,6 @@
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .toggle-btn:hover {
-    color: #374151;
-    background: #E5E7EB;
-  }
-
   .toggle-btn.active {
     background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     color: white;
@@ -1255,12 +1234,6 @@
     box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
   }
 
-  .stop-speech-btn:hover {
-    background: #B91C1C;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-  }
-
   .stop-speech-btn:active {
     transform: translateY(0);
     transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -1280,11 +1253,6 @@
     font-weight: 500;
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 0 4px 14px rgba(255, 107, 53, 0.35);
-  }
-
-  .replay-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 22px rgba(255, 107, 53, 0.45);
   }
 
   .replay-btn:active {
@@ -1363,11 +1331,6 @@
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     width: 100%;
     box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
-  }
-
-  .new-query-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
   }
 
   .new-query-btn:active {

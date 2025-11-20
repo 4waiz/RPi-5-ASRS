@@ -298,11 +298,6 @@
     transition: all 0.2s;
   }
 
-  .close-btn:hover {
-    background: #F5F5F5;
-    transform: rotate(90deg);
-  }
-
   .modal-body {
     overflow-y: auto;
     padding: 2rem;

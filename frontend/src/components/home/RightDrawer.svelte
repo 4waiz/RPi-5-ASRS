@@ -103,10 +103,6 @@
     border-radius: 10px;
     cursor: pointer;
   }
-  .icon-btn:hover {
-    background: #f4f4f4;
-  }
-
   .list {
     padding: 12px 16px 28px;
     overflow: auto;

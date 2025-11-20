@@ -182,11 +182,6 @@
     background: #FFA000;
   }
 
-  .alert-card:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
-  }
-
   .alert-card.critical {
     background: #FFEBEE;
     border-color: #EF5350;
@@ -395,11 +390,6 @@
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   }
 
-  .fix-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  }
-
   /* Component Visual - Larger Image */
   .component-visual {
     display: flex;
@@ -412,11 +402,6 @@
     width: 100%;
     transition: all 0.2s;
     box-sizing: border-box;
-  }
-
-  .component-visual:hover {
-    border-color: #BDBDBD;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   .component-visual img {

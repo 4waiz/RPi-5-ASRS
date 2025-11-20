@@ -11,6 +11,10 @@
   // i18n importss
   import { t, currentLanguage, setLanguage } from "../lib/i18n";
 
+  // Password hashing
+  import { verifyPassword } from "../utils/passwordHash";
+  import { credentials } from "../config/credentials";
+
   let previousBodyOverflow = "";
   onMount(() => {
     if (typeof document === "undefined") return;
@@ -119,10 +123,15 @@
     pendingIpReveal = null;
   };
 
-  const handleIpPasswordSubmit = () => {
-    const CORRECT_PASSWORD = 'changeme';
+  const handleIpPasswordSubmit = async () => {
+    // Verify password against stored hash
+    console.log('🔑 Checking password:', ipPassword);
+    console.log('📋 Against hash:', credentials.ipRevealPasswordHash);
 
-    if (ipPassword === CORRECT_PASSWORD) {
+    const isValid = await verifyPassword(ipPassword, credentials.ipRevealPasswordHash);
+    console.log('✅ Valid:', isValid);
+
+    if (isValid) {
       // Reveal the IP
       if (pendingIpReveal === 1) ip1Masked = false;
       else if (pendingIpReveal === 2) ip2Masked = false;
@@ -155,13 +164,32 @@
     const button = event.currentTarget as HTMLElement;
     button.classList.add('key-pressed');
 
-    // Create ripple effect
+    // Create colorful ripple effect
     const ripple = document.createElement('span');
     ripple.classList.add('ripple');
+
+    // Random vibrant color for each press
+    const colors = [
+      'rgba(255, 107, 107, 0.7)',  // Red
+      'rgba(78, 205, 196, 0.7)',   // Teal
+      'rgba(255, 195, 0, 0.7)',    // Yellow
+      'rgba(255, 121, 198, 0.7)',  // Pink
+      'rgba(106, 176, 255, 0.7)',  // Blue
+      'rgba(129, 236, 236, 0.7)',  // Cyan
+      'rgba(255, 159, 64, 0.7)',   // Orange
+      'rgba(162, 155, 254, 0.7)'   // Purple
+    ];
+
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    ripple.style.background = randomColor;
     button.appendChild(ripple);
+
+    // Add colorful glow
+    button.style.boxShadow = `0 0 20px ${randomColor}, 0 4px 12px rgba(0, 0, 0, 0.15)`;
 
     setTimeout(() => {
       button.classList.remove('key-pressed');
+      button.style.boxShadow = '';
       ripple.remove();
     }, 600);
   };
@@ -942,11 +970,6 @@
     50% { transform: translateY(-2px); }
   }
 
-  .card:hover .icon-animated {
-    animation: iconBounce 0.6s ease-in-out;
-    transform: scale(1.1);
-  }
-
   @keyframes iconBounce {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.15); }
@@ -979,11 +1002,6 @@
     justify-content: center;
     gap: 5px;
     transition: all 0.2s;
-  }
-
-  .lang-btn:hover {
-    border-color: var(--secondary);
-    background: var(--bg-page);
   }
 
   .lang-btn.active {
@@ -1049,10 +1067,6 @@
     transition: transform 0.1s;
   }
 
-  .slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-  }
-
   .slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
@@ -1110,17 +1124,9 @@
     transition: background 0.2s;
   }
 
-  .reveal-btn:hover {
-    background: var(--bg-page);
-  }
-
   .eye-icon {
     color: var(--secondary);
     transition: color 0.2s;
-  }
-
-  .reveal-btn:hover .eye-icon {
-    color: var(--primary);
   }
 
   /* Logs */
@@ -1152,11 +1158,6 @@
     white-space: nowrap;
   }
 
-  .log-tab:hover {
-    border-color: var(--secondary);
-    background: var(--bg-page);
-  }
-
   .log-tab.active {
     border-color: var(--brand);
     color: var(--brand);
@@ -1184,11 +1185,6 @@
     color: var(--primary);
     cursor: pointer;
     transition: all 0.2s;
-  }
-
-  .action-btn:hover {
-    border-color: var(--secondary);
-    background: var(--bg-page);
   }
 
   /* Backup - Compact */
@@ -1235,11 +1231,6 @@
     cursor: pointer;
     position: relative;
     transition: all 0.2s;
-  }
-
-  .hold-button:hover {
-    border-color: var(--secondary);
-    background: var(--bg-page);
   }
 
   .progress-ring {
@@ -1438,12 +1429,6 @@
     color: #757575;
   }
 
-  .close-btn:hover {
-    background: #EEEEEE;
-    color: #424242;
-    transform: rotate(90deg);
-  }
-
   .modal-body {
     padding: 24px;
   }
@@ -1491,20 +1476,10 @@
     transition: all 0.2s ease;
   }
 
-  .password-display:hover {
-    border-color: var(--brand);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(229, 72, 23, 0.1);
-  }
-
   .password-display.error {
     border-color: #F44336;
     background: #FFEBEE;
     animation: shake 0.3s ease-in-out;
-  }
-
-  .password-display.error:hover {
-    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
   }
 
   .placeholder-text {
@@ -1567,20 +1542,10 @@
     color: #616161;
   }
 
-  .btn-cancel:hover {
-    background: #EEEEEE;
-    color: #424242;
-  }
-
   .btn-submit {
     background: linear-gradient(135deg, var(--brand) 0%, #F4511E 100%);
     color: white;
     box-shadow: 0 4px 12px rgba(229, 72, 23, 0.3);
-  }
-
-  .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(229, 72, 23, 0.4);
   }
 
   .btn-submit:active {
@@ -1649,13 +1614,6 @@
     overflow: hidden;
   }
 
-  .key:hover {
-    background: linear-gradient(135deg, #FFF3E0 0%, #FFCC80 100%);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2),
-                0 0 0 3px rgba(255, 152, 0, 0.2);
-    transform: translateY(-2px);
-  }
-
   .key:active {
     transform: translateY(0) scale(0.95);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -1663,8 +1621,9 @@
   }
 
   /* Key press animation */
-  .key-pressed {
-    animation: keyPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  :global(.key-pressed) {
+    animation: keyPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+               colorPulse 0.6s ease-out;
   }
 
   @keyframes keyPop {
@@ -1679,8 +1638,20 @@
     }
   }
 
+  @keyframes colorPulse {
+    0% {
+      filter: brightness(1) saturate(1);
+    }
+    50% {
+      filter: brightness(1.3) saturate(1.5);
+    }
+    100% {
+      filter: brightness(1) saturate(1);
+    }
+  }
+
   /* Ripple effect */
-  .ripple {
+  :global(.ripple) {
     position: absolute;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.6);
@@ -1689,8 +1660,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: rippleEffect 0.6s ease-out;
+    animation: rippleEffect 0.6s ease-out, rippleRotate 0.6s ease-out;
     pointer-events: none;
+    box-shadow: 0 0 20px currentColor;
   }
 
   @keyframes rippleEffect {
@@ -1706,19 +1678,22 @@
     }
   }
 
+  @keyframes rippleRotate {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(180deg) scale(1.2);
+    }
+  }
+
   .key-backspace {
     background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
     color: white;
   }
 
-  .key-backspace .ripple {
+  .key-backspace :global(.ripple) {
     background: rgba(255, 255, 255, 0.5);
-  }
-
-  .key-backspace:hover {
-    background: linear-gradient(135deg, #F4511E 0%, #E64A19 100%);
-    box-shadow: 0 6px 16px rgba(230, 74, 25, 0.3),
-                0 0 0 3px rgba(230, 74, 25, 0.2);
   }
 
   .key-backspace:active {
@@ -1734,19 +1709,13 @@
     font-weight: 800;
   }
 
-  .key-clear .ripple {
+  .key-clear :global(.ripple) {
     background: rgba(255, 255, 255, 0.5);
   }
 
   .key-backspace svg {
     width: 20px;
     height: 20px;
-  }
-
-  .key-clear:hover {
-    background: linear-gradient(135deg, #FF8F00 0%, #FF6F00 100%);
-    box-shadow: 0 6px 16px rgba(255, 111, 0, 0.3),
-                0 0 0 3px rgba(255, 111, 0, 0.2);
   }
 
   .key-clear:active {

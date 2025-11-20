@@ -7,6 +7,10 @@
   import EdgeLogo from '../../assets/Icons/Edge_logo.png?url';
   import { t } from '../../lib/i18n';
 
+  // Password hashing
+  import { verifyPassword } from '../../utils/passwordHash';
+  import { credentials } from '../../config/credentials';
+
   let { AlertsNum = 0, ActivePage = "Home" } = $props();
 
   let dropdownOpen = $state(false);
@@ -16,6 +20,7 @@
   let passwordError = $state('');
   let showKeyboard = $state(false);
   let capsLock = $state(false); // Start with lowercase
+  let audioCtx = null;
 
   // Translate mode text based on current mode
   let translatedMode = $derived(
@@ -36,6 +41,8 @@
         myVariable.set(AIAssistant);
         break;
       case 'Settings':
+        // If we're already on Settings, don't re-open the password modal
+        if (ActivePage === 'Settings') return;
         // Show password modal for Settings
         showPasswordModal = true;
         modalType = 'settings';
@@ -66,11 +73,15 @@
     modalType = '';
   };
 
-  const handlePasswordSubmit = () => {
-    // Change this password to whatever you want
-    const CORRECT_PASSWORD = 'changeme';
+  const handlePasswordSubmit = async () => {
+    // Verify password against stored hash
+    console.log('🔑 Sidebar password check:', password);
+    console.log('📋 Against hash:', credentials.ipRevealPasswordHash);
 
-    if (password === CORRECT_PASSWORD) {
+    const isValid = await verifyPassword(password, credentials.ipRevealPasswordHash);
+    console.log('✅ Valid:', isValid);
+
+    if (isValid) {
       if (modalType === 'editMode') {
         currentMode.set('Edit Mode');
       } else if (modalType === 'settings') {
@@ -78,6 +89,7 @@
       }
       closePasswordModal();
     } else {
+      playErrorSound();
       // Set error based on modal type
       if (modalType === 'editMode') {
         passwordError = $t('sidebar.editPasswordModal.error');
@@ -102,6 +114,7 @@
 
   // Virtual Keyboard Functions
   const handleKeyPress = (key) => {
+    playKeySound();
     if (key === 'backspace') {
       password = password.slice(0, -1);
     } else if (key === 'clear') {
@@ -119,6 +132,69 @@
 
   const showVirtualKeyboard = () => {
     showKeyboard = true;
+  };
+
+  const animateKeyPress = (event) => {
+    const button = event.currentTarget;
+    if (!button) return;
+    button.classList.add('key-pressed');
+
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    button.appendChild(ripple);
+
+    setTimeout(() => {
+      button.classList.remove('key-pressed');
+      ripple.remove();
+    }, 500);
+  };
+
+  const playKeySound = () => {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 420;
+    gain.gain.value = 0.2;
+    osc.connect(gain).connect(ctx.destination);
+    const now = ctx.currentTime;
+    osc.start(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+    osc.stop(now + 0.12);
+  };
+
+  const getAudioContext = () => {
+    if (typeof window === 'undefined') return null;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!audioCtx) {
+      // Use cached audio context so multiple key presses don't create new ones
+      audioCtx = new Ctx();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  };
+
+  const playErrorSound = () => {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    // Smooth two-step sine chirp for error feedback
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    const now = ctx.currentTime;
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(340, now + 0.18);
+    gain.gain.value = 0.3;
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+    osc.stop(now + 0.3);
   };
 </script>
 
@@ -207,7 +283,7 @@
 
 <!-- Password Modal -->
 {#if showPasswordModal}
-  <div class="modal-overlay" onclick={closePasswordModal}>
+  <div class="modal-overlay">
     <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
         <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
@@ -264,40 +340,40 @@
 {#if showKeyboard}
   <div class="virtual-keyboard">
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('1')}>1</button>
-      <button class="key" onclick={() => handleKeyPress('2')}>2</button>
-      <button class="key" onclick={() => handleKeyPress('3')}>3</button>
-      <button class="key" onclick={() => handleKeyPress('4')}>4</button>
-      <button class="key" onclick={() => handleKeyPress('5')}>5</button>
-      <button class="key" onclick={() => handleKeyPress('6')}>6</button>
-      <button class="key" onclick={() => handleKeyPress('7')}>7</button>
-      <button class="key" onclick={() => handleKeyPress('8')}>8</button>
-      <button class="key" onclick={() => handleKeyPress('9')}>9</button>
-      <button class="key" onclick={() => handleKeyPress('0')}>0</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('1'); }}>1</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('2'); }}>2</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('3'); }}>3</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('4'); }}>4</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('5'); }}>5</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('6'); }}>6</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('7'); }}>7</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('8'); }}>8</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('9'); }}>9</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('0'); }}>0</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('q')}>{capsLock ? 'Q' : 'q'}</button>
-      <button class="key" onclick={() => handleKeyPress('w')}>{capsLock ? 'W' : 'w'}</button>
-      <button class="key" onclick={() => handleKeyPress('e')}>{capsLock ? 'E' : 'e'}</button>
-      <button class="key" onclick={() => handleKeyPress('r')}>{capsLock ? 'R' : 'r'}</button>
-      <button class="key" onclick={() => handleKeyPress('t')}>{capsLock ? 'T' : 't'}</button>
-      <button class="key" onclick={() => handleKeyPress('y')}>{capsLock ? 'Y' : 'y'}</button>
-      <button class="key" onclick={() => handleKeyPress('u')}>{capsLock ? 'U' : 'u'}</button>
-      <button class="key" onclick={() => handleKeyPress('i')}>{capsLock ? 'I' : 'i'}</button>
-      <button class="key" onclick={() => handleKeyPress('o')}>{capsLock ? 'O' : 'o'}</button>
-      <button class="key" onclick={() => handleKeyPress('p')}>{capsLock ? 'P' : 'p'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('q'); }}>{capsLock ? 'Q' : 'q'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('w'); }}>{capsLock ? 'W' : 'w'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('e'); }}>{capsLock ? 'E' : 'e'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('r'); }}>{capsLock ? 'R' : 'r'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('t'); }}>{capsLock ? 'T' : 't'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('y'); }}>{capsLock ? 'Y' : 'y'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('u'); }}>{capsLock ? 'U' : 'u'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('i'); }}>{capsLock ? 'I' : 'i'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('o'); }}>{capsLock ? 'O' : 'o'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('p'); }}>{capsLock ? 'P' : 'p'}</button>
     </div>
     <div class="keyboard-row">
-      <button class="key" onclick={() => handleKeyPress('a')}>{capsLock ? 'A' : 'a'}</button>
-      <button class="key" onclick={() => handleKeyPress('s')}>{capsLock ? 'S' : 's'}</button>
-      <button class="key" onclick={() => handleKeyPress('d')}>{capsLock ? 'D' : 'd'}</button>
-      <button class="key" onclick={() => handleKeyPress('f')}>{capsLock ? 'F' : 'f'}</button>
-      <button class="key" onclick={() => handleKeyPress('g')}>{capsLock ? 'G' : 'g'}</button>
-      <button class="key" onclick={() => handleKeyPress('h')}>{capsLock ? 'H' : 'h'}</button>
-      <button class="key" onclick={() => handleKeyPress('j')}>{capsLock ? 'J' : 'j'}</button>
-      <button class="key" onclick={() => handleKeyPress('k')}>{capsLock ? 'K' : 'k'}</button>
-      <button class="key" onclick={() => handleKeyPress('l')}>{capsLock ? 'L' : 'l'}</button>
-      <button class="key key-backspace" onclick={() => handleKeyPress('backspace')}>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('a'); }}>{capsLock ? 'A' : 'a'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('s'); }}>{capsLock ? 'S' : 's'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('d'); }}>{capsLock ? 'D' : 'd'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('f'); }}>{capsLock ? 'F' : 'f'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('g'); }}>{capsLock ? 'G' : 'g'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('h'); }}>{capsLock ? 'H' : 'h'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('j'); }}>{capsLock ? 'J' : 'j'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('k'); }}>{capsLock ? 'K' : 'k'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('l'); }}>{capsLock ? 'L' : 'l'}</button>
+      <button class="key key-backspace" onclick={(e) => { animateKeyPress(e); handleKeyPress('backspace'); }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke-width="2"/>
           <line x1="18" y1="9" x2="12" y2="15" stroke-width="2" stroke-linecap="round"/>
@@ -309,21 +385,21 @@
       <button
         class="key key-capslock"
         class:active={capsLock}
-        onclick={() => handleKeyPress('capslock')}
+        onclick={(e) => { animateKeyPress(e); handleKeyPress('capslock'); }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 3l-8 8h5v6h6v-6h5z" stroke-linecap="round" stroke-linejoin="round"/>
           <line x1="5" y1="21" x2="19" y2="21" stroke-linecap="round"/>
         </svg>
       </button>
-      <button class="key" onclick={() => handleKeyPress('z')}>{capsLock ? 'Z' : 'z'}</button>
-      <button class="key" onclick={() => handleKeyPress('x')}>{capsLock ? 'X' : 'x'}</button>
-      <button class="key" onclick={() => handleKeyPress('c')}>{capsLock ? 'C' : 'c'}</button>
-      <button class="key" onclick={() => handleKeyPress('v')}>{capsLock ? 'V' : 'v'}</button>
-      <button class="key" onclick={() => handleKeyPress('b')}>{capsLock ? 'B' : 'b'}</button>
-      <button class="key" onclick={() => handleKeyPress('n')}>{capsLock ? 'N' : 'n'}</button>
-      <button class="key" onclick={() => handleKeyPress('m')}>{capsLock ? 'M' : 'm'}</button>
-      <button class="key key-clear" onclick={() => handleKeyPress('clear')}>Clear</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('z'); }}>{capsLock ? 'Z' : 'z'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('x'); }}>{capsLock ? 'X' : 'x'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('c'); }}>{capsLock ? 'C' : 'c'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('v'); }}>{capsLock ? 'V' : 'v'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('b'); }}>{capsLock ? 'B' : 'b'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('n'); }}>{capsLock ? 'N' : 'n'}</button>
+      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('m'); }}>{capsLock ? 'M' : 'm'}</button>
+      <button class="key key-clear" onclick={(e) => { animateKeyPress(e); handleKeyPress('clear'); }}>Clear</button>
     </div>
   </div>
 {/if}
@@ -382,12 +458,6 @@
     white-space: nowrap;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .mode-selector:hover {
-    background: #F5F5F5;
-    border-color: #B0B0B0;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
   }
 
   .mode-dot {
@@ -469,10 +539,6 @@
     font-size: 0.95rem;
     color: #424242;
     font-weight: 500;
-  }
-
-  .mode-option:hover {
-    background: #F5F5F5;
   }
 
   .mode-option.active {
@@ -594,12 +660,6 @@
     color: #757575;
   }
 
-  .close-btn:hover {
-    background: #EEEEEE;
-    color: #424242;
-    transform: rotate(90deg);
-  }
-
   .modal-body {
     padding: 24px;
   }
@@ -700,20 +760,10 @@
     color: #616161;
   }
 
-  .btn-cancel:hover {
-    background: #EEEEEE;
-    color: #424242;
-  }
-
   .btn-submit {
     background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
     color: white;
     box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
-  }
-
-  .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4);
   }
 
   .btn-submit:active {
@@ -735,10 +785,6 @@
     color: #424242;
     font-weight: 500;
     font-size: 1.1rem;
-  }
-
-  .nav-item:hover {
-    background: #F5F5F5;
   }
 
   .nav-item.active {
@@ -827,12 +873,6 @@
     }
   }
 
-  /* Hover animations for all icons */
-  .nav-item:hover .nav-icon,
-  .settings-button:hover .nav-icon {
-    transform: scale(1.15);
-  }
-
   .badge-group {
     display: flex;
     gap: 0.75rem;
@@ -891,10 +931,6 @@
     font-size: 1.1rem;
   }
 
-  .settings-button:hover {
-    background: #F5F5F5;
-  }
-
   .settings-button.active {
     background: #FFF3E0;
     color: #FF5722;
@@ -933,22 +969,50 @@
     font-weight: 700;
     color: #FF5722;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .key:hover {
-    background: #FFE0B2;
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
   }
 
   .key:active {
     transform: scale(0.98);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .key-pressed {
+    background: linear-gradient(135deg, #FF8A50 0%, #FF7043 100%);
+    color: #ffffff;
+    transform: scale(0.93);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.28);
+  }
+
+  .key .ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 87, 34, 0.25);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: rippleSpread 0.5s ease-out;
+    pointer-events: none;
+  }
+
+  @keyframes rippleSpread {
+    from {
+      transform: translate(-50%, -50%) scale(0.6);
+      opacity: 0.8;
+    }
+    to {
+      transform: translate(-50%, -50%) scale(6);
+      opacity: 0;
+    }
   }
 
   .key-backspace,
@@ -958,12 +1022,6 @@
     min-width: 52px;
     font-size: 1rem;
     padding: 0 12px;
-  }
-
-  .key-backspace:hover,
-  .key-clear:hover {
-    background: #F4511E;
-    transform: scale(1.05);
   }
 
   .key-backspace:active,
@@ -983,18 +1041,9 @@
     transition: all 0.3s ease;
   }
 
-  .key-capslock:hover {
-    background: #616161;
-    transform: scale(1.05);
-  }
-
   .key-capslock.active {
     background: #4CAF50;
     box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
-  }
-
-  .key-capslock.active:hover {
-    background: #45a049;
   }
 
   .key-capslock svg {

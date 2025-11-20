@@ -1433,13 +1433,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
-  :global(.box-item:hover) {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.08) 100%);
-    transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-    border-color: rgba(102, 126, 234, 0.3);
-  }
-
   :global(.box-item.selected) {
     background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;
     border-color: rgba(102, 126, 234, 0.4) !important;
@@ -1532,11 +1525,6 @@
     box-shadow: none;
   }
 
-  .action-buttons button:not(:disabled):hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  }
-
   .action-buttons button:not(:disabled):active {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -1546,16 +1534,8 @@
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   }
 
-  #getBoxOutBtn:not(:disabled):hover {
-    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
-  }
-
   #putBoxInBtn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  #putBoxInBtn:not(:disabled):hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   }
 
   .status-label {
