@@ -1373,15 +1373,15 @@
     top: 140px;
     left: 16px;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg-card, rgba(255, 255, 255, 0.95));
     padding: 16px;
     border-radius: 16px;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.8));
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
     width: 220px;
     z-index: 100;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background 0.3s ease, border 0.3s ease;
   }
 
   .control-panel.hidden {
@@ -1405,11 +1405,11 @@
   .box-list {
     max-height: 160px;
     overflow-y: auto;
-    background: rgba(248, 250, 252, 0.6);
+    background: var(--bg-page, rgba(248, 250, 252, 0.6));
     border-radius: 10px;
     margin-bottom: 12px;
     padding: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -1427,9 +1427,9 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
-    background: #FFFFFF;
+    background: var(--bg-card, #FFFFFF);
     border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
@@ -1473,7 +1473,7 @@
   :global(.box-name) {
     font-weight: 600;
     font-size: 12px;
-    color: #1a202c;
+    color: var(--primary, #1a202c);
   }
 
   :global(.box-status) {
@@ -1542,17 +1542,17 @@
     position: absolute;
     bottom: 120px;
     left: 16px;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg-card, rgba(255, 255, 255, 0.95));
     padding: 12px 16px;
     border-radius: 14px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.8));
     z-index: 100;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background 0.3s ease, border 0.3s ease;
   }
 
   .status-label.hidden {
@@ -1589,7 +1589,7 @@
 
   .status-text {
     font-size: 13px;
-    color: #1a202c;
+    color: var(--primary, #1a202c);
     font-weight: 600;
   }
 
@@ -1605,14 +1605,14 @@
   }
 
   :global(.toast) {
-    background: rgba(255, 255, 255, 0.98);
+    background: var(--bg-card, rgba(255, 255, 255, 0.98));
     padding: 12px 16px;
     border-radius: 12px;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
     animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 220px;
-    color: #1a202c;
+    color: var(--primary, #1a202c);
     font-size: 12px;
     font-weight: 500;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);

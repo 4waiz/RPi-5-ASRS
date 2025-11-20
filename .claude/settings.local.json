@@ -7,7 +7,10 @@
       "Bash(node test-hash.js:*)",
       "Bash(node -e:*)",
       "Bash(dir:*)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(cat:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 10 echo:*)"
     ],
     "deny": [],
     "ask": []

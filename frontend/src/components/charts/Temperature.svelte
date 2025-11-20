@@ -42,7 +42,7 @@
     width: fit-content;
     height: auto;
     font-family: system-ui, sans-serif;
-    color: #000;
+    color: var(--primary, #000);
 }
 
 .thermo {
@@ -65,6 +65,11 @@
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+:global(html.dark-mode) .tube {
+    background: linear-gradient(to bottom, #2D3748 0%, #1E293B 100%);
+    border-color: #374151;
+}
+
 .fill {
     position: absolute;
     bottom: 0;
@@ -81,7 +86,7 @@
     height: 110px;
     font-size: 13px;
     font-weight: 500;
-    color: #444;
+    color: var(--secondary, #444);
 }
 
 .readout {
@@ -95,6 +100,7 @@
     font-weight: 700;
     line-height: 20px;
     margin-bottom: 2px;
+    color: var(--primary, #000);
 }
 
 .label {
@@ -102,5 +108,6 @@
     font-weight: 400;
     line-height: 1.3;
     word-wrap: break-word;
+    color: var(--primary, #000);
 }
 </style>

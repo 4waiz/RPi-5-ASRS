@@ -218,7 +218,7 @@
   .hd {
     height: 1.5px;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.08);
+    background-color: var(--border, rgba(0, 0, 0, 0.08));
   }
 
   .column2 {
@@ -239,8 +239,7 @@
 
   .vd {
     flex: 0 0 1.5px;
-    background-color: #000000;
-    opacity: 0.08;
+    background-color: var(--border, rgba(0, 0, 0, 0.08));
     align-self: stretch;
   }
 
@@ -259,12 +258,14 @@
     width: fit-content;
     padding: 12px 16px;
     border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.3));
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: var(--bg-card, #fff);
+    transition: all 0.3s ease;
   }
 
   h3 {
-    color: #000;
+    color: var(--primary, #000);
     font-size: 16px;
     font-weight: 700;
     margin: 0 0 10px 0;
@@ -300,7 +301,7 @@
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: #333;
+    color: var(--primary, #333);
   }
 
   .legend-icon {
@@ -317,11 +318,17 @@
     border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
-    color: #333;
+    color: var(--primary, #333);
     cursor: pointer;
-    border: 1.095px solid rgba(0, 0, 0, 0.68);
-    background-color: rgba(0, 0, 0, 0);
-    transition: all 0.2s ease;
+    border: 1.095px solid var(--border, rgba(0, 0, 0, 0.68));
+    background-color: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .manage-btn:hover {
+    background-color: var(--brand-light);
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
 </style>

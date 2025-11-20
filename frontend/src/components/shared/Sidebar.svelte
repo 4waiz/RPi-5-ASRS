@@ -6,6 +6,7 @@
   import Setting from '../../pages/Setting.svelte';
   import EdgeLogo from '../../assets/Icons/Edge_logo.png?url';
   import { t } from '../../lib/i18n';
+  import PasswordModal from './PasswordModal.svelte';
 
   // Password hashing
   import { verifyPassword } from '../../utils/passwordHash';
@@ -16,11 +17,8 @@
   let dropdownOpen = $state(false);
   let showPasswordModal = $state(false);
   let modalType = $state(''); // 'editMode' or 'settings'
-  let password = $state('');
-  let passwordError = $state('');
-  let showKeyboard = $state(false);
-  let capsLock = $state(false); // Start with lowercase
   let audioCtx = null;
+  let passwordModalRef;
 
   // Translate mode text based on current mode
   let translatedMode = $derived(
@@ -60,20 +58,16 @@
     dropdownOpen = false;
     showPasswordModal = true;
     modalType = 'editMode';
-    password = '';
-    passwordError = '';
   };
 
   const closePasswordModal = () => {
     showPasswordModal = false;
-    password = '';
-    passwordError = '';
-    showKeyboard = false;
-    capsLock = false; // Reset to lowercase
     modalType = '';
   };
 
-  const handlePasswordSubmit = async () => {
+  const handlePasswordSubmit = async (event) => {
+    const password = event.detail.password;
+
     // Verify password against stored hash
     console.log('🔑 Sidebar password check:', password);
     console.log('📋 Against hash:', credentials.ipRevealPasswordHash);
@@ -92,11 +86,10 @@
       playErrorSound();
       // Set error based on modal type
       if (modalType === 'editMode') {
-        passwordError = $t('sidebar.editPasswordModal.error');
+        passwordModalRef?.setError($t('sidebar.editPasswordModal.error'));
       } else if (modalType === 'settings') {
-        passwordError = $t('sidebar.settingsPasswordModal.error');
+        passwordModalRef?.setError($t('sidebar.settingsPasswordModal.error'));
       }
-      password = '';
     }
   };
 
@@ -112,65 +105,11 @@
     }
   };
 
-  // Virtual Keyboard Functions
-  const handleKeyPress = (key) => {
-    playKeySound();
-    if (key === 'backspace') {
-      password = password.slice(0, -1);
-    } else if (key === 'clear') {
-      password = '';
-    } else if (key === 'capslock') {
-      capsLock = !capsLock;
-      return; // Don't clear error for caps lock toggle
-    } else {
-      // Apply caps lock transformation for letters
-      const finalKey = capsLock ? key.toUpperCase() : key.toLowerCase();
-      password += finalKey;
-    }
-    passwordError = ''; // Clear error when typing
-  };
-
-  const showVirtualKeyboard = () => {
-    showKeyboard = true;
-  };
-
-  const animateKeyPress = (event) => {
-    const button = event.currentTarget;
-    if (!button) return;
-    button.classList.add('key-pressed');
-
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
-    button.appendChild(ripple);
-
-    setTimeout(() => {
-      button.classList.remove('key-pressed');
-      ripple.remove();
-    }, 500);
-  };
-
-  const playKeySound = () => {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 420;
-    gain.gain.value = 0.2;
-    osc.connect(gain).connect(ctx.destination);
-    const now = ctx.currentTime;
-    osc.start(now);
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-    osc.stop(now + 0.12);
-  };
-
   const getAudioContext = () => {
     if (typeof window === 'undefined') return null;
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
     if (!audioCtx) {
-      // Use cached audio context so multiple key presses don't create new ones
       audioCtx = new Ctx();
     }
     if (audioCtx.state === 'suspended') {
@@ -182,14 +121,13 @@
   const playErrorSound = () => {
     const ctx = getAudioContext();
     if (!ctx) return;
-    // Smooth two-step sine chirp for error feedback
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
     const now = ctx.currentTime;
     osc.frequency.setValueAtTime(520, now);
     osc.frequency.exponentialRampToValueAtTime(340, now + 0.18);
-    gain.gain.value = 0.3;
+    gain.gain.value = 1.0;
     osc.connect(gain).connect(ctx.destination);
     osc.start(now);
     gain.gain.setValueAtTime(gain.gain.value, now);
@@ -282,127 +220,14 @@
 </div>
 
 <!-- Password Modal -->
-{#if showPasswordModal}
-  <div class="modal-overlay">
-    <div class="modal-content" class:with-keyboard={showKeyboard} onclick={(e) => e.stopPropagation()}>
-      <div class="modal-header">
-        <h2>{modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}</h2>
-        <button class="close-btn" onclick={closePasswordModal}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
-            <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <p class="modal-description">{modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}</p>
-
-        <div class="input-group">
-          <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <input
-            type="password"
-            class="password-input"
-            class:error={passwordError}
-            bind:value={password}
-            placeholder={modalType === 'editMode' ? $t('sidebar.editPasswordModal.placeholder') : $t('sidebar.settingsPasswordModal.placeholder')}
-            onkeydown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-            onfocus={showVirtualKeyboard}
-            onclick={showVirtualKeyboard}
-            autofocus
-          />
-        </div>
-
-        {#if passwordError}
-          <div class="error-message">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="10" stroke-width="2"/>
-              <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
-              <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            {passwordError}
-          </div>
-        {/if}
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick={closePasswordModal}>{$t('common.cancel')}</button>
-        <button class="btn-submit" onclick={handlePasswordSubmit}>{$t('common.submit')}</button>
-      </div>
-    </div>
-  </div>
-{/if}
-
-<!-- Virtual Keyboard at Bottom of Screen -->
-{#if showKeyboard}
-  <div class="virtual-keyboard">
-    <div class="keyboard-row">
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('1'); }}>1</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('2'); }}>2</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('3'); }}>3</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('4'); }}>4</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('5'); }}>5</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('6'); }}>6</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('7'); }}>7</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('8'); }}>8</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('9'); }}>9</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('0'); }}>0</button>
-    </div>
-    <div class="keyboard-row">
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('q'); }}>{capsLock ? 'Q' : 'q'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('w'); }}>{capsLock ? 'W' : 'w'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('e'); }}>{capsLock ? 'E' : 'e'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('r'); }}>{capsLock ? 'R' : 'r'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('t'); }}>{capsLock ? 'T' : 't'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('y'); }}>{capsLock ? 'Y' : 'y'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('u'); }}>{capsLock ? 'U' : 'u'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('i'); }}>{capsLock ? 'I' : 'i'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('o'); }}>{capsLock ? 'O' : 'o'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('p'); }}>{capsLock ? 'P' : 'p'}</button>
-    </div>
-    <div class="keyboard-row">
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('a'); }}>{capsLock ? 'A' : 'a'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('s'); }}>{capsLock ? 'S' : 's'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('d'); }}>{capsLock ? 'D' : 'd'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('f'); }}>{capsLock ? 'F' : 'f'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('g'); }}>{capsLock ? 'G' : 'g'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('h'); }}>{capsLock ? 'H' : 'h'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('j'); }}>{capsLock ? 'J' : 'j'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('k'); }}>{capsLock ? 'K' : 'k'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('l'); }}>{capsLock ? 'L' : 'l'}</button>
-      <button class="key key-backspace" onclick={(e) => { animateKeyPress(e); handleKeyPress('backspace'); }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" stroke-width="2"/>
-          <line x1="18" y1="9" x2="12" y2="15" stroke-width="2" stroke-linecap="round"/>
-          <line x1="12" y1="9" x2="18" y2="15" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div class="keyboard-row">
-      <button
-        class="key key-capslock"
-        class:active={capsLock}
-        onclick={(e) => { animateKeyPress(e); handleKeyPress('capslock'); }}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 3l-8 8h5v6h6v-6h5z" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="5" y1="21" x2="19" y2="21" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('z'); }}>{capsLock ? 'Z' : 'z'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('x'); }}>{capsLock ? 'X' : 'x'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('c'); }}>{capsLock ? 'C' : 'c'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('v'); }}>{capsLock ? 'V' : 'v'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('b'); }}>{capsLock ? 'B' : 'b'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('n'); }}>{capsLock ? 'N' : 'n'}</button>
-      <button class="key" onclick={(e) => { animateKeyPress(e); handleKeyPress('m'); }}>{capsLock ? 'M' : 'm'}</button>
-      <button class="key key-clear" onclick={(e) => { animateKeyPress(e); handleKeyPress('clear'); }}>Clear</button>
-    </div>
-  </div>
-{/if}
+<PasswordModal
+  bind:this={passwordModalRef}
+  show={showPasswordModal}
+  title={modalType === 'editMode' ? $t('sidebar.editPasswordModal.title') : $t('sidebar.settingsPasswordModal.title')}
+  description={modalType === 'editMode' ? $t('sidebar.editPasswordModal.description') : $t('sidebar.settingsPasswordModal.description')}
+  on:submit={handlePasswordSubmit}
+  on:cancel={closePasswordModal}
+/>
 
 <style>
   .sidebar {
@@ -411,16 +236,17 @@
     top: 0;
     width: 220px;
     height: 100vh;
-    background: white;
-    border-right: 2px solid #E0E0E0;
+    background: var(--bg-card, white);
+    border-right: 2px solid var(--border, #E0E0E0);
     display: flex;
     flex-direction: column;
     z-index: 100;
+    transition: background 0.3s ease, border 0.3s ease;
   }
 
   .logo-section {
     padding: 1.5rem 1rem;
-    border-bottom: 2px solid #E0E0E0;
+    border-bottom: 2px solid var(--border, #E0E0E0);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -431,6 +257,11 @@
     width: 120px;
     height: auto;
     object-fit: contain;
+    transition: filter 0.3s ease;
+  }
+
+  :global(html.dark-mode) .logo-image {
+    filter: brightness(0) invert(1);
   }
 
   .station-text {
@@ -447,8 +278,8 @@
   .mode-selector {
     width: 100%;
     padding: 0.875rem 1.25rem;
-    background: #FAFAFA;
-    border: 2px solid #D0D0D0;
+    background: var(--bg-page, #FAFAFA);
+    border: 2px solid var(--border, #D0D0D0);
     border-radius: 50px;
     display: flex;
     align-items: center;
@@ -487,12 +318,12 @@
   .mode-text {
     flex: 1;
     font-weight: 600;
-    color: #212121;
+    color: var(--primary, #212121);
   }
 
   .dropdown-arrow {
     transition: transform 0.2s ease;
-    color: #757575;
+    color: var(--secondary, #757575);
     font-size: 0.8rem;
   }
 
@@ -506,13 +337,13 @@
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     z-index: 1000;
     animation: dropdownSlide 0.2s ease-out;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--border, #E0E0E0);
   }
 
   @keyframes dropdownSlide {
@@ -529,7 +360,7 @@
   .mode-option {
     width: 100%;
     padding: 12px 16px;
-    background: white;
+    background: var(--bg-card, white);
     border: none;
     display: flex;
     align-items: center;
@@ -537,7 +368,7 @@
     cursor: pointer;
     transition: background 0.2s ease;
     font-size: 0.95rem;
-    color: #424242;
+    color: var(--primary, #424242);
     font-weight: 500;
   }
 
@@ -566,210 +397,6 @@
     color: #FF5722;
   }
 
-  /* Modal Styles */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .modal-content {
-    background: white;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 420px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-  }
-
-  .modal-content:not(.with-keyboard) {
-    animation: modalSlide 0.3s ease-out;
-  }
-
-  .modal-content.with-keyboard {
-    animation: modalSlideWithKeyboard 0.3s ease-out;
-    transform: translateY(-150px);
-  }
-
-  @keyframes modalSlide {
-    from {
-      opacity: 0;
-      transform: translateY(-20px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes modalSlideWithKeyboard {
-    from {
-      opacity: 0;
-      transform: translateY(-170px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(-150px) scale(1);
-    }
-  }
-
-  .modal-header {
-    padding: 24px 24px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #E0E0E0;
-  }
-
-  .modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #212121;
-  }
-
-  .close-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: #F5F5F5;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    color: #757575;
-  }
-
-  .modal-body {
-    padding: 24px;
-  }
-
-  .modal-description {
-    margin: 0 0 20px 0;
-    color: #616161;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .input-icon {
-    position: absolute;
-    left: 16px;
-    color: #9E9E9E;
-    pointer-events: none;
-  }
-
-  .password-input {
-    width: 100%;
-    padding: 14px 16px 14px 48px;
-    border: 2px solid #E0E0E0;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    outline: none;
-    background: #FAFAFA;
-  }
-
-  .password-input:focus {
-    border-color: #FF5722;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
-  }
-
-  .password-input.error {
-    border-color: #F44336;
-    background: #FFEBEE;
-  }
-
-  .password-input.error:focus {
-    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
-  }
-
-  .error-message {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 12px;
-    background: #FFEBEE;
-    border-radius: 8px;
-    color: #D32F2F;
-    font-size: 0.9rem;
-    font-weight: 500;
-    animation: shake 0.3s ease-in-out;
-  }
-
-  @keyframes shake {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-8px);
-    }
-    75% {
-      transform: translateX(8px);
-    }
-  }
-
-  .modal-footer {
-    padding: 16px 24px 24px;
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-  }
-
-  .btn-cancel,
-  .btn-submit {
-    padding: 12px 28px;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-  }
-
-  .btn-cancel {
-    background: #F5F5F5;
-    color: #616161;
-  }
-
-  .btn-submit {
-    background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
-  }
-
-  .btn-submit:active {
-    transform: translateY(0);
-  }
-
   .nav-menu {
     flex: 1;
     padding: 1.5rem 0;
@@ -782,7 +409,7 @@
     gap: 1.25rem;
     cursor: pointer;
     transition: all 0.2s;
-    color: #424242;
+    color: var(--primary, #424242);
     font-weight: 500;
     font-size: 1.1rem;
   }
@@ -791,6 +418,11 @@
     background: #FFF3E0;
     color: #FF5722;
     border-right: 4px solid #FF5722;
+  }
+
+  :global(html.dark-mode) .nav-item.active {
+    background: rgba(251, 146, 60, 0.15);
+    color: var(--brand);
   }
 
   .nav-icon {
@@ -920,13 +552,13 @@
 
   .settings-button {
     padding: 1.25rem 2rem;
-    border-top: 2px solid #E0E0E0;
+    border-top: 2px solid var(--border, #E0E0E0);
     display: flex;
     align-items: center;
     gap: 1.25rem;
     cursor: pointer;
     transition: all 0.2s;
-    color: #424242;
+    color: var(--primary, #424242);
     font-weight: 500;
     font-size: 1.1rem;
   }
@@ -937,116 +569,8 @@
     border-right: 4px solid #FF5722;
   }
 
-  /* Virtual Keyboard Styles */
-  .virtual-keyboard {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 10001;
-  }
-
-  .keyboard-row {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .key {
-    width: 52px;
-    height: 52px;
-    padding: 0;
-    background: #FFF3E0;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #FF5722;
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-    touch-action: manipulation;
-  }
-
-  .key:active {
-    transform: scale(0.98);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  .key-pressed {
-    background: linear-gradient(135deg, #FF8A50 0%, #FF7043 100%);
-    color: #ffffff;
-    transform: scale(0.93);
-    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.28);
-  }
-
-  .key .ripple {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 12px;
-    height: 12px;
-    background: rgba(255, 87, 34, 0.25);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: rippleSpread 0.5s ease-out;
-    pointer-events: none;
-  }
-
-  @keyframes rippleSpread {
-    from {
-      transform: translate(-50%, -50%) scale(0.6);
-      opacity: 0.8;
-    }
-    to {
-      transform: translate(-50%, -50%) scale(6);
-      opacity: 0;
-    }
-  }
-
-  .key-backspace,
-  .key-clear {
-    background: #FF5722;
-    color: white;
-    min-width: 52px;
-    font-size: 1rem;
-    padding: 0 12px;
-  }
-
-  .key-backspace:active,
-  .key-clear:active {
-    transform: scale(0.98);
-  }
-
-  .key-backspace svg,
-  .key-clear svg {
-    stroke: white;
-  }
-
-  /* Caps Lock Button */
-  .key-capslock {
-    background: #757575;
-    color: white;
-    transition: all 0.3s ease;
-  }
-
-  .key-capslock.active {
-    background: #4CAF50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
-  }
-
-  .key-capslock svg {
-    stroke: white;
+  :global(html.dark-mode) .settings-button.active {
+    background: rgba(251, 146, 60, 0.15);
+    color: var(--brand);
   }
 </style>

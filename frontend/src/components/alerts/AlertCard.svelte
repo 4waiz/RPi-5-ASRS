@@ -146,14 +146,14 @@
 
 <style>
   .alert-card {
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 14px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: flex-start;
     gap: 1.5rem;
-    transition: all 0.2s;
+    transition: all 0.2s, background 0.3s ease;
     cursor: pointer;
     border: 3px solid transparent;
     position: relative;
@@ -183,24 +183,43 @@
   }
 
   .alert-card.critical {
-    background: #FFEBEE;
+    background: var(--bg-card, #FFEBEE);
+    border-color: #EF5350;
+  }
+
+  :global(html.dark-mode) .alert-card.critical {
+    background: rgba(239, 83, 80, 0.15);
     border-color: #EF5350;
   }
 
   .alert-card.error {
-    background: #FFF3E0;
+    background: var(--bg-card, #FFF3E0);
+    border-color: #FB8C00;
+  }
+
+  :global(html.dark-mode) .alert-card.error {
+    background: rgba(251, 140, 0, 0.15);
     border-color: #FB8C00;
   }
 
   .alert-card.warning {
-    background: #FFFDE7;
+    background: var(--bg-card, #FFFDE7);
+    border-color: #FDD835;
+  }
+
+  :global(html.dark-mode) .alert-card.warning {
+    background: rgba(253, 216, 53, 0.15);
     border-color: #FDD835;
   }
 
   .alert-card.resolved {
-    background: #F5F5F5;
+    background: var(--bg-card, #F5F5F5);
     opacity: 0.7;
-    border-color: #E0E0E0;
+    border-color: var(--border, #E0E0E0);
+  }
+
+  :global(html.dark-mode) .alert-card.resolved {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .alert-card.resolved::before {
@@ -238,6 +257,8 @@
     font-size: 1.3rem;
     line-height: 1.3;
     flex: 1;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .severity-badge {
@@ -283,9 +304,10 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
-    color: #616161;
+    color: var(--secondary, #616161);
     font-size: 1rem;
     margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
   }
 
   .meta-item {
@@ -294,7 +316,8 @@
   }
 
   .meta-divider {
-    color: #BDBDBD;
+    color: var(--border, #BDBDBD);
+    transition: color 0.3s ease;
   }
 
   .fmea-metrics {
@@ -306,6 +329,11 @@
     border-radius: 10px;
     margin-bottom: 0.75rem;
     overflow: visible;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .fmea-metrics {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .metric {
@@ -319,21 +347,23 @@
 
   .metric-label {
     font-size: 0.65rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 0.5rem;
     line-height: 1.2;
     white-space: nowrap;
     display: block;
+    transition: color 0.3s ease;
   }
 
   .metric-value {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #212121;
+    color: var(--primary, #212121);
     line-height: 1.3;
     white-space: nowrap;
+    transition: color 0.3s ease;
   }
 
   .rpn-metric .metric-value {
@@ -347,7 +377,8 @@
   .alert-time {
     font-style: italic;
     font-size: 1rem;
-    color: #757575;
+    color: var(--secondary, #757575);
+    transition: color 0.3s ease;
   }
 
   /* Right Section - Badges, Button + Image */
@@ -395,12 +426,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 12px;
     padding: 1rem;
-    border: 2px solid #E0E0E0;
+    border: 2px solid var(--border, #E0E0E0);
     width: 100%;
-    transition: all 0.2s;
+    transition: all 0.2s, background 0.3s ease, border 0.3s ease;
     box-sizing: border-box;
   }
 
@@ -413,12 +444,13 @@
 
   .component-label {
     font-size: 0.9rem;
-    color: #424242;
+    color: var(--primary, #424242);
     font-weight: 600;
     text-align: center;
     line-height: 1.3;
     word-break: break-word;
     width: 100%;
+    transition: color 0.3s ease;
   }
 
   @media (max-width: 768px) {

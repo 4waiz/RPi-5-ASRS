@@ -231,8 +231,12 @@
     padding: 2rem;
   }
 
+  :global(html.dark-mode) .modal-overlay {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
   .modal-content {
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 16px;
     width: 100%;
     max-width: 900px;
@@ -241,6 +245,11 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .modal-content {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
   }
 
   .modal-header {
@@ -274,19 +283,21 @@
   .modal-header h2 {
     margin: 0 0 1rem 0;
     font-size: 1.5rem;
-    color: #212121;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .header-meta {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
-    color: #616161;
+    color: var(--secondary, #616161);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
   }
 
   .close-btn {
-    background: white;
+    background: var(--bg-card, white);
     border: none;
     border-radius: 8px;
     width: 40px;
@@ -295,7 +306,12 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s, background 0.3s ease;
+    color: var(--primary, #212121);
+  }
+
+  :global(html.dark-mode) .close-btn {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .modal-body {
@@ -306,7 +322,8 @@
   .section {
     margin-bottom: 2rem;
     padding-bottom: 2rem;
-    border-bottom: 1px solid #E0E0E0;
+    border-bottom: 1px solid var(--border, #E0E0E0);
+    transition: border-bottom 0.3s ease;
   }
 
   .section:last-child {
@@ -319,16 +336,26 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 1.1rem;
-    color: #212121;
+    color: var(--primary, #212121);
     margin: 0 0 1rem 0;
     font-weight: 700;
+    transition: color 0.3s ease;
+  }
+
+  :global(html.dark-mode) .section h3 svg {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
   }
 
   .fmea-section {
-    background: #F5F7FA;
+    background: var(--bg-page, #F5F7FA);
     padding: 1.5rem;
     border-radius: 12px;
     border: none;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .fmea-section {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .fmea-grid {
@@ -338,9 +365,14 @@
   }
 
   .fmea-metric {
-    background: white;
+    background: var(--bg-card, white);
     padding: 1rem;
     border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .fmea-metric {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .metric-header {
@@ -352,23 +384,30 @@
 
   .metric-label {
     font-weight: 700;
-    color: #424242;
+    color: var(--secondary, #424242);
     font-size: 0.9rem;
     text-transform: uppercase;
+    transition: color 0.3s ease;
   }
 
   .metric-score {
     font-weight: 700;
     font-size: 1.2rem;
-    color: #212121;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .metric-bar {
     height: 8px;
-    background: #E0E0E0;
+    background: var(--border, #E0E0E0);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 0.5rem;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .metric-bar {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .metric-fill {
@@ -391,8 +430,9 @@
 
   .metric-description {
     font-size: 0.8rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     margin: 0;
+    transition: color 0.3s ease;
   }
 
   .rpn-display {
@@ -426,16 +466,18 @@
 
   .rpn-explanation {
     font-size: 1rem;
-    color: #424242;
+    color: var(--primary, #424242);
     text-align: center;
     margin: 0 0 0.5rem 0;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 
   .rpn-formula {
     font-size: 0.85rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     font-style: italic;
+    transition: color 0.3s ease;
   }
 
   .info-grid {
@@ -453,33 +495,42 @@
 
   .info-item strong {
     font-size: 0.85rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: color 0.3s ease;
   }
 
   .info-item span {
     font-size: 1rem;
-    color: #212121;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .message-box {
-    background: #FFFBF0;
+    background: var(--bg-page, #FFFBF0);
     border-left: 4px solid #FFA000;
     padding: 1rem;
     border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .message-box {
+    background: rgba(255, 160, 0, 0.1);
   }
 
   .message-box strong {
     display: block;
     margin-bottom: 0.5rem;
-    color: #424242;
+    color: var(--primary, #424242);
+    transition: color 0.3s ease;
   }
 
   .message-box p {
     margin: 0;
-    color: #616161;
+    color: var(--secondary, #616161);
     line-height: 1.6;
+    transition: color 0.3s ease;
   }
 
   .detail-list {
@@ -490,10 +541,16 @@
 
   .detail-list li {
     padding: 0.75rem 1rem;
-    background: #F5F5F5;
+    background: var(--bg-page, #F5F5F5);
     margin-bottom: 0.5rem;
     border-radius: 8px;
     border-left: 3px solid #FF5722;
+    color: var(--primary, #212121);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  :global(html.dark-mode) .detail-list li {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .detail-list.checks li {
@@ -501,33 +558,53 @@
   }
 
   .fix-section {
-    background: #E3F2FD;
+    background: var(--bg-page, #E3F2FD);
     padding: 1.5rem;
     border-radius: 12px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .fix-section {
+    background: rgba(33, 150, 243, 0.1);
   }
 
   .fix-content {
-    background: white;
+    background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
     border-left: 4px solid #2196F3;
     line-height: 1.8;
-    color: #424242;
+    color: var(--primary, #424242);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  :global(html.dark-mode) .fix-content {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .prevention-section {
-    background: #E8F5E9;
+    background: var(--bg-page, #E8F5E9);
     padding: 1.5rem;
     border-radius: 12px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .prevention-section {
+    background: rgba(76, 175, 80, 0.1);
   }
 
   .prevention-content {
-    background: white;
+    background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
     border-left: 4px solid #4CAF50;
     line-height: 1.8;
-    color: #424242;
+    color: var(--primary, #424242);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  :global(html.dark-mode) .prevention-content {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   @media (max-width: 768px) {

@@ -472,11 +472,12 @@
     min-height: 100vh;
     display: flex;
     gap: 48px;
-    background: #ebebeb;
+    background: var(--bg-page, #ebebeb);
     padding-left: 220px;
     padding-right: 32px;
     box-sizing: border-box;
     overflow-y: auto;
+    transition: background 0.3s ease;
   }
 
   .alerts-shell {
@@ -493,13 +494,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ffffff;
+    background: var(--bg-card, #ffffff);
     padding: 10px 16px;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     gap: 16px;
     flex-wrap: wrap;
     min-width: 0;
+    transition: background 0.3s ease;
   }
 
   /* Filter Tabs (Left - Compact) */
@@ -511,9 +513,9 @@
 
   .filter-tab {
     padding: 8px 16px;
-    border: 1.5px solid #e0e0e0;
-    background: #ffffff;
-    color: #666;
+    border: 1.5px solid var(--border, #e0e0e0);
+    background: var(--bg-card, #ffffff);
+    color: var(--secondary, #666);
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
@@ -572,17 +574,22 @@
   }
 
   .summary-card {
-    background: #fff;
+    background: var(--bg-card, #fff);
     border-radius: 12px;
     padding: 12px 16px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    border: 1.5px solid #e0e0e0;
+    border: 1.5px solid var(--border, #e0e0e0);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease, background 0.3s ease, border 0.3s ease;
     flex: 1;
     min-width: 0;
+  }
+
+  :global(html.dark-mode) .summary-card {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .summary-card.critical {
@@ -590,9 +597,19 @@
     background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
   }
 
+  :global(html.dark-mode) .summary-card.critical {
+    background: linear-gradient(135deg, rgba(211, 47, 47, 0.15) 0%, rgba(211, 47, 47, 0.08) 100%);
+    border-color: rgba(211, 47, 47, 0.6);
+  }
+
   .summary-card.warning {
     border-color: #f9a825;
     background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+  }
+
+  :global(html.dark-mode) .summary-card.warning {
+    background: linear-gradient(135deg, rgba(249, 168, 37, 0.15) 0%, rgba(249, 168, 37, 0.08) 100%);
+    border-color: rgba(249, 168, 37, 0.6);
   }
 
   .summary-card.error {
@@ -600,28 +617,36 @@
     background: linear-gradient(135deg, #fff 0%, #fff8f5 100%);
   }
 
+  :global(html.dark-mode) .summary-card.error {
+    background: linear-gradient(135deg, rgba(255, 112, 67, 0.15) 0%, rgba(255, 112, 67, 0.08) 100%);
+    border-color: rgba(255, 112, 67, 0.6);
+  }
+
   .summary-label {
     font-size: 0.75rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 
   .summary-value {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #212121;
+    color: var(--primary, #212121);
     line-height: 1;
+    transition: color 0.3s ease;
   }
 
   .content-region {
     flex: 1;
-    background: #ffffff;
+    background: var(--bg-card, #ffffff);
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border, #e0e0e0);
+    transition: background 0.3s ease, border 0.3s ease;
   }
 
   .alerts-grid {
@@ -631,17 +656,19 @@
   }
 
   .state-card {
-    background: #fff;
+    background: var(--bg-card, #fff);
     border-radius: 16px;
     padding: 48px 24px;
     text-align: center;
-    border: 2px dashed #ccc;
+    border: 2px dashed var(--border, #ccc);
+    color: var(--primary, #333);
     display: flex;
     flex-direction: column;
     gap: 16px;
     align-items: center;
     justify-content: center;
     min-height: 220px;
+    transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
   }
 
   .state-card.state-error {

@@ -339,10 +339,11 @@
         height: 100vh;
         display: flex;
         gap: 48px;
-        background-color: #ebebeb;
+        background-color: var(--bg-page, #ebebeb);
         box-sizing: border-box;
         padding-left: 220px;
         padding-right: 32px;
+        transition: background-color 0.3s ease;
     }
     .content-area {
         flex: 1;
@@ -350,15 +351,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: auto; 
+        overflow: auto;
         padding: 32px 0;
         box-sizing: border-box;
     }
     .chat-container {
-        background: #ffffff;
-        border: 1px solid #d2d2d7;
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border, #d2d2d7);
         border-radius: 16px;
-        width: 100%; 
+        width: 100%;
         height: 100%;
         max-width: 700px;
         max-height: 90vh;
@@ -367,15 +368,22 @@
         padding: 1rem;
         box-shadow: 0 0 20px rgba(255, 122, 26, 0.2);
         box-sizing: border-box;
+        transition: background 0.3s ease, border 0.3s ease;
     }
     h1 {
         text-align: center;
         color: #ff7a1a;
-        margin-bottom: 0.5rem; 
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
     }
+
+    :global(html.dark-mode) h1 {
+        text-shadow: 0 0 12px rgba(255, 122, 26, 0.6);
+    }
+
     .avatar-wrapper {
         width: 200px;
-        height: 200px; 
+        height: 200px;
         display: block;
         margin-left: auto;
         margin-right: auto;
@@ -383,9 +391,10 @@
         border-radius: 50%;
         border: 4px solid #ff7a1a;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        overflow: hidden; 
+        overflow: hidden;
         position: relative;
-        background-color: #ffffff; 
+        background-color: var(--bg-card, #ffffff);
+        transition: background-color 0.3s ease;
     }
     .avatar-display {
         width: 100%;
@@ -396,12 +405,13 @@
     .chat-box {
         flex: 1;
         overflow-y: auto;
-        background: #f9f9f9;
+        background: var(--bg-page, #f9f9f9);
         border-radius: 8px;
         padding: 1rem;
         margin-bottom: 1rem;
         display: flex;
         flex-direction: column;
+        transition: background 0.3s ease;
     }
     .message {
         margin: 0.5rem 0;
@@ -411,18 +421,29 @@
         border-radius: 12px;
         white-space: pre-wrap;
         word-wrap: break-word;
+        transition: all 0.3s ease;
     }
     .message.user {
         text-align: right;
         color: #c59c22;
         align-self: flex-end;
-        background-color: #f0f0f0; 
+        background-color: rgba(192, 156, 34, 0.15);
     }
+
+    :global(html.dark-mode) .message.user {
+        background-color: rgba(192, 156, 34, 0.2);
+        color: #f4d03f;
+    }
+
     .message.bot {
         text-align: left;
-        color: #1d1d1f;
+        color: var(--primary, #1d1d1f);
         align-self: flex-start;
-        background-color: #ebebeb; 
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    :global(html.dark-mode) .message.bot {
+        background-color: rgba(255, 255, 255, 0.1);
     }
     .controls {
         display: flex;
@@ -431,11 +452,12 @@
     textarea {
         flex: 1;
         resize: none;
-        border: 1px solid #d2d2d7;
+        border: 1px solid var(--border, #d2d2d7);
         border-radius: 8px;
         padding: 0.5rem;
-        background: #f9f9f9;
-        color: #1d1d1f;
+        background: var(--bg-page, #f9f9f9);
+        color: var(--primary, #1d1d1f);
+        transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
     }
     button {
         background: #ff7a1a;
@@ -445,29 +467,31 @@
         padding: 0.5rem 1rem;
         cursor: pointer;
         font-weight: bold;
+        transition: all 0.2s ease;
     }
     .icon-btn {
-        padding: 0.5rem; 
+        padding: 0.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
     }
     .icon-btn img {
-        width: 24px;  
+        width: 24px;
         height: 24px;
     }
     .stt-lang {
         font-size: 0.9rem;
         margin-top: 0.5rem;
-        color: #555;
+        color: var(--secondary, #555);
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        transition: color 0.3s ease;
     }
     .lang-btn {
-        background: #f0f0f0;
-        color: #555;
-        border: 1px solid #d2d2d7;
+        background: var(--bg-page, #f0f0f0);
+        color: var(--secondary, #555);
+        border: 1px solid var(--border, #d2d2d7);
         border-radius: 6px;
         padding: 0.25rem 0.5rem;
         cursor: pointer;

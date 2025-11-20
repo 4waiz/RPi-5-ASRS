@@ -48,8 +48,12 @@
     justify-content: center;
   }
 
+  :global(html.dark-mode) .modal-overlay {
+    background: rgba(0,0,0,0.8);
+  }
+
   .modal {
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 16px;
     width: 90%;
     max-width: 800px;
@@ -57,12 +61,14 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: background 0.3s ease;
   }
 
   .modal-header {
     padding: 2rem;
-    border-bottom: 1px solid #E0E0E0;
+    border-bottom: 1px solid var(--border, #E0E0E0);
     position: relative;
+    transition: border-bottom 0.3s ease;
   }
 
   .back-button {
@@ -71,19 +77,27 @@
     left: 2rem;
     width: 48px;
     height: 48px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--border, #E0E0E0);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: white;
+    background: var(--bg-card, white);
+    color: var(--primary, #212121);
+    transition: all 0.3s ease;
+  }
+
+  :global(html.dark-mode) .back-button {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .modal-title {
     text-align: center;
     font-size: 2rem;
     font-weight: 700;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .modal-body {
@@ -94,6 +108,8 @@
 
   .diagnosis-content {
     line-height: 1.8;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .diagnosis-content :global(h2) {

@@ -29,7 +29,7 @@
 
 .value {
     margin: 0;
-    color: #000;
+    color: var(--primary, #000);
     font-size: 25px;
     font-weight: 700;
     line-height: 1;
@@ -38,7 +38,7 @@
 
 .unit {
     margin-left: 0px;
-    color: rgba(0, 0, 0, 0.68);
+    color: var(--secondary, rgba(0, 0, 0, 0.68));
     font-size: 14px;
     font-weight: 400;
     line-height: 1;
@@ -46,7 +46,7 @@
 
 .label {
     margin: 0;
-    color: #000;
+    color: var(--primary, #000);
     font-size: 18px;
     font-weight: 400;
     line-height: 1.2;

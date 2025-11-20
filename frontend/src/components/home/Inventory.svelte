@@ -242,10 +242,11 @@
     display: flex;
     flex-direction: row;
     gap: 32px;
-    background-color: #ebebeb;
+    background-color: var(--bg-page, #ebebeb);
     box-sizing: border-box;
     padding-left: 24px;
     padding-right: 32px;
+    transition: background-color 0.3s ease;
   }
 
   .notifications-container {
@@ -267,16 +268,22 @@
   h2 {
     margin: 0 0 12px 0;
     color: blue;
+    transition: color 0.3s ease;
+  }
+
+  :global(html.dark-mode) h2 {
+    text-shadow: 0 0 12px rgba(0, 0, 255, 0.6);
   }
 
   /* NotificationCard styles (merged inline) */
   .notification-card {
     border-radius: 17.134px;
-    border: 1.606px solid rgba(0, 0, 0, 0.24);
-    box-shadow: 
-      0 0 0.535px 0 rgba(66, 71, 76, 0.32), 
-      0 4.284px 8.567px 0 rgba(66, 71, 76, 0.05), 
-      0 4.284px 42.836px 0 #EEE;
+    border: 1.606px solid var(--border, rgba(0, 0, 0, 0.24));
+    background: var(--bg-card, #fff);
+    box-shadow:
+      0 0 0.535px 0 rgba(66, 71, 76, 0.32),
+      0 4.284px 8.567px 0 rgba(66, 71, 76, 0.05),
+      0 4.284px 42.836px 0 rgba(238, 238, 238, 0.5);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -285,20 +292,37 @@
     padding: 14.993px 19.276px 14.993px 14.993px;
     gap: 16px;
     flex-shrink: 0;
+    transition: background 0.3s ease, border 0.3s ease;
   }
+
+  :global(html.dark-mode) .notification-card {
+    box-shadow:
+      0 0 0.535px 0 rgba(255, 255, 255, 0.1),
+      0 4.284px 8.567px 0 rgba(0, 0, 0, 0.3),
+      0 4.284px 42.836px 0 rgba(0, 0, 0, 0.2);
+  }
+
   .icon-container {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: #00000025;
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 10px;
     flex-shrink: 0;
+    transition: background 0.3s ease;
   }
+
+  :global(html.dark-mode) .icon-container {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   .checkmark {
-    color: #374151;
+    color: var(--secondary, #374151);
+    transition: color 0.3s ease;
   }
+
   .content {
     display: flex;
     flex-direction: column;
@@ -310,20 +334,22 @@
     margin: 0;
     font-size: 16px;
     font-weight: 600;
-    color: #111827;
+    color: var(--primary, #111827);
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.3s ease;
   }
   .timestamp {
     margin: 0;
     font-size: 13px;
-    color: #6b7280;
+    color: var(--secondary, #6b7280);
     line-height: 1.4;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.3s ease;
   }
 
   /* Legend Styling */
@@ -343,8 +369,9 @@
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    color: #333333;
+    color: var(--primary, #333333);
     width: fit-content;
+    transition: color 0.3s ease;
   }
 
   .dot {

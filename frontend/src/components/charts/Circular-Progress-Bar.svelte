@@ -63,6 +63,11 @@
     stroke: #c8c8c8;
     stroke-width: 20;
   }
+
+  :global(html.dark-mode) .circle-bg-track {
+    stroke: #374151;
+  }
+
   .circle-progress {
     fill: none;
     stroke-width: 20;
@@ -76,6 +81,7 @@
     transform: translate(-50%, -50%);
     font-size: 18px;
     font-weight: bold;
+    color: var(--primary, #000);
     transition: color 0.3s ease;
   }
   .label {
@@ -84,5 +90,6 @@
     font-weight: 600;
     white-space: nowrap;
     text-align: center;
+    color: var(--primary, #000);
   }
 </style>

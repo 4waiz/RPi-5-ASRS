@@ -722,7 +722,7 @@
   }
 
   .modal-content {
-    background: #FFFFFF;
+    background: var(--bg-card, #FFFFFF);
     border-radius: 28px;
     width: 100%;
     max-width: 680px;
@@ -732,6 +732,11 @@
     flex-direction: column;
     box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.05);
     animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .modal-content {
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   @keyframes slideUp {
@@ -810,7 +815,12 @@
   .modal-body {
     overflow-y: auto;
     padding: 2.5rem 2rem;
-    background: #FAFBFC;
+    background: var(--bg-page, #FAFBFC);
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .modal-body {
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .voice-section {
@@ -893,14 +903,14 @@
   .ptt-instruction {
     font-size: 1.0625rem;
     font-weight: 500;
-    color: #4B5563;
+    color: var(--secondary, #4B5563);
     margin: 0;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.3s ease;
   }
 
   .transcript-box {
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
+    background: var(--bg-card, #FFFFFF);
+    border: 1.5px solid var(--border, #E5E7EB);
     border-left: 4px solid #FF6B35;
     padding: 1.5rem;
     border-radius: 18px;
@@ -908,8 +918,12 @@
     margin-bottom: 1.5rem;
     opacity: 0;
     transform: translateY(16px);
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease, border 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  :global(html.dark-mode) .transcript-box {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .transcript-box.show {
@@ -928,7 +942,8 @@
     display: flex;
     align-items: center;
     gap: 0.625rem;
-    color: #4B5563;
+    color: var(--secondary, #4B5563);
+    transition: color 0.3s ease;
   }
 
   .header-label svg {
@@ -963,13 +978,14 @@
 
   .transcript-text {
     margin: 0;
-    color: #1F2937;
+    color: var(--primary, #1F2937);
     font-size: 1.0625rem;
     line-height: 1.65;
+    transition: color 0.3s ease;
   }
 
   .error-box {
-    background: #FEF2F2;
+    background: var(--bg-page, #FEF2F2);
     border: 1.5px solid #FCA5A5;
     border-left: 4px solid #DC2626;
     padding: 1.25rem;
@@ -982,8 +998,12 @@
     font-size: 0.9375rem;
     opacity: 0;
     transform: translateY(16px);
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease, border 0.3s ease;
     box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+  }
+
+  :global(html.dark-mode) .error-box {
+    background: rgba(220, 38, 38, 0.15);
   }
 
   .error-box.show {
@@ -1101,14 +1121,18 @@
   }
 
   .response-section {
-    background: #FFFFFF;
+    background: var(--bg-card, #FFFFFF);
     padding: 2rem;
     border-radius: 20px;
-    border: 1.5px solid #E5E7EB;
+    border: 1.5px solid var(--border, #E5E7EB);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     opacity: 0;
     transform: translateY(16px);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease, border 0.3s ease;
+  }
+
+  :global(html.dark-mode) .response-section {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .response-section.show {
@@ -1130,23 +1154,29 @@
     align-items: center;
     gap: 0.625rem;
     font-size: 1.125rem;
-    color: #1F2937;
+    color: var(--primary, #1F2937);
     margin: 0;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 
   .view-toggle {
     display: flex;
     gap: 0.5rem;
-    background: #F3F4F6;
+    background: var(--bg-page, #F3F4F6);
     padding: 0.375rem;
     border-radius: 14px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .view-toggle {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .toggle-btn {
     background: transparent;
     border: none;
-    color: #6B7280;
+    color: var(--secondary, #6B7280);
     padding: 0.5625rem 1rem;
     border-radius: 11px;
     cursor: pointer;
@@ -1155,7 +1185,7 @@
     gap: 0.4375rem;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.3s ease;
   }
 
   .toggle-btn.active {
@@ -1165,10 +1195,15 @@
   }
 
   .audio-mode {
-    background: #FAFBFC;
+    background: var(--bg-page, #FAFBFC);
     padding: 2rem;
     border-radius: 16px;
-    border: 1.5px solid #E5E7EB;
+    border: 1.5px solid var(--border, #E5E7EB);
+    transition: background 0.3s ease, border 0.3s ease;
+  }
+
+  :global(html.dark-mode) .audio-mode {
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .audio-controls {
@@ -1212,10 +1247,11 @@
   }
 
   .speaking-indicator p {
-    color: #4B5563;
+    color: var(--secondary, #4B5563);
     font-weight: 500;
     margin: 0;
     font-size: 1rem;
+    transition: color 0.3s ease;
   }
 
   .stop-speech-btn {
@@ -1261,28 +1297,35 @@
   }
 
   .audio-hint {
-    color: #6B7280;
+    color: var(--secondary, #6B7280);
     font-size: 0.875rem;
     margin: 0.875rem 0 0 0;
     text-align: center;
+    transition: color 0.3s ease;
   }
 
   .response-content {
-    background: #FAFBFC;
+    background: var(--bg-page, #FAFBFC);
     padding: 1.5rem;
     border-radius: 16px;
-    border: 1.5px solid #E5E7EB;
+    border: 1.5px solid var(--border, #E5E7EB);
     line-height: 1.75;
-    color: #1F2937;
+    color: var(--primary, #1F2937);
+    transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+  }
+
+  :global(html.dark-mode) .response-content {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .response-content :global(h1),
   .response-content :global(h2),
   .response-content :global(h3) {
-    color: #1F2937;
+    color: var(--primary, #1F2937);
     margin-top: 1.5rem;
     margin-bottom: 0.875rem;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 
   .response-content :global(h1:first-child),
@@ -1310,12 +1353,17 @@
   }
 
   .response-content :global(code) {
-    background: #E5E7EB;
+    background: var(--border, #E5E7EB);
     padding: 0.25rem 0.5rem;
     border-radius: 6px;
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Consolas', monospace;
     font-size: 0.875em;
     color: #F7931E;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .response-content :global(code) {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .new-query-btn {

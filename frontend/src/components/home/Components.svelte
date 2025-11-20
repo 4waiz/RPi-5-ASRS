@@ -210,7 +210,8 @@ const statusStore = createStatusStore();
     padding: 20px 24px 32px;
     min-height: calc(100vh - 120px);
     box-sizing: border-box;
-    transition: all 200ms ease;
+    transition: all 0.3s ease;
+    background: var(--bg-page);
     user-select: none;
     caret-color: transparent;
   }
@@ -226,7 +227,8 @@ const statusStore = createStatusStore();
     flex-direction: column;
     gap: 16px;
     max-width: 960px;
-    transition: all 200ms ease;
+    transition: all 0.3s ease;
+    background: var(--bg-page);
   }
 
   .components-page.with-drawer {

@@ -191,8 +191,12 @@
     justify-content: center;
   }
 
+  :global(html.dark-mode) .modal-overlay {
+    background: rgba(0,0,0,0.8);
+  }
+
   .modal {
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 16px;
     width: 90%;
     max-width: 800px;
@@ -200,12 +204,14 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: background 0.3s ease;
   }
 
   .modal-header {
     padding: 2rem;
-    border-bottom: 1px solid #E0E0E0;
+    border-bottom: 1px solid var(--border, #E0E0E0);
     position: relative;
+    transition: border-bottom 0.3s ease;
   }
 
   .back-button {
@@ -214,19 +220,27 @@
     left: 2rem;
     width: 48px;
     height: 48px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--border, #E0E0E0);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: white;
+    background: var(--bg-card, white);
+    color: var(--primary, #212121);
+    transition: all 0.3s ease;
+  }
+
+  :global(html.dark-mode) .back-button {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .modal-title {
     text-align: center;
     font-size: 2rem;
     font-weight: 700;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .progress-bar {
@@ -239,8 +253,13 @@
   .progress-segment {
     height: 4px;
     width: 80px;
-    background: #E0E0E0;
+    background: var(--border, #E0E0E0);
     border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+
+  :global(html.dark-mode) .progress-segment {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .progress-segment.active {
@@ -258,6 +277,8 @@
     font-weight: 600;
     text-align: center;
     margin-bottom: 2rem;
+    color: var(--primary, #212121);
+    transition: color 0.3s ease;
   }
 
   .options-grid {
@@ -268,14 +289,15 @@
 
   .option-button {
     padding: 2rem 1rem;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--border, #E0E0E0);
     border-radius: 12px;
-    background: white;
+    background: var(--bg-card, white);
     cursor: pointer;
     font-weight: 500;
     font-size: 1rem;
-    transition: all 0.2s;
+    transition: all 0.2s, background 0.3s ease, border 0.3s ease, color 0.3s ease;
     text-align: center;
+    color: var(--primary, #212121);
   }
 
   .option-button.selected {
@@ -286,9 +308,10 @@
 
   .modal-footer {
     padding: 1.5rem 2rem;
-    border-top: 1px solid #E0E0E0;
+    border-top: 1px solid var(--border, #E0E0E0);
     display: flex;
     gap: 1rem;
+    transition: border-top 0.3s ease;
   }
 
   .footer-button {
@@ -298,12 +321,17 @@
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s, background 0.3s ease, border 0.3s ease, color 0.3s ease;
   }
 
   .footer-button.back {
-    background: white;
-    border: 1px solid #E0E0E0;
+    background: var(--bg-card, white);
+    border: 1px solid var(--border, #E0E0E0);
+    color: var(--primary, #212121);
+  }
+
+  :global(html.dark-mode) .footer-button.back {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .footer-button.next {
@@ -329,10 +357,16 @@
   .spinner {
     width: 60px;
     height: 60px;
-    border: 4px solid #E0E0E0;
+    border: 4px solid var(--border, #E0E0E0);
     border-top: 4px solid #FF5722;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+    transition: border 0.3s ease;
+  }
+
+  :global(html.dark-mode) .spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: #FF5722;
   }
 
   @keyframes spin {
@@ -342,7 +376,8 @@
 
   .loading-text {
     font-size: 1.1rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     font-weight: 500;
+    transition: color 0.3s ease;
   }
 </style>

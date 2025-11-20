@@ -59,13 +59,14 @@
     align-self: stretch;
     max-width: 640px;
     max-height: calc(100vh - 160px);
-    background: #fff;
+    background: var(--bg-card, #fff);
     box-shadow: -8px 0 18px rgba(0, 0, 0, 0.12);
     display: grid;
     grid-template-rows: auto 1fr;
-    border: 1px solid #eee;
+    border: 1px solid var(--border, #eee);
     border-radius: 16px;
     overflow: hidden;
+    transition: background 0.3s ease, border 0.3s ease;
   }
 
   .hdr {
@@ -73,7 +74,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 18px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border, #eee);
   }
   .head {
     display: flex;
@@ -84,16 +85,16 @@
     width: 52px;
     height: 52px;
     object-fit: contain;
-    background: #f4f4f4;
+    background: var(--bg-page, #f4f4f4);
     border-radius: 12px;
   }
   .title {
     font-weight: 700;
     font-size: 1.05rem;
-    color: #222;
+    color: var(--primary, #222);
   }
   .subtitle {
-    color: #7b7b7b;
+    color: var(--secondary, #7b7b7b);
     font-size: 0.9rem;
   }
   .icon-btn {
@@ -116,7 +117,7 @@
     align-items: center;
     gap: 16px;
     padding: 18px 14px;
-    border-bottom: 1px solid #f2f2f2;
+    border-bottom: 1px solid var(--border, #f2f2f2);
     border-radius: 16px;
     transition: background 140ms ease, box-shadow 160ms ease, transform 120ms ease;
   }
@@ -130,10 +131,10 @@
   }
   .name {
     font-weight: 600;
-    color: #2b2b2b;
+    color: var(--primary, #2b2b2b);
   }
   .id {
-    color: #8a8a8a;
+    color: var(--secondary, #8a8a8a);
     font-size: 0.9rem;
   }
   .status {

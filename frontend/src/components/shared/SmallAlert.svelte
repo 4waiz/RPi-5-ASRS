@@ -4,10 +4,9 @@
 
     let { Massage, Type, Time } = $props();
     let iconPath = $state(Type === "Alert" ? alertRed : alertYellow);
-    let color = $state(Type === "Alert" ? "#EDD1D1" : "#EDEBD1");
 </script>
 
-<div class="alert-container" style="background-color: {color};">
+<div class="alert-container" class:alert-type={Type === "Alert"} class:warning-type={Type !== "Alert"}>
     <div class="alert-content">
         <img src={iconPath} alt="My icon" class="alert-icon" />
         <p class="alert-message">
@@ -25,9 +24,28 @@
     align-items: center;
     padding: 0 12px;
     height: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
     border-radius: 8px;
     align-self: stretch;
+    transition: all 0.3s ease;
+}
+
+.alert-container.alert-type {
+    background-color: #EDD1D1;
+}
+
+.alert-container.warning-type {
+    background-color: #EDEBD1;
+}
+
+:global(html.dark-mode) .alert-container.alert-type {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+:global(html.dark-mode) .alert-container.warning-type {
+    background-color: rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.4);
 }
 
 .alert-content {
@@ -37,13 +55,13 @@
 }
 
 .alert-message {
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--primary, rgba(0, 0, 0, 0.87));
     font-size: 16px;
     font-weight: 400;
 }
 
 .alert-timestamp {
-    color: #000;
+    color: var(--primary, #000);
     font-size: 12px;
     font-style: italic;
 }
@@ -52,5 +70,9 @@
     color: red;
     width: 19px;
     height: 19px;
+}
+
+:global(html.dark-mode) .alert-container {
+    border-color: #2D3748;
 }
 </style>
