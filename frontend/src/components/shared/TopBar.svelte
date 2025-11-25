@@ -57,7 +57,7 @@
     justify-content: center;
     align-items: center;
     font-size: 16px;
-    background-color: #ebebeb;
+    background-color: var(--surface-muted);
     border: 0;
     text-align: center;
     color: var(--secondary, #525252);
@@ -68,67 +68,26 @@
     transition: all 0.3s ease;
 }
 
-:global(html.dark-mode) .tab {
-    background-color: #1E293B;
-    color: #FFFFFF;
-}
-
-:global(html.dark-mode) .tab .tab-text {
-    color: #FFFFFF;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
-}
-
 .tab-active {
-    border-top: 2px solid var(--primary, #000);
-    border-right: 2px solid var(--primary, #000);
-    border-left: 2px solid var(--primary, #000);
-    border-bottom: 2px solid #ebebeb;
+    border-top: 2px solid var(--border);
+    border-right: 2px solid var(--border);
+    border-left: 2px solid var(--border);
+    border-bottom: 2px solid var(--surface-muted);
+    background-color: var(--bg-card);
     color: var(--brand, #e54817);
     font-weight: 600;
     z-index: 2;
     animation: tabActivate 0.3s ease-out;
-}
-
-:global(html.dark-mode) .tab-active {
-    border-top-color: var(--border);
-    border-right-color: var(--border);
-    border-left-color: var(--border);
-    border-bottom-color: #0F172A;
-    background-color: #0F172A;
-    color: var(--brand);
-    animation: tabActivateDark 0.3s ease-out;
-}
-
-:global(html.dark-mode) .tab-active .tab-text {
-    text-shadow:
-        0 0 10px rgba(229, 72, 23, 0.6),
-        0 0 20px rgba(229, 72, 23, 0.4),
-        0 0 30px rgba(229, 72, 23, 0.2);
-}
-
-:global(html.dark-mode) .tab-active .tab-icon {
-    filter: drop-shadow(0 0 8px rgba(229, 72, 23, 0.6))
-            drop-shadow(0 0 12px rgba(229, 72, 23, 0.4));
+    box-shadow: var(--shadow-soft);
 }
 
 @keyframes tabActivate {
     0% {
-        background-color: #e0e0e0;
+        background-color: var(--surface-muted);
         transform: translateY(3px);
     }
     100% {
-        background-color: #ebebeb;
-        transform: translateY(0);
-    }
-}
-
-@keyframes tabActivateDark {
-    0% {
-        background-color: #1E293B;
-        transform: translateY(3px);
-    }
-    100% {
-        background-color: #0F172A;
+        background-color: var(--bg-card);
         transform: translateY(0);
     }
 }
@@ -141,8 +100,12 @@
     transition: transform 0.2s ease, filter 0.3s ease;
 }
 
+:global(html.dark-mode) .tab {
+    color: var(--primary);
+}
+
 :global(html.dark-mode) .tab .tab-icon {
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.1));
+    filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.1));
 }
 
 /* Overview tab - Slide up animation */
@@ -269,7 +232,7 @@
 }
 
 .devider {
-    background-color: var(--primary, #000);
+    background-color: var(--border);
     width: 100%;
     height: 2px;
     position: relative;

@@ -259,7 +259,7 @@
     padding: 12px 16px;
     border-radius: 16px;
     border: 1px solid var(--border, rgba(0, 0, 0, 0.3));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px var(--shadow-light);
     background: var(--bg-card, #fff);
     transition: all 0.3s ease;
   }

@@ -626,88 +626,6 @@
     box-sizing: border-box; 
   }
 
-  :global(:root) {
-    --primary: #111827;
-    --secondary: #6B7280;
-    --border: #E5E7EB;
-    --bg-card: #FFFFFF;
-    --bg-page: #F9FAFB;
-    --brand: #E54817;
-    --brand-light: rgba(229, 72, 23, 0.1);
-    --track-rest: #E5E7EB;
-    --screen-brightness: 0;
-  }
-
-  /* Dark Mode Theme */
-  :global(html.dark-mode) {
-    --primary: #F3F4F6;
-    --secondary: #9CA3AF;
-    --border: #2D3748;
-    --bg-card: #1A202C;
-    --bg-page: #0F172A;
-    --brand: #FB923C;
-    --brand-light: rgba(251, 146, 60, 0.15);
-    --track-rest: #2D3748;
-  }
-
-  :global(html.dark-mode) body {
-    background: var(--bg-page);
-    color: var(--primary);
-  }
-
-  /* Dark mode specific improvements */
-  :global(html.dark-mode) .page {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  }
-
-  :global(html.dark-mode) .card {
-    background: linear-gradient(135deg, #1A202C 0%, #1E293B 100%);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  :global(html.dark-mode) .info-card {
-    background: linear-gradient(135deg, #1E293B 0%, #1A202C 100%);
-    border-color: #2D3748;
-  }
-
-  :global(html.dark-mode) .info-card:hover {
-    background: linear-gradient(135deg, #2D3748 0%, #1E293B 100%);
-    border-color: var(--brand);
-    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.2);
-  }
-
-  :global(html.dark-mode) .lang-btn,
-  :global(html.dark-mode) .log-tab,
-  :global(html.dark-mode) .action-btn {
-    background: #1E293B;
-    border-color: #2D3748;
-    color: var(--secondary);
-  }
-
-  :global(html.dark-mode) .lang-btn.active,
-  :global(html.dark-mode) .log-tab.active {
-    background: rgba(251, 146, 60, 0.15);
-    border-color: var(--brand);
-    color: var(--brand);
-  }
-
-  :global(html.dark-mode) .ip-input,
-  :global(html.dark-mode) .timestamp-input {
-    background: #0F172A;
-    border-color: #2D3748;
-    color: var(--secondary);
-  }
-
-  :global(html.dark-mode) .hold-button {
-    background: #1E293B;
-    border-color: #2D3748;
-  }
-
-  :global(html.dark-mode) .settings-shell {
-    background: transparent;
-  }
-
-  
   :global(body::before) {
     content: '';
     position: fixed;
@@ -761,7 +679,7 @@
     min-height: 100vh;
     display: flex;
     gap: 48px;
-    background: var(--bg-page);
+    background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
     padding-left: 220px;
     padding-right: 32px;
     box-sizing: border-box;
@@ -893,7 +811,7 @@
   .card-brightness.disabled {
     opacity: 0.6;
     pointer-events: none;
-    background: #F9F9F9;
+    background: var(--surface-muted);
   }
 
   .card-brightness.disabled .slider {
@@ -915,14 +833,14 @@
 
   /* Compact Card */
   .card {
-    background: var(--bg-card);
+    background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end));
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 8px 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-soft);
     min-height: 0;
     overflow: hidden;
     height: 100%;
@@ -1245,7 +1163,7 @@
     padding: 0 10px;
     border: 1.5px solid var(--border);
     border-radius: 8px;
-    background: #f3f4f6;
+    background: var(--surface-muted);
     font-size: 11px;
     color: var(--secondary);
     font-family: "Inter", monospace;
@@ -1265,7 +1183,7 @@
     align-items: center;
     gap: 10px;
     padding: 12px;
-    background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
+    background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end));
     border: 1.5px solid var(--border);
     border-radius: 10px;
     transition: all 0.3s ease;
@@ -1273,9 +1191,9 @@
 
   .info-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-strong);
     border-color: var(--brand);
-    background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F0 100%);
+    background: linear-gradient(135deg, var(--card-hover-gradient-start), var(--card-hover-gradient-end));
   }
 
   .info-icon-wrapper {
@@ -1291,7 +1209,7 @@
   }
 
   .info-card:hover .info-icon-wrapper {
-    background: linear-gradient(135deg, var(--brand) 0%, #F4511E 100%);
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong));
   }
 
   .info-icon {
@@ -1331,11 +1249,11 @@
   }
 
   .status-ready {
-    color: #10B981;
+    color: var(--success);
   }
 
   .status-enabled {
-    color: #3B82F6;
+    color: var(--info);
   }
 
   @media (max-width: 840px) {

@@ -9,6 +9,7 @@
   let passwordError = $state('');
   let capsLock = $state(false);
   let audioCtx = null;
+  let passwordInput = null;
 
   // Audio context
   const getAudioContext = () => {
@@ -79,7 +80,7 @@
     button.classList.add('key-pressed');
     setTimeout(() => {
       button.classList.remove('key-pressed');
-    }, 150);
+    }, 80);
   };
 
   const handleSubmit = () => {
@@ -107,12 +108,33 @@
       passwordError = '';
       capsLock = false;
       stopBackspaceHold();
+    } else if (passwordInput) {
+      passwordInput.focus();
+      passwordInput.setSelectionRange(password.length, password.length);
     }
   });
+
+  const handlePhysicalKeydown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSubmit();
+      return;
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      handleCancel();
+      return;
+    }
+
+    if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
+      playKeySound();
+      passwordError = '';
+    }
+  };
 </script>
 
 {#if show}
-  <div class="modal-overlay" onclick={handleCancel}>
+  <div class="modal-overlay">
     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
       <div class="modal-header">
         <h2>{title}</h2>
@@ -132,13 +154,16 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-width="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <div class="password-display" class:error={passwordError}>
-            {#if password}
-              {'•'.repeat(password.length)}
-            {:else}
-              <span class="placeholder-text">Enter password</span>
-            {/if}
-          </div>
+          <input
+            class="password-display password-input"
+            class:error={passwordError}
+            type="password"
+            placeholder="Enter password"
+            bind:this={passwordInput}
+            bind:value={password}
+            oninput={() => (passwordError = '')}
+            onkeydown={handlePhysicalKeydown}
+          />
         </div>
 
         {#if passwordError}
@@ -246,7 +271,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--overlay-bg);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -261,20 +286,16 @@
   }
 
   .modal-content {
-    background: var(--bg-card, white);
+    background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end));
     border-radius: 20px;
     width: 90%;
     max-width: 450px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px var(--shadow-heavy);
     animation: modalSlide 0.3s ease-out;
     overflow: hidden;
     transition: background 0.3s ease;
     margin-bottom: 300px;
-  }
-
-  :global(html.dark-mode) .modal-content {
-    background: linear-gradient(135deg, #1A202C 0%, #1E293B 100%);
-    border: 1px solid #2D3748;
+    border: 1px solid var(--border);
   }
 
   @keyframes modalSlide {
@@ -297,10 +318,6 @@
     transition: border-bottom 0.3s ease;
   }
 
-  :global(html.dark-mode) .modal-header {
-    border-bottom-color: #2D3748;
-  }
-
   .modal-header h2 {
     margin: 0;
     font-size: 1.5rem;
@@ -309,16 +326,12 @@
     transition: color 0.3s ease;
   }
 
-  :global(html.dark-mode) .modal-header h2 {
-    color: #F3F4F6;
-  }
-
   .close-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
     border: none;
-    background: var(--bg-page, #F5F5F5);
+    background: var(--surface-muted);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -332,19 +345,6 @@
     transform: rotate(90deg);
   }
 
-  :global(html.dark-mode) .close-btn {
-    background: #2D3748;
-    color: var(--secondary);
-  }
-
-:global(html.dark-mode) .close-btn:hover {
-  background: #374151;
-}
-
-:global(html.dark-mode) .close-btn svg {
-  filter: none;
-}
-
   .modal-body {
     padding: 24px;
   }
@@ -355,10 +355,6 @@
     font-size: 0.95rem;
     line-height: 1.5;
     transition: color 0.3s ease;
-  }
-
-  :global(html.dark-mode) .modal-description {
-    color: #D1D5DB;
   }
 
   .input-group {
@@ -375,11 +371,6 @@
     transition: color 0.3s ease, filter 0.3s ease;
   }
 
-  :global(html.dark-mode) .input-icon {
-    color: #E0E7FF;
-    filter: none;
-  }
-
   .password-display {
     width: 100%;
     padding: 14px 16px 14px 48px;
@@ -387,29 +378,36 @@
     border-radius: 12px;
     font-size: 1.5rem;
     font-weight: 500;
-    background: var(--bg-page, #FAFAFA);
+    background: var(--bg-card);
     min-height: 52px;
-    display: flex;
-    align-items: center;
+    display: block;
     letter-spacing: 4px;
     color: var(--primary, #212121);
     transition: all 0.2s ease;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
-
-  :global(html.dark-mode) .password-display {
-    background: #0F172A;
-    border-color: #2D3748;
-    color: #FFFFFF;
-    text-shadow: none;
+    box-sizing: border-box;
   }
 
   .password-display.error {
-    border-color: #F44336;
-    background: #FFEBEE;
+    border-color: var(--danger);
+    background: var(--surface-critical);
     animation: shake 0.3s ease-in-out;
+  }
+
+  .password-input {
+    outline: none;
+    box-shadow: none;
+    height: 100%;
+  }
+
+  .password-input::placeholder {
+    font-size: 0.95rem;
+    color: var(--secondary, #9E9E9E);
+    letter-spacing: normal;
+    font-weight: 400;
+    opacity: 1;
   }
 
   .placeholder-text {
@@ -420,32 +418,19 @@
     transition: color 0.3s ease;
   }
 
-  :global(html.dark-mode) .placeholder-text {
-    color: #9CA3AF;
-  }
-
   .error-message {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-top: 12px;
     padding: 12px;
-    background: #FFEBEE;
+    background: var(--surface-critical);
     border-radius: 8px;
-    color: #D32F2F;
+    color: var(--danger);
     font-size: 0.9rem;
     font-weight: 500;
     animation: shake 0.3s ease-in-out;
     transition: color 0.3s ease;
-  }
-
-  :global(html.dark-mode) .error-message {
-    background: rgba(220, 38, 38, 0.15);
-    color: #FCA5A5;
-  }
-
-  :global(html.dark-mode) .error-message svg {
-    filter: none;
   }
 
   @keyframes shake {
@@ -473,7 +458,7 @@
   }
 
   .btn-cancel {
-    background: var(--bg-page, #F5F5F5);
+    background: var(--surface-muted);
     color: var(--secondary, #616161);
   }
 
@@ -481,33 +466,19 @@
     background: var(--border, #E0E0E0);
   }
 
-  :global(html.dark-mode) .btn-cancel {
-    background: #2D3748;
-    color: var(--secondary);
-    text-shadow: none;
-  }
-
-  :global(html.dark-mode) .btn-cancel:hover {
-    background: #374151;
-  }
-
   .btn-submit {
-    background: linear-gradient(135deg, #E54817 0%, #F4511E 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(229, 72, 23, 0.3);
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%);
+    color: var(--on-brand);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 30%, transparent);
   }
 
   .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(229, 72, 23, 0.4);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 45%, transparent);
   }
 
   .btn-submit:active {
     transform: translateY(0);
-  }
-
-  :global(html.dark-mode) .btn-submit {
-    text-shadow: none;
   }
 
   /* Virtual Keyboard - Floating at bottom */
@@ -565,12 +536,12 @@
     height: 54px;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%);
+    background: linear-gradient(135deg, var(--accent-warm-start), var(--accent-warm-end));
     font-size: 1.1rem;
     font-weight: 700;
-    color: #E64A19;
+    color: var(--on-brand);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
@@ -579,12 +550,6 @@
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
     position: relative;
-  }
-
-  :global(html.dark-mode) .key {
-    background: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%);
-    color: #E64A19;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.3);
   }
 
   .key:hover {
@@ -603,40 +568,39 @@
   }
 
   .key-backspace, .key-clear {
-    background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong));
+    color: var(--on-brand);
   }
 
   .key-backspace {
-    color: #FFFFFF;
+    color: var(--on-brand);
   }
 
   .key-backspace svg {
-    stroke: #FFFFFF;
-  }
-
-  :global(html.dark-mode) .key-backspace,
-  :global(html.dark-mode) .key-clear {
-    background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
-    box-shadow: 0 4px 12px rgba(230, 74, 25, 0.4);
+    stroke: var(--on-brand);
   }
 
   .key-clear {
     grid-column: span 2;
-    color: #FFFFFF;
+    color: var(--on-brand);
   }
 
   .key-capslock {
-    background: linear-gradient(135deg, #607D8B 0%, #546E7A 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--border), var(--border-strong));
+    color: var(--on-brand);
   }
 
   .key-capslock.active {
-    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    background: linear-gradient(135deg, var(--success) 0%, var(--accent-green) 100%);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--success) 50%, transparent);
+    color: white;
   }
 
   .key-capslock svg {
+    stroke: var(--on-brand);
+  }
+
+  .key-capslock.active svg {
     stroke: white;
   }
 
@@ -658,3 +622,4 @@
     }
   }
 </style>
+

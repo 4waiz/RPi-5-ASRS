@@ -378,7 +378,7 @@
     }
 
     :global(html.dark-mode) h1 {
-        text-shadow: 0 0 12px rgba(255, 122, 26, 0.6);
+        text-shadow: 0 0 12px var(--ai-glow);
     }
 
     .avatar-wrapper {
@@ -425,14 +425,14 @@
     }
     .message.user {
         text-align: right;
-        color: #c59c22;
+        color: var(--message-user);
         align-self: flex-end;
-        background-color: rgba(192, 156, 34, 0.15);
+        background-color: var(--message-user-bg);
     }
 
     :global(html.dark-mode) .message.user {
-        background-color: rgba(192, 156, 34, 0.2);
-        color: #f4d03f;
+        background-color: var(--message-user-bg);
+        color: var(--message-user);
     }
 
     .message.bot {
@@ -443,7 +443,7 @@
     }
 
     :global(html.dark-mode) .message.bot {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: var(--overlay-white-strong);
     }
     .controls {
         display: flex;

@@ -588,8 +588,8 @@
   }
 
   :global(html.dark-mode) .summary-card {
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background: var(--overlay-white-medium);
+    box-shadow: 0 1px 3px var(--overlay-medium);
   }
 
   .summary-card.critical {
@@ -598,8 +598,8 @@
   }
 
   :global(html.dark-mode) .summary-card.critical {
-    background: linear-gradient(135deg, rgba(211, 47, 47, 0.15) 0%, rgba(211, 47, 47, 0.08) 100%);
-    border-color: rgba(211, 47, 47, 0.6);
+    background: linear-gradient(135deg, var(--alert-critical-bg-start) 0%, var(--alert-critical-bg-end) 100%);
+    border-color: var(--alert-critical-border);
   }
 
   .summary-card.warning {
@@ -608,8 +608,8 @@
   }
 
   :global(html.dark-mode) .summary-card.warning {
-    background: linear-gradient(135deg, rgba(249, 168, 37, 0.15) 0%, rgba(249, 168, 37, 0.08) 100%);
-    border-color: rgba(249, 168, 37, 0.6);
+    background: linear-gradient(135deg, var(--alert-warning-bg-start) 0%, var(--alert-warning-bg-end) 100%);
+    border-color: var(--alert-warning-border);
   }
 
   .summary-card.error {
@@ -618,8 +618,8 @@
   }
 
   :global(html.dark-mode) .summary-card.error {
-    background: linear-gradient(135deg, rgba(255, 112, 67, 0.15) 0%, rgba(255, 112, 67, 0.08) 100%);
-    border-color: rgba(255, 112, 67, 0.6);
+    background: linear-gradient(135deg, var(--alert-error-bg-start) 0%, var(--alert-error-bg-end) 100%);
+    border-color: var(--alert-error-border);
   }
 
   .summary-label {

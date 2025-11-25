@@ -272,7 +272,7 @@
   }
 
   :global(html.dark-mode) h2 {
-    text-shadow: 0 0 12px rgba(0, 0, 255, 0.6);
+    text-shadow: 0 0 12px var(--text-shadow-glow);
   }
 
   /* NotificationCard styles (merged inline) */
@@ -308,14 +308,10 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--overlay-light);
     border-radius: 10px;
     flex-shrink: 0;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .icon-container {
-    background: rgba(255, 255, 255, 0.1);
   }
 
   .checkmark {

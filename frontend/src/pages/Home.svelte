@@ -58,47 +58,16 @@
 </div>
 
 <style>
-  :global(:root) {
-    --primary: #111827;
-    --secondary: #6B7280;
-    --border: #E5E7EB;
-    --bg-card: #FFFFFF;
-    --bg-page: #F9FAFB;
-    --brand: #E54817;
-    --brand-light: rgba(229, 72, 23, 0.1);
-    --track-rest: #E5E7EB;
-  }
-
-  :global(html.dark-mode) {
-    --primary: #F3F4F6;
-    --secondary: #9CA3AF;
-    --border: #2D3748;
-    --bg-card: #1A202C;
-    --bg-page: #0F172A;
-    --brand: #FB923C;
-    --brand-light: rgba(251, 146, 60, 0.15);
-    --track-rest: #2D3748;
-  }
-
-  :global(html.dark-mode) body {
-    background: var(--bg-page);
-    color: var(--primary);
-  }
-
   .main {
     width: 100%;
     height: calc(100vh);
     display: flex;
     gap: 32px;
-    background: linear-gradient(135deg, var(--bg-page) 0%, #ebebeb 100%);
+    background: linear-gradient(135deg, var(--page-gradient-start) 0%, var(--page-gradient-end) 100%);
     box-sizing: border-box;
     padding-left: 220px;
     padding-right: 32px;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .main {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   }
 
   .right-con {

@@ -266,7 +266,7 @@
 
   .station-text {
     font-size: 1.2rem;
-    color: #757575;
+    color: var(--secondary, #757575);
     margin-top: 0.5rem;
   }
 
@@ -294,16 +294,16 @@
   .mode-dot {
     width: 10px;
     height: 10px;
-    background: #4CAF50;
+    background: var(--success);
     border-radius: 50%;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--success) 60%, transparent);
     animation: pulse 2s ease-in-out infinite;
     flex-shrink: 0;
   }
 
   .mode-dot.edit-mode {
-    background: #FF9800;
-    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+    background: var(--warning);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--warning) 60%, transparent);
   }
 
   @keyframes pulse {
@@ -373,8 +373,8 @@
   }
 
   .mode-option.active {
-    background: #FFF3E0;
-    color: #FF5722;
+    background: var(--brand-light);
+    color: var(--brand);
   }
 
   .option-dot {
@@ -385,16 +385,16 @@
   }
 
   .option-dot.live {
-    background: #4CAF50;
+    background: var(--success);
   }
 
   .option-dot.edit {
-    background: #FF9800;
+    background: var(--warning);
   }
 
   .check-icon {
     margin-left: auto;
-    color: #FF5722;
+    color: var(--brand);
   }
 
   .nav-menu {
@@ -415,14 +415,9 @@
   }
 
   .nav-item.active {
-    background: #FFF3E0;
-    color: #FF5722;
-    border-right: 4px solid #FF5722;
-  }
-
-  :global(html.dark-mode) .nav-item.active {
-    background: rgba(251, 146, 60, 0.15);
+    background: var(--brand-light);
     color: var(--brand);
+    border-right: 4px solid var(--brand);
   }
 
   .nav-icon {
@@ -524,30 +519,30 @@
   }
 
   .badge.alert {
-    background: #FFEBEE;
-    color: #D32F2F;
+    background: var(--surface-critical, rgba(211, 47, 47, 0.12));
+    color: var(--danger);
     animation: alertPulse 2s ease-in-out infinite;
-    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 70%, transparent);
   }
 
   @keyframes alertPulse {
     0%, 100% {
-      background: #FFEBEE;
-      color: #D32F2F;
-      box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
+      background: var(--surface-critical, rgba(211, 47, 47, 0.12));
+      color: var(--danger);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 70%, transparent);
       transform: scale(1);
     }
     50% {
-      background: #D32F2F;
-      color: white;
-      box-shadow: 0 0 0 8px rgba(211, 47, 47, 0);
+      background: var(--danger);
+      color: var(--on-brand, #ffffff);
+      box-shadow: 0 0 0 8px transparent;
       transform: scale(1.1);
     }
   }
 
   .badge.warning {
-    background: #FFF9C4;
-    color: #F57C00;
+    background: var(--surface-warning, rgba(245, 158, 11, 0.12));
+    color: var(--warning);
   }
 
   .settings-button {
@@ -564,13 +559,8 @@
   }
 
   .settings-button.active {
-    background: #FFF3E0;
-    color: #FF5722;
-    border-right: 4px solid #FF5722;
-  }
-
-  :global(html.dark-mode) .settings-button.active {
-    background: rgba(251, 146, 60, 0.15);
+    background: var(--brand-light);
     color: var(--brand);
+    border-right: 4px solid var(--brand);
   }
 </style>

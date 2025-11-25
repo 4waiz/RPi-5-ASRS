@@ -11,18 +11,18 @@
 
   function getSeverityColor(severity) {
     const colors = {
-      'critical': '#D32F2F',
-      'error': '#FB8C00',
-      'warning': '#F9A825'
+      'critical': 'var(--danger)',
+      'error': 'var(--brand)',
+      'warning': 'var(--warning)'
     };
-    return colors[severity] || '#757575';
+    return colors[severity] || 'var(--secondary)';
   }
 
   function getRPNLevel(rpn) {
-    if (rpn >= 200) return { label: 'Extreme Risk', color: '#B71C1C', description: 'Immediate action required' };
-    if (rpn >= 100) return { label: 'High Risk', color: '#D32F2F', description: 'Urgent attention needed' };
-    if (rpn >= 50) return { label: 'Medium Risk', color: '#FB8C00', description: 'Schedule maintenance soon' };
-    return { label: 'Low Risk', color: '#F9A825', description: 'Monitor and address when convenient' };
+    if (rpn >= 200) return { label: 'Extreme Risk', color: 'var(--danger)', description: 'Immediate action required' };
+    if (rpn >= 100) return { label: 'High Risk', color: 'var(--brand)', description: 'Urgent attention needed' };
+    if (rpn >= 50) return { label: 'Medium Risk', color: 'var(--warning)', description: 'Schedule maintenance soon' };
+    return { label: 'Low Risk', color: 'var(--success)', description: 'Monitor and address when convenient' };
   }
 
   // Generate placeholder image paths based on component/subsystem
@@ -223,7 +223,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--overlay-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,11 +232,11 @@
   }
 
   :global(html.dark-mode) .modal-overlay {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--overlay-dark);
   }
 
   .modal-content {
-    background: var(--bg-card, white);
+    background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end));
     border-radius: 16px;
     width: 100%;
     max-width: 900px;
@@ -246,15 +246,16 @@
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     transition: background 0.3s ease;
+    border: 1px solid var(--border);
   }
 
   :global(html.dark-mode) .modal-content {
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 20px 60px var(--overlay-dark);
   }
 
   .modal-header {
     padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -311,7 +312,7 @@
   }
 
   :global(html.dark-mode) .close-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-white-strong);
   }
 
   .modal-body {
@@ -343,7 +344,7 @@
   }
 
   :global(html.dark-mode) .section h3 svg {
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+    filter: drop-shadow(0 0 4px var(--overlay-white-light));
   }
 
   .fmea-section {
@@ -355,7 +356,7 @@
   }
 
   :global(html.dark-mode) .fmea-section {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--overlay-white-medium);
   }
 
   .fmea-grid {
@@ -372,7 +373,7 @@
   }
 
   :global(html.dark-mode) .fmea-metric {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--overlay-white-mild);
   }
 
   .metric-header {
@@ -407,7 +408,7 @@
   }
 
   :global(html.dark-mode) .metric-bar {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-white-strong);
   }
 
   .metric-fill {
@@ -417,15 +418,15 @@
   }
 
   .metric-fill.severity {
-    background: linear-gradient(90deg, #FFA000 0%, #D32F2F 100%);
+    background: linear-gradient(90deg, var(--warning) 0%, var(--danger) 100%);
   }
 
   .metric-fill.occurrence {
-    background: linear-gradient(90deg, #42A5F5 0%, #1976D2 100%);
+    background: linear-gradient(90deg, var(--info) 0%, color-mix(in srgb, var(--info) 70%, var(--primary)));
   }
 
   .metric-fill.detection {
-    background: linear-gradient(90deg, #66BB6A 0%, #388E3C 100%);
+    background: linear-gradient(90deg, var(--success) 0%, color-mix(in srgb, var(--success) 80%, var(--primary)));
   }
 
   .metric-description {
@@ -508,15 +509,11 @@
   }
 
   .message-box {
-    background: var(--bg-page, #FFFBF0);
-    border-left: 4px solid #FFA000;
+    background: color-mix(in srgb, var(--surface-warning) 75%, var(--bg-card));
+    border-left: 4px solid var(--warning);
     padding: 1rem;
     border-radius: 8px;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .message-box {
-    background: rgba(255, 160, 0, 0.1);
   }
 
   .message-box strong {
@@ -541,70 +538,54 @@
 
   .detail-list li {
     padding: 0.75rem 1rem;
-    background: var(--bg-page, #F5F5F5);
+    background: var(--surface-muted);
     margin-bottom: 0.5rem;
     border-radius: 8px;
-    border-left: 3px solid #FF5722;
+    border-left: 3px solid var(--brand);
     color: var(--primary, #212121);
     transition: background 0.3s ease, color 0.3s ease;
   }
 
-  :global(html.dark-mode) .detail-list li {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
   .detail-list.checks li {
-    border-left-color: #2196F3;
+    border-left-color: var(--info);
   }
 
   .fix-section {
-    background: var(--bg-page, #E3F2FD);
+    background: color-mix(in srgb, var(--surface-info) 80%, var(--bg-card));
     padding: 1.5rem;
     border-radius: 12px;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .fix-section {
-    background: rgba(33, 150, 243, 0.1);
   }
 
   .fix-content {
     background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid #2196F3;
+    border-left: 4px solid var(--info);
     line-height: 1.8;
     color: var(--primary, #424242);
     transition: background 0.3s ease, color 0.3s ease;
   }
 
   :global(html.dark-mode) .fix-content {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--overlay-white-mild);
   }
 
   .prevention-section {
-    background: var(--bg-page, #E8F5E9);
+    background: color-mix(in srgb, var(--surface-success) 80%, var(--bg-card));
     padding: 1.5rem;
     border-radius: 12px;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .prevention-section {
-    background: rgba(76, 175, 80, 0.1);
   }
 
   .prevention-content {
     background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--success);
     line-height: 1.8;
     color: var(--primary, #424242);
     transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  :global(html.dark-mode) .prevention-content {
-    background: rgba(255, 255, 255, 0.08);
   }
 
   @media (max-width: 768px) {

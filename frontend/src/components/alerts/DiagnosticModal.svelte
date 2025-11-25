@@ -184,7 +184,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: var(--overlay-bg);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -192,7 +192,7 @@
   }
 
   :global(html.dark-mode) .modal-overlay {
-    background: rgba(0,0,0,0.8);
+    background: var(--overlay-dark);
   }
 
   .modal {
@@ -232,7 +232,7 @@
   }
 
   :global(html.dark-mode) .back-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-white-strong);
   }
 
   .modal-title {
@@ -259,7 +259,7 @@
   }
 
   :global(html.dark-mode) .progress-segment {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-white-strong);
   }
 
   .progress-segment.active {
@@ -331,7 +331,7 @@
   }
 
   :global(html.dark-mode) .footer-button.back {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--overlay-white-strong);
   }
 
   .footer-button.next {
@@ -365,7 +365,7 @@
   }
 
   :global(html.dark-mode) .spinner {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--overlay-white-strong);
     border-top-color: #FF5722;
   }
 

@@ -65,7 +65,7 @@
   }
 
   :global(html.dark-mode) .circle-bg-track {
-    stroke: #374151;
+    stroke: var(--gray-gradient-dark);
   }
 
   .circle-progress {

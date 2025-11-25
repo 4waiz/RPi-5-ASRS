@@ -60,7 +60,7 @@
     max-width: 640px;
     max-height: calc(100vh - 160px);
     background: var(--bg-card, #fff);
-    box-shadow: -8px 0 18px rgba(0, 0, 0, 0.12);
+    box-shadow: -8px 0 18px var(--shadow-medium);
     display: grid;
     grid-template-rows: auto 1fr;
     border: 1px solid var(--border, #eee);
@@ -103,6 +103,7 @@
     padding: 8px;
     border-radius: 10px;
     cursor: pointer;
+    color: var(--primary);
   }
   .list {
     padding: 12px 16px 28px;
@@ -143,13 +144,13 @@
   }
   .status.Running,
   .status.Live {
-    color: #1e7d34;
+    color: var(--success);
   }
   .status.Off {
-    color: #a33;
+    color: var(--danger);
   }
   .status.numeric {
-    color: #2a6bf3;
+    color: var(--info);
   }
 
   @media (max-width: 960px) {

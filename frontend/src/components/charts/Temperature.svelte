@@ -66,8 +66,8 @@
 }
 
 :global(html.dark-mode) .tube {
-    background: linear-gradient(to bottom, #2D3748 0%, #1E293B 100%);
-    border-color: #374151;
+    background: linear-gradient(to bottom, var(--gray-gradient-light) 0%, var(--gray-gradient-mid) 100%);
+    border-color: var(--gray-gradient-dark);
 }
 
 .fill {

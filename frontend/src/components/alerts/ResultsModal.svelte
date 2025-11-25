@@ -41,7 +41,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: var(--overlay-bg);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -113,19 +113,19 @@
   }
 
   .diagnosis-content :global(h2) {
-    color: #FF5722;
+    color: var(--brand);
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
   }
 
   .diagnosis-content :global(h3) {
-    color: #FF5722;
+    color: var(--brand);
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
   }
 
   .diagnosis-content :global(strong) {
-    color: #FF5722;
+    color: var(--brand);
   }
 
   .diagnosis-content :global(ol),

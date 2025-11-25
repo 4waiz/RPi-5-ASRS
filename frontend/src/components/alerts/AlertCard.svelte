@@ -15,22 +15,23 @@
     dispatch('click', { alertId: alert.id });
   }
 
+  const severityPalette = {
+    critical: 'var(--danger)',
+    error: 'var(--accent-red)',
+    warning: 'var(--warning)'
+  };
+
   // Get severity color
   function getSeverityColor(severity) {
-    const colors = {
-      'critical': '#D32F2F',
-      'error': '#F57C00',
-      'warning': '#FFA000'
-    };
-    return colors[severity] || '#757575';
+    return severityPalette[severity] || 'var(--secondary)';
   }
 
   // Get RPN risk level
   function getRPNLevel(rpn) {
-    if (rpn >= 200) return { label: 'Extreme Risk', color: '#B71C1C' };
-    if (rpn >= 100) return { label: 'High Risk', color: '#D32F2F' };
-    if (rpn >= 50) return { label: 'Medium Risk', color: '#F57C00' };
-    return { label: 'Low Risk', color: '#FFA000' };
+    if (rpn >= 200) return { label: 'Extreme Risk', color: 'var(--danger)' };
+    if (rpn >= 100) return { label: 'High Risk', color: 'var(--accent-red)' };
+    if (rpn >= 50) return { label: 'Medium Risk', color: 'var(--warning)' };
+    return { label: 'Low Risk', color: 'var(--success)' };
   }
 
   // Get component image dynamically
@@ -170,61 +171,36 @@
     border-radius: 14px 0 0 14px;
   }
 
-  .alert-card.critical::before {
-    background: #D32F2F;
-  }
-
-  .alert-card.error::before {
-    background: #F57C00;
-  }
-
-  .alert-card.warning::before {
-    background: #FFA000;
-  }
+  .alert-card.critical::before { background: var(--danger); }
+  .alert-card.error::before { background: var(--accent-red); }
+  .alert-card.warning::before { background: var(--warning); }
 
   .alert-card.critical {
-    background: var(--bg-card, #FFEBEE);
-    border-color: #EF5350;
-  }
-
-  :global(html.dark-mode) .alert-card.critical {
-    background: rgba(239, 83, 80, 0.15);
-    border-color: #EF5350;
+    background: var(--surface-critical);
+    border-color: var(--danger);
   }
 
   .alert-card.error {
-    background: var(--bg-card, #FFF3E0);
-    border-color: #FB8C00;
-  }
-
-  :global(html.dark-mode) .alert-card.error {
-    background: rgba(251, 140, 0, 0.15);
-    border-color: #FB8C00;
+    background: var(--brand-light);
+    border-color: var(--brand-strong, var(--accent-red));
   }
 
   .alert-card.warning {
-    background: var(--bg-card, #FFFDE7);
-    border-color: #FDD835;
-  }
-
-  :global(html.dark-mode) .alert-card.warning {
-    background: rgba(253, 216, 53, 0.15);
-    border-color: #FDD835;
+    background: var(--surface-warning);
+    border-color: var(--warning);
   }
 
   .alert-card.resolved {
-    background: var(--bg-card, #F5F5F5);
+    background: var(--surface-muted);
     opacity: 0.7;
     border-color: var(--border, #E0E0E0);
   }
 
   :global(html.dark-mode) .alert-card.resolved {
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
   }
 
-  .alert-card.resolved::before {
-    background: #9E9E9E;
-  }
+  .alert-card.resolved::before { background: var(--muted); }
 
   .alert-icon {
     width: 44px;
@@ -272,20 +248,9 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
 
-  .severity-badge.critical {
-    background: #D32F2F;
-    color: white;
-  }
-
-  .severity-badge.error {
-    background: #F57C00;
-    color: white;
-  }
-
-  .severity-badge.warning {
-    background: #FFA000;
-    color: white;
-  }
+  .severity-badge.critical { background: var(--danger); color: var(--on-brand); }
+  .severity-badge.error { background: var(--accent-red); color: var(--on-brand); }
+  .severity-badge.warning { background: var(--warning); color: var(--on-brand); }
 
   .rpn-badge {
     padding: 0.65rem 1rem;
@@ -315,25 +280,18 @@
     align-items: center;
   }
 
-  .meta-divider {
-    color: var(--border, #BDBDBD);
-    transition: color 0.3s ease;
-  }
+  .meta-divider { color: var(--divider); transition: color 0.3s ease; }
 
   .fmea-metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     padding: 1rem 0.75rem;
-    background: rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, var(--bg-card), var(--surface-muted));
     border-radius: 10px;
     margin-bottom: 0.75rem;
     overflow: visible;
     transition: background 0.3s ease;
-  }
-
-  :global(html.dark-mode) .fmea-metrics {
-    background: rgba(255, 255, 255, 0.05);
   }
 
   .metric {
@@ -374,12 +332,7 @@
     max-width: 100%;
   }
 
-  .alert-time {
-    font-style: italic;
-    font-size: 1rem;
-    color: var(--secondary, #757575);
-    transition: color 0.3s ease;
-  }
+  .alert-time { font-style: italic; font-size: 1rem; color: var(--secondary, #757575); transition: color 0.3s ease; }
 
   /* Right Section - Badges, Button + Image */
   .right-section {
@@ -404,7 +357,7 @@
 
   .fix-button {
     padding: 0.85rem 1.25rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-blue-start), var(--accent-blue-end));
     border: none;
     border-radius: 10px;
     display: flex;
@@ -414,11 +367,11 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
-    color: white;
+    color: var(--on-brand);
     transition: all 0.2s;
     white-space: nowrap;
     width: 100%;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-blue-start) 40%, transparent);
   }
 
   /* Component Visual - Larger Image */

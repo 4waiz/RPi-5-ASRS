@@ -36,12 +36,12 @@
     border-radius: 18px;
     background: var(--bg-card, #fff);
     border: 1px solid var(--border, #ececec);
-    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.04), 0 16px 24px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 1px var(--shadow-light), 0 16px 24px var(--shadow-light);
     text-align: left;
     cursor: pointer;
     transition: all 0.3s ease;
     touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
+    -webkit-tap-highlight-color: var(--shadow-light);
     user-select: none;
     caret-color: transparent;
   }
@@ -52,7 +52,7 @@
 
   .unit-card.active {
     border: 2px solid var(--brand, #ff5b2e);
-    box-shadow: 0 0 0 2px rgba(255, 91, 46, 0.18);
+    box-shadow: 0 0 0 2px var(--focus-ring);
   }
 
   .thumb {
