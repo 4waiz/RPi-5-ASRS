@@ -271,10 +271,6 @@
     transition: color 0.3s ease;
   }
 
-  :global(html.dark-mode) h2 {
-    text-shadow: 0 0 12px var(--text-shadow-glow);
-  }
-
   /* NotificationCard styles (merged inline) */
   .notification-card {
     border-radius: 17.134px;
