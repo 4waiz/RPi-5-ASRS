@@ -242,11 +242,9 @@
     display: flex;
     flex-direction: row;
     gap: 32px;
-    background-color: var(--bg-page, #ebebeb);
     box-sizing: border-box;
     padding-left: 24px;
     padding-right: 32px;
-    transition: background-color 0.3s ease;
   }
 
   .notifications-container {
