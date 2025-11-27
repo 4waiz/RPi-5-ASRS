@@ -34,7 +34,7 @@
       "overview": "نظرة عامة",
       "inventory": "المخزون",
       "digitalTwin": "التوأم الرقمي",
-      "components": "المكونات"
+      "components": "عناصر الأجهزة"
     },
     "alerts": {
       "noStockBox8": "لا يوجد مخزون متاح في الصندوق 8 لتلبية الطلبات الواردة.",
@@ -93,7 +93,7 @@
     "stepperMotor": "محرك متدرج",
     "proximitySensor": "مستشعر القرب",
     "jetsonOrinNano": "جيتسون أورين نانو",
-    "greartisanDC": "Greartisan DC 24V",
+    "greartisanDC": "محرك غريرتيسان 24 فولت",
     "conveyorUnit": "وحدة النقل_{number}",
     "subcomponents": "المكونات الفرعية",
     "status": {
