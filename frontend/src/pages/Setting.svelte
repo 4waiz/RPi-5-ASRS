@@ -651,27 +651,6 @@
   /* Arabic font support */
   :global(html[lang="ar"] body) {
     font-family: "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    direction: rtl;
-  }
-
-  :global(html[lang="ar"]) .page {
-    direction: rtl;
-  }
-
-  :global(html[lang="ar"]) .settings-shell {
-    direction: rtl;
-  }
-
-  :global(html[lang="ar"]) .content-grid {
-    direction: rtl;
-  }
-
-  :global(html[lang="ar"]) .card {
-    direction: rtl;
-  }
-
-  :global(html[lang="ar"]) .info-card {
-    direction: rtl;
   }
 
   .page {
