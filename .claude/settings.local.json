@@ -2,7 +2,22 @@
   "permissions": {
     "allow": [
       "Bash(python -m pip install:*)",
-      "Bash(python -m pip:*)"
+      "Bash(python -m pip:*)",
+      "Bash(./venv/bin/pip install:*)",
+      "Bash(./venv/bin/python:*)",
+      "Bash(npm run dev:frontend:*)",
+      "Bash(brew install:*)",
+      "Bash(/opt/homebrew/bin/python3.12 -m venv venv)",
+      "Bash(pkill:*)",
+      "Bash(npm run dev:alerts-only:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npm run dev:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(/opt/homebrew/bin/npm run dev)",
+      "Bash(source ~/.zshrc)",
+      "Bash(export PATH=\"/opt/homebrew/bin:/opt/homebrew/opt/node/bin:$PATH\")"
     ],
     "deny": [],
     "ask": []

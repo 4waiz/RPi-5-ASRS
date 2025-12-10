@@ -12,10 +12,11 @@ langchain-ollama
 # Data processing
 pandas
 numpy
+scikit-learn
+scipy
 
 # Audio processing
 pydub
-audioop-lts  # Required for Python 3.13+ (audioop was removed from stdlib)
 soundfile
 vosk
 piper-tts

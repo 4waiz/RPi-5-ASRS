@@ -22,6 +22,7 @@
   let acknowledgmentAudioUrl = null; // Track the acknowledgment audio URL for cleanup
 
   function close() {
+    console.log('🚪 Modal closing - cleaning up audio');
     // Stop all audio and processing
     stopListening();
     stopSpeaking();
@@ -33,6 +34,13 @@
 
     dispatch('close');
   }
+
+  // Cleanup on component destroy
+  onDestroy(() => {
+    console.log('🧹 Component destroying - final cleanup');
+    stopListening();
+    stopSpeaking();
+  });
 
   async function unlockAudio() {
     if (isAudioUnlocked) return;
@@ -401,8 +409,11 @@
   }
 
   function stopSpeaking() {
+    console.log('🛑 stopSpeaking() called');
+
     // Stop and clean up current audio
     if (currentAudio) {
+      console.log('🛑 Stopping current audio');
       try {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -416,6 +427,7 @@
 
     // Revoke current audio URL to free memory
     if (currentAudioUrl) {
+      console.log('🧹 Revoking current audio URL');
       try {
         URL.revokeObjectURL(currentAudioUrl);
       } catch (e) {
@@ -426,6 +438,7 @@
 
     // Stop and clean up acknowledgment audio
     if (acknowledgmentAudio) {
+      console.log('🛑 Stopping acknowledgment audio');
       try {
         acknowledgmentAudio.pause();
         acknowledgmentAudio.currentTime = 0;
@@ -439,6 +452,7 @@
 
     // Revoke acknowledgment audio URL to free memory
     if (acknowledgmentAudioUrl) {
+      console.log('🧹 Revoking acknowledgment audio URL');
       try {
         URL.revokeObjectURL(acknowledgmentAudioUrl);
       } catch (e) {
@@ -449,11 +463,13 @@
 
     // Cancel any speech synthesis
     if (window.speechSynthesis) {
+      console.log('🛑 Canceling speech synthesis');
       window.speechSynthesis.cancel();
     }
 
     isSpeaking = false;
     isPlayingAcknowledgment = false;
+    console.log('✅ stopSpeaking() completed');
   }
 
   function toggleViewMode() {

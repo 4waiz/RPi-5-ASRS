@@ -5,6 +5,7 @@
   "description": "RPi-5 ASRS - Automated Storage and Retrieval System",
   "scripts": {
     "dev": "npm --prefix frontend run dev:stack",
+    "dev:alerts-only": "npm --prefix frontend run dev:stack-alerts-only",
     "dev:frontend": "npm --prefix frontend run dev:frontend",
     "dev:backend": "npm --prefix frontend run dev:backend",
     "build": "npm --prefix frontend run build",

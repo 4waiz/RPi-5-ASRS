@@ -21,6 +21,58 @@
     'hmi'
   ];
 
+  // Category mapping for subsystems
+  const SUBSYSTEM_CATEGORIES = {
+    // Mechanical
+    'gantry': 'mechanical',
+    'elevator': 'mechanical',
+    'conveyor': 'mechanical',
+    'storage': 'mechanical',
+    'shuttle': 'mechanical',
+
+    // Electrical
+    'drive': 'electrical',
+    'motor': 'electrical',
+    'power': 'electrical',
+
+    // Software/Control
+    'plc_network': 'software',
+    'hmi': 'software',
+    'control': 'software',
+
+    // Sensor/Vision
+    'qc_vision': 'sensor',
+    'sensor': 'sensor',
+    'photoeye': 'sensor',
+
+    // Pneumatic/Hydraulic
+    'pneumatics': 'pneumatic',
+    'hydraulic': 'pneumatic',
+    'brake': 'pneumatic'
+  };
+
+  // Get category from subsystem or detection source
+  function getAlertCategory(alert) {
+    const subsystem = (alert.subsystem || '').toLowerCase();
+    const detectionSource = (alert.detection_source || '').toLowerCase();
+    const component = (alert.component || '').toLowerCase();
+
+    // Check subsystem first
+    if (SUBSYSTEM_CATEGORIES[subsystem]) {
+      return SUBSYSTEM_CATEGORIES[subsystem];
+    }
+
+    // Check detection source
+    for (const [key, category] of Object.entries(SUBSYSTEM_CATEGORIES)) {
+      if (detectionSource.includes(key) || component.includes(key)) {
+        return category;
+      }
+    }
+
+    // Default to mechanical
+    return 'mechanical';
+  }
+
   const DEMO_ALERTS = [
     {
       id: 'demo-critical',
@@ -214,6 +266,16 @@
   let showVoiceModal = false;
   let showResultsModal = false;
   let diagnosticResult = '';
+  let showCategoryFilter = false;
+  let selectedCategory = 'all';
+  let categoryFilterWrapper = null;
+
+  // Close dropdown when clicking outside
+  function handleClickOutside(event) {
+    if (categoryFilterWrapper && !categoryFilterWrapper.contains(event.target)) {
+      showCategoryFilter = false;
+    }
+  }
 
   let selectedAlert = null;
   let totalTrackedAlerts = 0;
@@ -312,17 +374,36 @@
     currentFilter.set(filter);
     selectedAlertId = null;
 
-    // If we have cached alerts, filter them directly (no need to refetch)
+    // Apply both severity and category filters
+    applyFilters(filter, selectedCategory);
+  }
+
+  function handleCategoryChange(category) {
+    selectedCategory = category;
+    selectedAlertId = null;
+
+    // Apply both severity and category filters
+    applyFilters(filterValue, category);
+  }
+
+  function applyFilters(severityFilter, categoryFilter) {
     if (allAlertsCache.length > 0) {
-      if (filter === 'all') {
-        alertsData.set(allAlertsCache);
-      } else {
-        const filtered = allAlertsCache.filter(alert => alert.severity === filter);
-        alertsData.set(filtered);
+      let filtered = allAlertsCache;
+
+      // Apply severity filter
+      if (severityFilter !== 'all') {
+        filtered = filtered.filter(alert => alert.severity === severityFilter);
       }
+
+      // Apply category filter
+      if (categoryFilter !== 'all') {
+        filtered = filtered.filter(alert => getAlertCategory(alert) === categoryFilter);
+      }
+
+      alertsData.set(filtered);
     } else {
       // Otherwise fetch from backend
-      fetchAlerts(filter);
+      fetchAlerts(severityFilter);
     }
   }
 
@@ -344,6 +425,8 @@
   }
 
 </script>
+
+<svelte:window on:click={handleClickOutside} />
 
 <div class="alerts-page">
   <SideBar AlertsNum={sidebarAlertCount} ActivePage="Alerts" />
@@ -395,6 +478,75 @@
           </svg>
           Voice Diagnosis
         </button>
+
+        <!-- Category Filter Dropdown -->
+        <div class="category-filter-wrapper" bind:this={categoryFilterWrapper}>
+          <button
+            class="action-btn filter-btn"
+            class:active={selectedCategory !== 'all'}
+            on:click={() => (showCategoryFilter = !showCategoryFilter)}
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Filter by Type
+            {#if selectedCategory !== 'all'}
+              <span class="filter-badge">{selectedCategory}</span>
+            {/if}
+          </button>
+
+          {#if showCategoryFilter}
+            <div class="category-dropdown">
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'all'}
+                on:click={() => { handleCategoryChange('all'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">All Types</span>
+              </button>
+
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'mechanical'}
+                on:click={() => { handleCategoryChange('mechanical'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">Mechanical</span>
+              </button>
+
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'electrical'}
+                on:click={() => { handleCategoryChange('electrical'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">Electrical</span>
+              </button>
+
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'software'}
+                on:click={() => { handleCategoryChange('software'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">Software/Control</span>
+              </button>
+
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'sensor'}
+                on:click={() => { handleCategoryChange('sensor'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">Sensors/Vision</span>
+              </button>
+
+              <button
+                class="category-option"
+                class:active={selectedCategory === 'pneumatic'}
+                on:click={() => { handleCategoryChange('pneumatic'); showCategoryFilter = false; }}
+              >
+                <span class="option-name">Pneumatic/Hydraulic</span>
+              </button>
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
 
@@ -558,25 +710,116 @@
   }
 
   .diagnosis-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+    background: white;
+    color: #FF6B35;
+    border: 1.5px solid #FF6B35;
   }
 
   .diagnosis-btn:hover {
+    background: rgba(255, 107, 53, 0.08);
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
   }
 
   .voice-btn {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     color: white;
-    box-shadow: 0 2px 6px rgba(17, 153, 142, 0.25);
+    box-shadow: 0 2px 6px rgba(255, 107, 53, 0.25);
   }
 
   .voice-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(17, 153, 142, 0.35);
+    box-shadow: 0 4px 10px rgba(255, 107, 53, 0.35);
+  }
+
+  .filter-btn {
+    background: white;
+    color: #374151;
+    border: 1.5px solid #e0e0e0;
+  }
+
+  .filter-btn:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    transform: translateY(-1px);
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+  }
+
+  .filter-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+    margin-left: 4px;
+  }
+
+  /* Category Filter Dropdown */
+  .category-filter-wrapper {
+    position: relative;
+  }
+
+  .category-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    min-width: 280px;
+    z-index: 1000;
+    animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes dropdownSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .category-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+  }
+
+  .category-option:hover {
+    background: #f5f5f5;
+  }
+
+  .category-option.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+  }
+
+  .category-option.active .option-name {
+    color: white;
+  }
+
+  .option-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.2s ease;
   }
 
   /* Compact Summary Cards - Single Horizontal Line */
