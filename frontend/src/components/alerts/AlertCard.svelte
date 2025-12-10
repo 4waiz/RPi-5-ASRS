@@ -37,12 +37,16 @@
   // Get component image dynamically
   function loadComponentImage(component) {
     const imagePath = getComponentImage(component);
-    return imagePath ?? null;
+    return imagePath || '';
+  }
+
+  function handleImageError(e) {
+    e.target.style.display = 'none';
   }
 
   $: rpnLevel = getRPNLevel(alert.rpn || 0);
   $: componentImage = loadComponentImage(alert.component);
-  $: hasImage = componentImage !== null;
+  $: hasImage = componentImage !== '';
 </script>
 
 <div
@@ -138,7 +142,7 @@
     <!-- Component Image Below Button -->
     {#if hasImage}
       <div class="component-visual">
-        <img src={componentImage} alt={alert.component} on:error={(e) => e.target.style.display = 'none'} />
+        <img src={String(componentImage)} alt={alert.component} on:error={handleImageError} />
         <span class="component-label">{alert.component}</span>
       </div>
     {/if}

@@ -46,7 +46,9 @@
   $: procedureImagePath = getProcedureImage(alert.subsystem, alert.component);
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 <div class="modal-overlay" on:click={close}>
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
   <div class="modal-content" on:click|stopPropagation>
     <div class="modal-header" style="border-left: 6px solid {getSeverityColor(alert.severity)};">
       <div class="header-content">
@@ -67,7 +69,7 @@
           <span><strong>Detected:</strong> {alert.timestamp}</span>
         </div>
       </div>
-      <button class="close-btn" on:click={close}>
+      <button class="close-btn" on:click={close} aria-label="Close modal">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
