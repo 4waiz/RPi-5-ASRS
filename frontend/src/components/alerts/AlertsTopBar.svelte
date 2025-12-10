@@ -107,9 +107,9 @@
 
   .diagnosis-btn {
     padding: 1rem 1.75rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
+    background: white;
+    color: #FF6B35;
+    border: 1.5px solid #FF6B35;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
@@ -118,13 +118,19 @@
     align-items: center;
     gap: 0.75rem;
     transition: all 0.2s;
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 6px rgba(255, 107, 53, 0.15);
     white-space: nowrap;
+  }
+
+  .diagnosis-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 107, 53, 0.08);
+    box-shadow: 0 4px 10px rgba(255, 107, 53, 0.25);
   }
 
   .voice-btn {
     padding: 1rem 1.75rem;
-    background: linear-gradient(135deg, #00C853 0%, #00897B 100%);
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     color: white;
     border: none;
     border-radius: 10px;
@@ -135,8 +141,13 @@
     align-items: center;
     gap: 0.75rem;
     transition: all 0.2s;
-    box-shadow: 0 3px 10px rgba(0, 200, 83, 0.3);
+    box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
     white-space: nowrap;
+  }
+
+  .voice-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
   }
 
   @media (max-width: 1024px) {

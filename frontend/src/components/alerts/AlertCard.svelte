@@ -357,7 +357,7 @@
 
   .fix-button {
     padding: 0.85rem 1.25rem;
-    background: linear-gradient(135deg, var(--accent-blue-start), var(--accent-blue-end));
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
     border: none;
     border-radius: 10px;
     display: flex;
@@ -371,7 +371,12 @@
     transition: all 0.2s;
     white-space: nowrap;
     width: 100%;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-blue-start) 40%, transparent);
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+  }
+
+  .fix-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
   }
 
   /* Component Visual - Larger Image */

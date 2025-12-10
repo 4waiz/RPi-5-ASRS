@@ -19,10 +19,10 @@
   }
 
   function getRPNLevel(rpn) {
-    if (rpn >= 200) return { label: 'Extreme Risk', color: 'var(--danger)', description: 'Immediate action required' };
-    if (rpn >= 100) return { label: 'High Risk', color: 'var(--brand)', description: 'Urgent attention needed' };
-    if (rpn >= 50) return { label: 'Medium Risk', color: 'var(--warning)', description: 'Schedule maintenance soon' };
-    return { label: 'Low Risk', color: 'var(--success)', description: 'Monitor and address when convenient' };
+    if (rpn >= 200) return { label: 'Extreme Risk', color: '#e85a30', description: 'Immediate action required' };
+    if (rpn >= 100) return { label: 'High Risk', color: '#FF6B35', description: 'Urgent attention needed' };
+    if (rpn >= 50) return { label: 'Medium Risk', color: '#F7931E', description: 'Schedule maintenance soon' };
+    return { label: 'Low Risk', color: '#f5a84b', description: 'Monitor and address when convenient' };
   }
 
   // Generate placeholder image paths based on component/subsystem
@@ -255,7 +255,7 @@
 
   .modal-header {
     padding: 2rem;
-    background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+    background: linear-gradient(135deg, #fff9f5 0%, #ffefe8 100%);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -418,15 +418,15 @@
   }
 
   .metric-fill.severity {
-    background: linear-gradient(90deg, var(--warning) 0%, var(--danger) 100%);
+    background: linear-gradient(90deg, #FF6B35 0%, #e85a30 100%);
   }
 
   .metric-fill.occurrence {
-    background: linear-gradient(90deg, var(--info) 0%, color-mix(in srgb, var(--info) 70%, var(--primary)));
+    background: linear-gradient(90deg, #F7931E 0%, #e88a1a 100%);
   }
 
   .metric-fill.detection {
-    background: linear-gradient(90deg, var(--success) 0%, color-mix(in srgb, var(--success) 80%, var(--primary)));
+    background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%);
   }
 
   .metric-description {
@@ -547,11 +547,11 @@
   }
 
   .detail-list.checks li {
-    border-left-color: var(--info);
+    border-left-color: #F7931E;
   }
 
   .fix-section {
-    background: color-mix(in srgb, var(--surface-info) 80%, var(--bg-card));
+    background: #fff5eb;
     padding: 1.5rem;
     border-radius: 12px;
     transition: background 0.3s ease;
@@ -561,7 +561,7 @@
     background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid var(--info);
+    border-left: 4px solid #FF6B35;
     line-height: 1.8;
     color: var(--primary, #424242);
     transition: background 0.3s ease, color 0.3s ease;
@@ -572,7 +572,7 @@
   }
 
   .prevention-section {
-    background: color-mix(in srgb, var(--surface-success) 80%, var(--bg-card));
+    background: #fff9f5;
     padding: 1.5rem;
     border-radius: 12px;
     transition: background 0.3s ease;
@@ -582,7 +582,7 @@
     background: var(--bg-card, white);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid var(--success);
+    border-left: 4px solid #F7931E;
     line-height: 1.8;
     color: var(--primary, #424242);
     transition: background 0.3s ease, color 0.3s ease;
