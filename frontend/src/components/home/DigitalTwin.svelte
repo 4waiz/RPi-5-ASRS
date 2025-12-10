@@ -44,6 +44,18 @@
     BOX_MODEL_URL: '/Static/Models/Box/full2.glb'
   };
 
+  const RFID_CONFIG = {
+    apiBase: (import.meta as any)?.env?.VITE_RFID_API_BASE ?? 'http://localhost:8003',
+    keyGapMs: 180,
+    streamReconnectMs: 3000
+  };
+
+  let rfidStreamAbort: AbortController | null = null;
+  let rfidReconnectTimer: number | null = null;
+  let rfidEventQueue: any[] = [];
+  let rfidQueueProcessing = false;
+  let pendingBoxStateUpdate: Record<string, string> | null = null;
+
   // ============================================================================
   // BOX DATA - 6x4 Grid (24 boxes)
   // ============================================================================
@@ -571,6 +583,14 @@
     }
   }
 
+  function markSelectedBox(boxName: string | null) {
+    if (!boxListEl) return;
+    boxListEl.querySelectorAll<HTMLElement>('.box-item').forEach(el => {
+      const isMatch = boxName !== null && el.dataset.boxName === boxName;
+      el.classList.toggle('selected', isMatch);
+    });
+  }
+
   // Helper function to translate box name (box_1 -> صندوق_1 in Arabic)
   function translateBoxName(boxName: string): string {
     const match = boxName.match(/box_(\d+)/);
@@ -614,9 +634,8 @@
         item.appendChild(statusSpan);
 
         item.addEventListener('click', () => {
-          boxListEl.querySelectorAll('.box-item').forEach(el => el.classList.remove('selected'));
-          item.classList.add('selected');
           systemState.setSelectedBox(box.name);
+          markSelectedBox(box.name);
           updateButtonStates();
         });
 
@@ -645,6 +664,68 @@
         }
       });
     });
+  }
+
+  function applyBackendBoxState(boxStates: Record<string, string>) {
+    boxGrid.forEach(row => {
+      row.forEach(box => {
+        if (boxStates[box.name]) {
+          box.status = boxStates[box.name] === 'Out' ? 'Out' : 'In';
+        }
+      });
+    });
+  }
+
+  function applyBoxStateToScene(boxStates: Record<string, string>) {
+    if (!sceneRoot) return;
+
+    boxGrid.forEach((row, rowIndex) => {
+      row.forEach((box, colIndex) => {
+        const mesh = sceneRoot.getObjectByName(box.name);
+        if (!mesh) return;
+        const status = boxStates[box.name] ?? box.status;
+
+        const targetPos = (status === "In")
+          ? calculateBoxCellPosition()
+          : calculateBoxDeliveryPosition(rowIndex, colIndex);
+
+        (mesh as any).position.set(targetPos.x, targetPos.y, targetPos.z);
+        setMeshOpacity(mesh, status === "In" ? 1.0 : 0.0);
+      });
+    });
+  }
+
+  async function hydrateRfidState() {
+    try {
+      const res = await fetch(`${RFID_CONFIG.apiBase}/api/rfid/state`);
+      if (!res.ok) throw new Error('rfid state fetch failed');
+      const data = await res.json();
+      const boxes: Record<string, string> = data?.boxes ?? {};
+      applyBackendBoxState(boxes);
+      updateBoxListUI();
+      updateStatusCounts();
+
+      if (sceneRoot) {
+        applyBoxStateToScene(boxes);
+      } else {
+        pendingBoxStateUpdate = boxes;
+      }
+    } catch (err) {
+      console.error('Failed to sync RFID state', err);
+    }
+  }
+
+  function pickRandomBoxByStatus(status: "In" | "Out") {
+    const matches = boxGrid.flat().filter(box => box.status === status);
+    if (!matches.length) return null;
+    const index = Math.floor(Math.random() * matches.length);
+    return matches[index];
+  }
+
+  function setSelectedBoxForAutomation(boxName: string) {
+    systemState.setSelectedBox(boxName);
+    markSelectedBox(boxName);
+    updateButtonStates();
   }
 
   // ============================================================================
@@ -971,6 +1052,11 @@
 
     systemState.setReady(true);
 
+    if (pendingBoxStateUpdate) {
+      applyBoxStateToScene(pendingBoxStateUpdate);
+      pendingBoxStateUpdate = null;
+    }
+
     populateBoxList();
     updateStatusCounts();
     updateButtonStates();
@@ -1055,12 +1141,141 @@
   }
 
   // ============================================================================
+  // RFID LISTENERS (SSE)
+  // ============================================================================
+  function scheduleRfidReconnect() {
+    if (rfidReconnectTimer) return;
+    rfidReconnectTimer = window.setTimeout(() => {
+      rfidReconnectTimer = null;
+      startRfidStream();
+    }, RFID_CONFIG.streamReconnectMs);
+  }
+
+  function stopRfidStream() {
+    if (rfidStreamAbort) {
+      rfidStreamAbort.abort();
+      rfidStreamAbort = null;
+    }
+    if (rfidReconnectTimer) {
+      clearTimeout(rfidReconnectTimer);
+      rfidReconnectTimer = null;
+    }
+  }
+
+  async function startRfidStream() {
+    stopRfidStream();
+    rfidStreamAbort = new AbortController();
+
+    try {
+      const response = await fetch(`${RFID_CONFIG.apiBase}/api/rfid/stream`, {
+        signal: rfidStreamAbort.signal
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error(`RFID stream error: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          scheduleRfidReconnect();
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() ?? '';
+
+        for (const evt of events) {
+          const dataLine = evt.split('\n').find(line => line.startsWith('data:'));
+          if (dataLine) {
+            try {
+              const payload = JSON.parse(dataLine.replace('data:', '').trim());
+              if (payload) handleIncomingRfidEvent(payload);
+            } catch (err) {
+              console.error('RFID payload parse error:', err);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      const aborted = error instanceof DOMException && error.name === 'AbortError';
+      if (!aborted) {
+        console.error('RFID stream connection failed:', error);
+        scheduleRfidReconnect();
+      }
+    }
+  }
+
+  function handleIncomingRfidEvent(payload: any) {
+    rfidEventQueue.push(payload);
+    processRfidEventQueue();
+  }
+
+  async function processRfidEventQueue() {
+    if (rfidQueueProcessing) return;
+    rfidQueueProcessing = true;
+
+    while (rfidEventQueue.length > 0) {
+      const payload = rfidEventQueue.shift();
+      await handleBackendRfidAction(payload);
+    }
+
+    rfidQueueProcessing = false;
+  }
+
+  async function handleBackendRfidAction(payload: any) {
+    const recognized = payload?.recognized;
+    const tag = payload?.tag ?? 'Unknown';
+    const boxName = payload?.box;
+    const action = payload?.action; // 'out' or 'in'
+
+    if (!recognized || !boxName || !action) {
+      showToast(get(t)('digitalTwin.rfidUnknownTag').replace('{tag}', tag), 'info');
+      return;
+    }
+
+    if (systemState.isOperationInProgress()) {
+      let retries = 0;
+      while (systemState.isOperationInProgress() && retries < 10) {
+        await sleep(200);
+        retries++;
+      }
+      if (systemState.isOperationInProgress()) {
+        showToast(get(t)('digitalTwin.rfidBusy'), 'info');
+        return;
+      }
+    }
+
+    setSelectedBoxForAutomation(boxName);
+
+    try {
+      if (action === 'out') {
+        showToast(get(t)('digitalTwin.rfidScanOut').replace('{box}', boxName), 'info');
+        await retrieveBoxFromStorage(boxName);
+      } else {
+        showToast(get(t)('digitalTwin.rfidScanIn').replace('{box}', boxName), 'info');
+        await insertBoxToStorage(boxName);
+      }
+    } catch (err) {
+      console.error('RFID action failed', err);
+      showToast(get(t)('digitalTwin.rfidActionFailed').replace('{box}', boxName), 'info');
+    }
+  }
+
+  // ============================================================================
   // SVELTE LIFECYCLE
   // ============================================================================
   onMount(() => {
-    populateBoxList();
-    updateStatusCounts();
-    updateButtonStates();
+    hydrateRfidState().finally(() => {
+      populateBoxList();
+      updateStatusCounts();
+      updateButtonStates();
+    });
 
     initScene();
 
@@ -1111,11 +1326,16 @@
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    // Bring RFID stream online immediately
+    startRfidStream();
+    showToast(get(t)('digitalTwin.rfidListening'), 'info');
+
     return () => {
       getBoxOutBtnEl.removeEventListener('click', handleGetOut);
       putBoxInBtnEl.removeEventListener('click', handlePutIn);
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopRfidStream();
       stopAnimation();
       movementController.stopAll();
       if (renderer) {
