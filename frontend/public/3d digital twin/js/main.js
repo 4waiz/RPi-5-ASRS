@@ -116,9 +116,9 @@ class SystemState {
 
 const systemState = new SystemState();
 
-// Map RFID tags to box actions for the twin (extend as needed)
-const RFID_ACTION_MAP = {
-  "0000000002": { action: "get_out", box: "box_2" }
+// Map RFID tags to box targets (action decided based on current status)
+const RFID_TAG_TO_BOX = {
+  "0000000002": "box_2"
 };
 
 function getSseUrl() {
@@ -1017,8 +1017,14 @@ function setupSseListener() {
 
     if (payload.type === 'action' && payload.box) {
       handleTwinAction(payload);
-    } else if (payload.type === 'rfid' && payload.tag && RFID_ACTION_MAP[payload.tag]) {
-      handleTwinAction({ ...RFID_ACTION_MAP[payload.tag], tag: payload.tag });
+    } else if (payload.type === 'rfid' && payload.tag && RFID_TAG_TO_BOX[payload.tag]) {
+      const boxName = RFID_TAG_TO_BOX[payload.tag];
+      const boxData = findBoxInGrid(boxName);
+      if (!boxData) return;
+
+      // Toggle: if box is Out -> put it in; if In -> get it out
+      const action = boxData.data.status === "Out" ? "put_in" : "get_out";
+      handleTwinAction({ action, box: boxName, tag: payload.tag });
     }
   };
 }
