@@ -477,7 +477,7 @@ async def startup_event():
     print("\n" + "="*80)
     print("Starting FastAPI Backend Server")
     print("="*80)
-    print(f"Server will run on: http://localhost:8000")
+    print(f"Server will run on: http://localhost:800")
     print(f"API Endpoints:")
     print(f"  - GET  /api/initial-data")
     print(f"  - POST /api/query")

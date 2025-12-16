@@ -43,6 +43,7 @@
     height: auto;
     font-family: system-ui, sans-serif;
     color: #000;
+    height:163px;
 }
 
 .thermo {
@@ -51,7 +52,7 @@
     gap: 10px;
     height: 110px;
     position: relative;
-    margin: 0 0 12px 0;
+    margin-left:8px;
 }
 
 .tube {
@@ -79,7 +80,7 @@
     flex-direction: column;
     justify-content: space-between;
     height: 110px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: #444;
 }
@@ -93,14 +94,13 @@
 .value {
     font-size: 19px;
     font-weight: 700;
-    line-height: 20px;
+    line-height: 14px;
     margin-bottom: 2px;
 }
 
 .label {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 400;
-    line-height: 1.3;
     word-wrap: break-word;
 }
 </style>

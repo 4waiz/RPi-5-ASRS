@@ -2,8 +2,8 @@
     let { value = 100, unit = "km/h", label = "Label" } = $props();
 </script>
 
-<div class="compinent-conternar">
-    <div class="value-conternrt">
+<div class="component-container">
+    <div class="value-container">
         <p class="value">
             {value}
             <samp class="unit">{unit}</samp>
@@ -13,7 +13,7 @@
 </div>
 
 <style>
-.compinent-conternar {
+.component-container {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -21,7 +21,7 @@
     height: auto;
 }
 
-.value-conternrt {
+.value-container {
     display: flex;
     align-items: baseline;
     gap: 4;
@@ -51,5 +51,7 @@
     font-weight: 400;
     line-height: 1.2;
     opacity: 0.9;
+    width: 112px;
+      white-space: normal;
 }
 </style>

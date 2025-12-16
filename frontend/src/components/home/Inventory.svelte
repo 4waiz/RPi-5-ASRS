@@ -1,13 +1,168 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
-  import InventoryImage from '../../assets/inventory/Inventory.png';
-
+  import InventoryImage from "../../assets/inventory/Inventory.png";
+  import BoxPopup from "../shared/box-popup.svelte";
   // Define notification cards data
   let cardNotificationData = $state([
     { title: "Box 1 retrieved", timestamp: "12:10pm" },
     { title: "Box 2 retrieved", timestamp: "1:45pm" },
-    { title: "Box 3 retrieved", timestamp: "3:20pm" }
+    { title: "Box 3 retrieved", timestamp: "3:20pm" },
   ]);
+
+  // Function to open popup
+  let isPopupOpen = $state(false);
+    let popupImage = $state("../../../test/image-16.png");
+  let popupMessage = $state("Box Details Here");
+  let boxDetails = [
+    {
+      id: 1,
+      itemName: "Box 1",
+      message: "Message for box 1",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 2,
+      itemName: "Box 2",
+      message: "Message for box 2",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 3,
+      itemName: "Box 3",
+      message: "Message for box 3",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 4,
+      itemName: "Box 4",
+      message: "Message for box 4",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 5,
+      itemName: "Box 5",
+      message: "Message for box 5",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 6,
+      itemName: "Box 6",
+      message: "Message for box 6",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 7,
+      itemName: "Box 7",
+      message: "Message for box 7",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 8,
+      itemName: "Box 8",
+      message: "Message for box 8",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 9,
+      itemName: "Box 9",
+      message: "Message for box 9",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 10,
+      itemName: "Box 10",
+      message: "Message for box 10",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 11,
+      itemName: "Box 11",
+      message: "Message for box 11",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 12,
+      itemName: "Box 12",
+      message: "Message for box 12",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 13,
+      itemName: "Box 13",
+      message: "Message for box 13",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 14,
+      itemName: "Box 14",
+      message: "Message for box 14",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 15,
+      itemName: "Box 15",
+      message: "Message for box 15",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 16,
+      itemName: "Box 16",
+      message: "Message for box 16",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 17,
+      itemName: "Box 17",
+      message: "Message for box 17",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 18,
+      itemName: "Box 18",
+      message: "Message for box 18",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 19,
+      itemName: "Box 19",
+      message: "Message for box 19",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 20,
+      itemName: "Box 20",
+      message: "Message for box 20",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 21,
+      itemName: "Box 21",
+      message: "Message for box 21",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 22,
+      itemName: "Box 22",
+      message: "Message for box 22",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 23,
+      itemName: "Box 23",
+      message: "Message for box 23",
+      image: "../../../test/image-16.png",
+    },
+    {
+      id: 24,
+      itemName: "Box 24",
+      message: "Message for box 24",
+      image: "../../../test/image-16.png",
+    },
+  ];
+  function openPopUp(id) {
+    popupImage = boxDetails[id].image;
+    popupMessage = boxDetails[id].message;
+    isPopupOpen = true;
+  }
 
   // Define colorArray using $state() to make it reactive
   let colorArray = $state([
@@ -38,72 +193,25 @@
   ]);
 
   // Derived state to count each color
-  let fullCount = $derived(colorArray.filter(color => color === "green").length);
-  let partiallyFullCount = $derived(colorArray.filter(color => color === "grey").length);
-  let emptyCount = $derived(colorArray.filter(color => color === "red").length);
-
-  const colors = ["red", "green", "grey"];
-
-  function getRandomColor() {
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
-  }
-
-  let interval;
-
-  // Update colors dynamically to show liveness
-  function updateColors() {
-    // Randomly change 2-4 boxes each update
-    const numChanges = Math.floor(Math.random() * 3) + 2; // 2 to 4 changes
-
-    for (let i = 0; i < numChanges; i++) {
-      const randomIndex = Math.floor(Math.random() * colorArray.length);
-      colorArray[randomIndex] = getRandomColor();
-    }
-  }
-
-  let isVisible = $state(true);
-
-  onMount(() => {
-    // Start interval only when visible
-    if (isVisible) {
-      interval = setInterval(updateColors, 3000);
-    }
-
-    // Pause/resume based on page visibility
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden, stop the interval
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
-        isVisible = false;
-      } else {
-        // Page is visible again, restart the interval
-        isVisible = true;
-        if (!interval) {
-          interval = setInterval(updateColors, 3000);
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  });
-
-  onDestroy(() => {
-    if (interval) {
-      clearInterval(interval);
-    }
-  });
+  let fullCount = $derived(
+    colorArray.filter((color) => color === "green").length,
+  );
+  let partiallyFullCount = $derived(
+    colorArray.filter((color) => color === "grey").length,
+  );
+  let emptyCount = $derived(
+    colorArray.filter((color) => color === "red").length,
+  );
 </script>
+
+<BoxPopup
+  open={isPopupOpen}
+  onClose={() => {
+    isPopupOpen = false;
+  }}
+  imageSrc={popupImage}
+  message={popupMessage}
+/>
 
 <div class="main">
   <div class="notifications-container">
@@ -113,19 +221,19 @@
         <!-- NotificationCard component merged inline -->
         <div class="notification-card">
           <div class="icon-container">
-            <svg 
-              class="checkmark" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              class="checkmark"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               stroke-width="2.5"
             >
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          
+
           <div class="content">
             <h3 class="title">{notification.title}</h3>
             <p class="timestamp">Done at {notification.timestamp}</p>
@@ -156,7 +264,10 @@
 
       <div class="boxs-con">
         {#each colorArray as color, index}
-          <div class="box-container">
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore event_directive_deprecated -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="box-container" on:click={() => openPopUp(index)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 55 22"
@@ -272,10 +383,10 @@
   .notification-card {
     border-radius: 17.134px;
     border: 1.606px solid rgba(0, 0, 0, 0.24);
-    box-shadow: 
-      0 0 0.535px 0 rgba(66, 71, 76, 0.32), 
-      0 4.284px 8.567px 0 rgba(66, 71, 76, 0.05), 
-      0 4.284px 42.836px 0 #EEE;
+    box-shadow:
+      0 0 0.535px 0 rgba(66, 71, 76, 0.32),
+      0 4.284px 8.567px 0 rgba(66, 71, 76, 0.05),
+      0 4.284px 42.836px 0 #eee;
     display: flex;
     flex-direction: row;
     align-items: center;

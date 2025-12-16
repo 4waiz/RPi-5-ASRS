@@ -84,5 +84,6 @@
     font-weight: 600;
     white-space: nowrap;
     text-align: center;
+      white-space: normal;
   }
 </style>

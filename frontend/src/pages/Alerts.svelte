@@ -446,7 +446,6 @@
     display: flex;
     gap: 48px;
     background: #ebebeb;
-    padding-left: 220px;
     padding-right: 32px;
     box-sizing: border-box;
     overflow-y: auto;

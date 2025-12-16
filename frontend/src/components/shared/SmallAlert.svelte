@@ -1,8 +1,8 @@
 <script>
     import alertRed from '../../assets/Icons/alert-red.svg?url';
-    import alertYellow from '../../assets/Icons/alert-yallow.svg?url';
+    import alertYellow from '../../assets/Icons/alert-yellow.svg?url';
 
-    let { Massage, Type, Time } = $props();
+    let { Message, Type, Time } = $props();
     let iconPath = $state(Type === "Alert" ? alertRed : alertYellow);
     let color = $state(Type === "Alert" ? "#EDD1D1" : "#EDEBD1");
 </script>
@@ -11,7 +11,7 @@
     <div class="alert-content">
         <img src={iconPath} alt="My icon" class="alert-icon" />
         <p class="alert-message">
-            {Massage}
+            {Message}
         </p>
     </div>
     <span class="alert-timestamp">

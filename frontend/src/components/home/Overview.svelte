@@ -1,318 +1,92 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
   import CircularProgressBar from "../charts/Circular-Progress-Bar.svelte";
-  import Temperature from "../charts/Temperature.svelte";
+  import Tem from "../charts/Tem.svelte";
   import NumericData from "../charts/numeric-data.svelte";
+  import NumericalGraph from "../charts/numerical-graph.svelte";
+  import AbstractInventory from "../shared/abstract-inventory.svelte";
+  let Cl = [80, 20];
+  // Overview metrics variables
+  let PickingAccuracy = 100; // Pick/Put Accuracy percentage
+  let InventoryAccuracy = 90; // Device Utilization percentage
+  let temperature = 45; // Current temperature
+  let Availability = 70; // Throughput Rate percentage
+  let throughputValue = 123; // Throughput value in Ops/h
+  let cycleTime = 10.1; // Carbon emission in kg CO₂/h
+  let energyConsumed = 125; // Energy consumed in w/h
 
-  /* inventory icons (paths match your repo) */
-  import Empty   from "../../assets/inventory/Empty.svg";
-  import Full    from "../../assets/inventory/Full.svg";
-  import Partial from "../../assets/inventory/Partial.svg";
-
-  const icons = { full: Full, empty: Empty, partial: Partial };
-
-  // Live reactive data
-  let carStock = $state(100);
-  let helicopterStock = $state(10);
-  let processorTemp = $state(45);
-  let ambientTemp = $state(23);
-  let energyConsumption = $state(120);
-  let humidity = $state(65);
-  let asrsUtilization = $state(25);
-
-  /* demo slot states - 7 in storage, 8 out storage, 1 out of stock */
-  let slots = $state([
-    "full","full","full","full","full","full","full",  // 7 in storage
-    "partial","partial","partial","partial","partial","partial","partial","partial",  // 8 out storage
-    "empty"  // 1 out of stock
-  ]);
-
-  let counts = $derived({
-    full: slots.filter((s) => s === "full").length,
-    partial: slots.filter((s) => s === "partial").length,
-    empty: slots.filter((s) => s === "empty").length,
-  });
-
-  let interval;
-
-  // Utility function to generate realistic fluctuations
-  function fluctuate(current, min, max, change = 3) {
-    const delta = (Math.random() - 0.5) * change;
-    let newValue = current + delta;
-    return Math.min(Math.max(newValue, min), max);
-  }
-
-  // Simulate live data updates
-  function updateData() {
-    // Stock levels change occasionally (0-100%)
-    if (Math.random() > 0.7) {
-      carStock = Math.round(fluctuate(carStock, 0, 100, 5));
-    }
-    if (Math.random() > 0.7) {
-      helicopterStock = Math.round(fluctuate(helicopterStock, 0, 100, 8));
-    }
-
-    // Temperatures fluctuate with wider range for more visible changes
-    processorTemp = Math.round(fluctuate(processorTemp, 20, 140, 8));
-    ambientTemp = Math.round(fluctuate(ambientTemp, 10, 80, 6));
-
-    // Energy consumption varies
-    energyConsumption = Math.round(fluctuate(energyConsumption, 80, 180, 5));
-
-    // Humidity changes slowly
-    humidity = Math.round(fluctuate(humidity, 40, 80, 2));
-
-    // ASRS utilization varies based on activity
-    asrsUtilization = Math.round(fluctuate(asrsUtilization, 10, 95, 6));
-
-    // Occasionally change inventory slots
-    if (Math.random() > 0.85) {
-      const randomIndex = Math.floor(Math.random() * slots.length);
-      const states = ["full", "partial", "empty"];
-      slots[randomIndex] = states[Math.floor(Math.random() * states.length)];
-    }
-  }
-
-  let isVisible = $state(true);
-
-  onMount(() => {
-    // Start interval only when visible
-    if (isVisible) {
-      interval = setInterval(updateData, 2000);
-    }
-
-    // Pause/resume based on page visibility
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden, stop the interval
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
-        isVisible = false;
-      } else {
-        // Page is visible again, restart the interval
-        isVisible = true;
-        if (!interval) {
-          interval = setInterval(updateData, 2000);
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  });
-
-  onDestroy(() => {
-    if (interval) {
-      clearInterval(interval);
-    }
-  });
+  let slots = ["full", "full", "full", "full"];
 </script>
 
-<div class="main-container">
-  <div class="row">
-    <!-- Column 1 -->
-    <div class="column1">
-      <CircularProgressBar Name="Car Stock" Present={carStock} />
-      <div class="hd"></div>
-      <Temperature Temperature={processorTemp} max={160} label="Processor Temperature" />
-    </div>
+<div class="row">
+  <div class="column1">
+    <CircularProgressBar Name="Picking Accuracy" Present={PickingAccuracy} />
+    <div class="hd"></div>
+    <CircularProgressBar
+      Name="Inventory Accuracy"
+      Present={InventoryAccuracy}
+    />
+  </div>
 
-    <div class="vd"></div>
+  <div class="vd"></div>
 
-    <!-- Column 2 -->
-    <div class="column1">
-      <CircularProgressBar Name="Helicopter Stock" Present={helicopterStock} />
-      <div class="hd"></div>
-      <Temperature Temperature={ambientTemp} max={160} label="Ambient Temperature" />
-    </div>
+  <div class="column1">
+    <Tem value={temperature} />
+    <div class="hd"></div>
+    <CircularProgressBar Name="Availability" Present={Availability} />
+  </div>
 
-    <div class="vd"></div>
+  <div class="vd"></div>
 
-    <!-- Column 3 -->
-    <div class="column2">
-      <NumericData value={energyConsumption} unit="kWh" label="Energy Consumption" />
-      <div class="hd"></div>
-      <NumericData value={humidity} unit="%" label="Humidity" />
-      <div class="hd"></div>
-      <NumericData value={asrsUtilization} unit="%" label="ASRS Utilization" />
-    </div>
-
-    <div style="flex:0 0 0px;"></div>
-
-
-    <!-- Inventory status on the RIGHT -->
-    <div class="inventory-status-container">
-      <div class="container">
-        <h3>Inventory status</h3>
-
-        <div class="grid">
-          {#each slots as state, i}
-            <img
-              class="cell"
-              src={icons[state]}
-              alt={`slot-${i}-${state}`}
-              width="24"
-              height="16"
-            />
-          {/each}
-        </div>
-
-        <div class="legend">
-          <div class="legend-item">
-            <img class="legend-icon" src={icons.full} alt="In Storage" />
-            <span><strong>{counts.full}</strong> : In Storage</span>
-          </div>
-
-          <div class="legend-item">
-            <img class="legend-icon" src={icons.partial} alt="Out Storage" />
-            <span><strong>{counts.partial}</strong> : Out Storage</span>
-          </div>
-
-          <div class="legend-item">
-            <img class="legend-icon" src={icons.empty} alt="Out of stock" />
-            <span><strong>{counts.empty}</strong> : Out of stock</span>
-          </div>
-        </div>
-
-        <button class="manage-btn">Managing Inventory →</button>
-      </div>
-    </div>
+  <div class="column2">
+    <NumericData value={throughputValue} unit="Ops/h" label="Throughput" />
+    <div class="hd"></div>
+    <NumericData value={cycleTime} unit="min/cycle" label="Cyclw Time" />
+    <div class="hd"></div>
+    <NumericData value={energyConsumed} unit="w/Cycle" label="Energy/Cycle" />
+  </div>
+  <div class="column3">
+    <AbstractInventory/>
+    <NumericalGraph value={120} unit="Milliseconds" label="CPU overload" />
   </div>
 </div>
 
 <style>
-  .main-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 0 16px;
-    max-width: 1024px;
-    box-sizing: border-box;
-  }
-
   .column1 {
     display: flex;
-    width: 130px;
+    width: 112.78px;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-end;
+    gap: 16px;
   }
-
   .hd {
     height: 1.5px;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.08);
   }
-
   .column2 {
     display: flex;
-    width: 160px;
+    width: 112.78px;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+  }
+    .column3 {
+    display: flex;
+    width: 249.6px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .row {
+    display: flex;
     align-items: flex-start;
     gap: 32px;
   }
-
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 992px;
-  }
-
   .vd {
-    flex: 0 0 1.5px;
-    background-color: #000000;
-    opacity: 0.08;
-    align-self: stretch;
+    flex: 0 0 1.5px; /* fixed 2px width, no growth */
+    background-color: #000000; /* your color */
+    opacity: 0.08; /* optional: softer line */
+    align-self: stretch; /* if you keep flex-start on the row, add this */
+    /* no height needed */
   }
-
-  .inventory-status-container {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 0;
-    flex-shrink: 0;
-  }
-
-  /* Card */
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: fit-content;
-    padding: 12px 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-
-  h3 {
-    color: #000;
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-  }
-
-  /* Grid */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 24px);
-    gap: 10px 24px;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
-
-  .cell {
-    width: 24px;
-    height: 16px;
-    display: block;
-  }
-
-  /* Legend */
-  .legend {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    margin-bottom: 10px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #333;
-  }
-
-  .legend-icon {
-    width: 24px;
-    height: 16px;
-    display: block;
-    flex-shrink: 0;
-  }
-
-  /* Button */
-  .manage-btn {
-    width: 100%;
-    padding: 8px 0;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    cursor: pointer;
-    border: 1.095px solid rgba(0, 0, 0, 0.68);
-    background-color: rgba(0, 0, 0, 0);
-    transition: all 0.2s ease;
-  }
-  .manage-btn:hover { background-color: rgba(0, 0, 0, 0.05); }
 </style>
