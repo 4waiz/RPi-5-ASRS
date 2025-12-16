@@ -591,9 +591,6 @@ async function retrieveBoxFromStorage(boxName) {
   }
 }
 
-// ============================================================================
-// BOX INSERTION
-// ============================================================================
 async function insertBoxToStorage(boxName) {
   const { boxData, boxMesh } = validateBoxOperation(boxName, "Out");
   systemState.setOperation(boxName);
