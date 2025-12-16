@@ -14,6 +14,7 @@
   import checkIcon from "../assets/settingPage/check.svg";
   import viewIcon from "../assets/settingPage/arrow-6.svg";
   import sliderThumb from "../assets/settingPage/slider.svg";
+  import { t, currentLanguage, setLanguage } from "../lib/i18n";
 
 
 
@@ -54,7 +55,16 @@
   const runtime = $state("00:08:20");
   const timestamp = $state("11/03/2025, 06:38:08");
 
+  // Sync local language state with the i18n store
   let language = $state<"en" | "ar">("en");
+
+  // Subscribe to currentLanguage store to keep local state in sync
+  $effect(() => {
+    const unsubscribe = currentLanguage.subscribe((lang) => {
+      language = lang;
+    });
+    return unsubscribe;
+  });
   // Load brightness from localStorage or default to 100
   let brightness = $state(
     typeof localStorage !== "undefined"
@@ -168,13 +178,13 @@
     <!-- Header -->
     <div class="topbar">
       <div class="titleblock">
-        <h1 class="h1">System Setting</h1>
+        <h1 class="h1">{$t('settings.title')}</h1>
         <div class="meta">
-          <span class="meta-label">ASRS ID:</span
+          <span class="meta-label">{$t('settings.asrsId')}:</span
           >&nbsp;{asrsId}&nbsp;&nbsp;·&nbsp;&nbsp;
-          <span class="meta-label">Runtime:</span
+          <span class="meta-label">{$t('settings.runtime')}:</span
           >&nbsp;{runtime}&nbsp;&nbsp;·&nbsp;&nbsp;
-          <span class="meta-label">Timestamp:</span>&nbsp;{timestamp}
+          <span class="meta-label">{$t('settings.timestamp')}:</span>&nbsp;{timestamp}
         </div>
       </div>
     </div>
@@ -193,7 +203,7 @@
             width="18"
             height="18"
           />
-          <h2 class="card-title">Language</h2>
+          <h2 class="card-title">{$t('settings.language')}</h2>
         </div>
 
         <div class="lang-toggle">
@@ -201,28 +211,28 @@
             type="button"
             class="lang-btn {language === 'en' ? 'active' : ''}"
             aria-pressed={language === "en"}
-            onclick={() => (language = "en")}
+            onclick={() => setLanguage("en")}
           >
             {#if language === "en"}
               <span class="check-dot"
                 ><img src={checkIcon} alt="" width="10" height="10" /></span
               >
             {/if}
-            English
+            {$t('settings.english')}
           </button>
 
           <button
             type="button"
             class="lang-btn {language === 'ar' ? 'active' : ''}"
             aria-pressed={language === "ar"}
-            onclick={() => (language = "ar")}
+            onclick={() => setLanguage("ar")}
           >
             {#if language === "ar"}
               <span class="check-dot"
                 ><img src={checkIcon} alt="" width="10" height="10" /></span
               >
             {/if}
-            عربي / Arabic
+            {$t('settings.arabic')}
           </button>
         </div>
       </section>
@@ -237,7 +247,7 @@
             width="18"
             height="18"
           />
-          <h2 class="card-title">Display Brightness</h2>
+          <h2 class="card-title">{$t('settings.brightness')}</h2>
           <span class="brightness-value">{brightness}%</span>
         </div>
 
@@ -264,7 +274,7 @@
             width="18"
             height="18"
           />
-          <h2 class="card-title">Network Configuration</h2>
+          <h2 class="card-title">{$t('settings.network')}</h2>
           <img
             class="icon lock-icon"
             src={padlockIcon}
@@ -275,7 +285,7 @@
         </div>
 
         <div class="network-content">
-          <div class="section-label">Machine IPs:</div>
+          <div class="section-label">{$t('settings.machineIps')}</div>
 
           <div class="ip-wrapper">
             <input
@@ -375,7 +385,7 @@
             width="18"
             height="18"
           />
-          <h2 class="card-title">Machine Logs</h2>
+          <h2 class="card-title">{$t('settings.logs')}</h2>
           <img
             class="icon lock-icon"
             src={logsFilterIcon}
@@ -393,7 +403,7 @@
               aria-pressed={activeLogTab === "all"}
               onclick={() => (activeLogTab = "all")}
             >
-              All
+              {$t('settings.all')}
             </button>
             <button
               type="button"
@@ -401,7 +411,7 @@
               aria-pressed={activeLogTab === "error"}
               onclick={() => (activeLogTab = "error")}
             >
-              Errors
+              {$t('settings.errors')}
             </button>
             <button
               type="button"
@@ -409,7 +419,7 @@
               aria-pressed={activeLogTab === "operation"}
               onclick={() => (activeLogTab = "operation")}
             >
-              Operations
+              {$t('settings.operations')}
             </button>
           </div>
 
@@ -422,10 +432,10 @@
                 width="16"
                 height="16"
               />
-              <span>Export</span>
+              <span>{$t('settings.export')}</span>
             </button>
             <button class="action-btn">
-              <span>View</span>
+              <span>{$t('settings.view')}</span>
               <img
                 class="icon"
                 src={viewIcon}
@@ -474,10 +484,10 @@
               stroke-width="2"
             />
           </svg>
-          <h2 class="card-title">Backup</h2>
+          <h2 class="card-title">{$t('settings.backup')}</h2>
         </div>
 
-        <p class="help-text">Hold 2s to save/restore</p>
+        <p class="help-text">{$t('settings.holdToSaveRestore')}</p>
 
         <div class="backup-row">
           <div class="backup-group">
@@ -512,7 +522,7 @@
                   stroke-width="2"
                 />
               </svg>
-              <span>Store</span>
+              <span>{$t('settings.store')}</span>
             </button>
             <input class="timestamp-input" value={storeTimestamp} readonly />
           </div>
@@ -549,7 +559,7 @@
                   stroke-linecap="round"
                 />
               </svg>
-              <span>Restore</span>
+              <span>{$t('settings.restore')}</span>
             </button>
             <input class="timestamp-input" value={restoreTimestamp} readonly />
           </div>

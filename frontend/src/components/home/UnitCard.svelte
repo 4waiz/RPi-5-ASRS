@@ -1,45 +1,26 @@
 <script>
-  let {
-    unit,
-    active = false,
-    hideCount = false,
-    hideArrow = false,
-    onOpen = () => {},
-  } = $props();
+  import { t } from "../../lib/i18n";
+  let { unit, active = false, hideCount = false, hideArrow = false, onOpen = () => {} } = $props();
 </script>
 
-<button class="unit-card" class:active onclick={() => onOpen()}>
-  <div class="thumb">
-    <img src={unit.image} alt="" loading="lazy" decoding="async" />
-  </div>
+<button
+  class="unit-card"
+  class:active={active}
+  onclick={() => onOpen()}
+>
+  <div class="thumb"><img src={unit.image} alt="" loading="lazy" decoding="async" /></div>
 
   <div class="meta">
-    <div class="name">{unit.name}</div>
+    <div class="name">{unit.translatedName || unit.name}</div>
     <div class="id">( ID: {unit.id} )</div>
   </div>
 
   <div class="right">
     <span class="subcount" class:hidden={active || hideCount}>
-      {unit.subcomponents.length} subcomponent{unit.subcomponents.length === 1
-        ? ""
-        : "s"}
+      {unit.subcomponents.length} {$t('components.subcomponents')}
     </span>
-    <svg
-      class="chev"
-      class:hidden={hideArrow}
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        d="M9 6l6 6-6 6"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
+    <svg class="chev" class:hidden={hideArrow} width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 </button>
@@ -48,84 +29,90 @@
   .unit-card {
     width: 100%;
     display: grid;
-    grid-template-columns: 92px 1fr auto;
+    grid-template-columns: 64px 1fr auto;
     align-items: center;
-    gap: 18px;
-    padding: 22px 32px 22px 22px;
-    border-radius: 18px;
-    background: #fff;
-    border: 1px solid #ececec;
-    box-shadow:
-      0 2px 1px rgba(0, 0, 0, 0.04),
-      0 16px 24px rgba(0, 0, 0, 0.05);
+    gap: 12px;
+    padding: 17px 34px 17px 26px;
+    border-radius: 17px;
+    background: var(--bg-card, #ffffff);
+    border: none;
+    box-shadow: 0 0 0.5px 0 rgba(66, 71, 76, 0.32);
     text-align: left;
     cursor: pointer;
-    transition:
-      border 160ms ease,
-      box-shadow 160ms ease,
-      transform 120ms ease;
+    transition: all 0.3s ease;
     touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
+    -webkit-tap-highlight-color: var(--shadow-light);
     user-select: none;
     caret-color: transparent;
   }
-  .unit-card:hover {
-    border-color: #e5e5e5;
-  }
+
   .unit-card:active {
     transform: scale(0.995);
   }
+
   .unit-card.active {
-    border: 2px solid #ff5b2e;
-    box-shadow: 0 0 0 2px rgba(255, 91, 46, 0.18);
+    border: 2px solid var(--brand, #ff5622);
+    background: var(--bg-card, #ffffff);
+    border-radius: 17px;
   }
+
   .thumb {
-    width: 92px;
-    height: 92px;
-    border-radius: 16px;
-    background: #f4f4f4;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: var(--bg-page, #f4f4f4);
     display: grid;
     place-items: center;
     overflow: hidden;
+    transition: background 0.3s ease;
   }
+
   .thumb img {
-    max-width: 80px;
-    max-height: 80px;
+    max-width: 56px;
+    max-height: 56px;
     object-fit: contain;
   }
+
   .meta .name {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 650;
-    color: #222;
+    color: var(--primary, #222);
     caret-color: transparent;
   }
+
   .meta .id {
-    margin-top: 2px;
-    font-size: 0.92rem;
-    color: #717171;
+    margin-top: 1px;
+    font-size: 0.8rem;
+    color: var(--secondary, #717171);
     caret-color: transparent;
   }
+
   .right {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #6d6d6d;
+    gap: 6px;
+    color: var(--secondary, #6d6d6d);
     justify-self: end;
     caret-color: transparent;
+    font-size: 0.8rem;
   }
+
   .subcount {
     white-space: nowrap;
     display: inline-block;
-    min-width: 12ch;
+    min-width: 10ch;
     text-align: right;
     caret-color: transparent;
   }
+
   .subcount.hidden {
     visibility: hidden;
   }
+
   .chev {
     opacity: 0.7;
   }
+
   .chev.hidden {
     visibility: hidden;
   }

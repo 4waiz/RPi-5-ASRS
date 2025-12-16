@@ -35,7 +35,7 @@
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
-  const API_BASE = import.meta.env?.VITE_ANALYTICS_API_BASE ?? 'http://localhost:8002';
+  const API_BASE = import.meta.env?.VITE_ANALYTICS_API_BASE ?? "http://192.168.208.146:8002";
 
   // KPI definitions - using consistent orange/neutral color scheme
   const kpiDefinitions = [

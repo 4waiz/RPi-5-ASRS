@@ -4,6 +4,8 @@
   import NumericData from "../charts/numeric-data.svelte";
   import NumericalGraph from "../charts/numerical-graph.svelte";
   import AbstractInventory from "../shared/abstract-inventory.svelte";
+  import { t } from "../../lib/i18n";
+
   let Cl = [80, 20];
   // Overview metrics variables
   let PickingAccuracy = 100; // Pick/Put Accuracy percentage
@@ -19,10 +21,10 @@
 
 <div class="row">
   <div class="column1">
-    <CircularProgressBar Name="Picking Accuracy" Present={PickingAccuracy} />
+    <CircularProgressBar Name={$t('overview.pickingAccuracy')} Present={PickingAccuracy} />
     <div class="hd"></div>
     <CircularProgressBar
-      Name="Inventory Accuracy"
+      Name={$t('overview.inventoryAccuracy')}
       Present={InventoryAccuracy}
     />
   </div>
@@ -32,21 +34,21 @@
   <div class="column1">
     <Tem value={temperature} />
     <div class="hd"></div>
-    <CircularProgressBar Name="Availability" Present={Availability} />
+    <CircularProgressBar Name={$t('overview.availability')} Present={Availability} />
   </div>
 
   <div class="vd"></div>
 
   <div class="column2">
-    <NumericData value={throughputValue} unit="Ops/h" label="Throughput" />
+    <NumericData value={throughputValue} unit="Ops/h" label={$t('overview.throughput')} />
     <div class="hd"></div>
-    <NumericData value={cycleTime} unit="min/cycle" label="Cyclw Time" />
+    <NumericData value={cycleTime} unit="min/cycle" label={$t('overview.cycleTime')} />
     <div class="hd"></div>
-    <NumericData value={energyConsumed} unit="w/Cycle" label="Energy/Cycle" />
+    <NumericData value={energyConsumed} unit="w/Cycle" label={$t('overview.energyCycle')} />
   </div>
   <div class="column3">
     <AbstractInventory/>
-    <NumericalGraph value={120} unit="Milliseconds" label="CPU overload" />
+    <NumericalGraph value={120} unit="Milliseconds" label={$t('overview.cpuOverload')} />
   </div>
 </div>
 

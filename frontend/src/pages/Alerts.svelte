@@ -8,7 +8,7 @@
   import ResultsModal from '../components/alerts/ResultsModal.svelte';
   import { alertsData, diagnosticOptions, currentFilter } from '../stores/alertStore.js';
 
-  const API_BASE = import.meta.env?.VITE_ALERTS_API_BASE ?? 'http://localhost:8000';
+  const API_BASE = import.meta.env?.VITE_ALERTS_API_BASE ?? "http://192.168.208.146:8000";
 
   const DEMO_DIAGNOSTIC_OPTIONS = [
     'conveyor',

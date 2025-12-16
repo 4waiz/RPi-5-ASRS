@@ -7,8 +7,11 @@
   import CompunentsOverviewTab from "../components/home/Components.svelte";
   import OverviewTabPage from "../components/home/Overview.svelte";
   import SmallAlert from "../components/shared/SmallAlert.svelte";
+  import { t } from "../lib/i18n";
+
   let Alerts = [2, 5];
-  let Names = ["Overview", "Inventory", "Digital Twin", "Components"];
+  // Tab names are now derived from translations
+  let Names = $derived([$t('home.tabs.overview'), $t('home.tabs.inventory'), $t('home.tabs.digitalTwin'), $t('home.tabs.components')]);
   let Pages = [
     OverviewTabPage,
     InverntoryTabPage,
@@ -45,7 +48,7 @@
               fill="#1CB542"
             />
           </svg>
-          <span>Smooth operation for {smootHours}h </span>
+          <span>{$t('home.smoothOperation').replace('{hours}', smootHours.toString())}</span>
         </div>
       {/if}
       {#each AlertMessages as alert}

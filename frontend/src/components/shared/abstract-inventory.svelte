@@ -3,6 +3,7 @@
   import Full from "../../assets/inventory/Full.svg";
   import Partial from "../../assets/inventory/Partial.svg";
   import Empty from "../../assets/inventory/Empty.svg";
+  import { t } from "../../lib/i18n";
   let { full = 14, pariallyFull = 5, empty = 5 } = $props();
   let total = 24;
   let fullPercent = (full / total) * 197;
@@ -11,7 +12,7 @@
 </script>
 
 <div class="container">
-  <h3>Inventory status</h3>
+  <h3>{$t('overview.inventoryStatus')}</h3>
   <!-- Grid -->
   <div class="bar-container">
     <div class="bar" style="width:{fullPercent}px; background-color:green;"></div>
@@ -24,22 +25,22 @@
     <div class="legend-row">
       <div class="legend-item small">
         <img class="legend-icon" src={Full} alt="Full" />
-        <span><strong>{full}</strong> : Full</span>
+        <span><strong>{full}</strong> : {$t('inventory.full')}</span>
       </div>
 
       <div class="legend-item small">
         <img class="legend-icon" src={Empty} alt="Empty" />
-        <span><strong>{empty}</strong> : Empty</span>
+        <span><strong>{empty}</strong> : {$t('inventory.empty')}</span>
       </div>
     </div>
 
     <div class="legend-item">
       <img class="legend-icon" src={Partial} alt="Partial" />
-      <span><strong>{pariallyFull}</strong> : Partially full</span>
+      <span><strong>{pariallyFull}</strong> : {$t('inventory.partiallyFull')}</span>
     </div>
   </div>
 
-  <button class="manage-btn" onclick={()=>{ActiveTapHomePag.set(1)}}>Managing Inventory →</button>
+  <button class="manage-btn" onclick={()=>{ActiveTapHomePag.set(1)}}>{$t('overview.managingInventory')} →</button>
 </div>
 
 <style>

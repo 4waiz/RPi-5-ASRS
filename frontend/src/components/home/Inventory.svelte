@@ -1,6 +1,7 @@
 <script>
   import InventoryImage from "../../assets/inventory/Inventory.png";
   import BoxPopup from "../shared/box-popup.svelte";
+  import { t } from "../../lib/i18n";
   // Define notification cards data
   let cardNotificationData = $state([
     { title: "Box 1 retrieved", timestamp: "12:10pm" },
@@ -215,7 +216,7 @@
 
 <div class="main">
   <div class="notifications-container">
-    <h2>Live Operations</h2>
+    <h2>{$t('inventory.liveOperations')}</h2>
     <div class="live-operations-container">
       {#each cardNotificationData as notification}
         <!-- NotificationCard component merged inline -->
@@ -236,7 +237,7 @@
 
           <div class="content">
             <h3 class="title">{notification.title}</h3>
-            <p class="timestamp">Done at {notification.timestamp}</p>
+            <p class="timestamp">{$t('inventory.doneAt')} {notification.timestamp}</p>
           </div>
         </div>
       {/each}
@@ -244,15 +245,15 @@
     <div class="legend">
       <div class="legend-item">
         <span class="dot full"></span>
-        <span>{fullCount} : Full</span>
+        <span>{fullCount} : {$t('inventory.full')}</span>
       </div>
       <div class="legend-item">
         <span class="dot partially-full"></span>
-        <span>{partiallyFullCount} : Partially full.</span>
+        <span>{partiallyFullCount} : {$t('inventory.partiallyFull')}</span>
       </div>
       <div class="legend-item">
         <span class="dot empty"></span>
-        <span>{emptyCount} : Empty</span>
+        <span>{emptyCount} : {$t('inventory.empty')}</span>
       </div>
     </div>
   </div>
