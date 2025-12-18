@@ -2,6 +2,7 @@
   import Keyboard from "./Keyboard.svelte";
   export let open = false; // control from parent
   export let onClose = () => {}; // function to call when closing
+  export let changeMode = true; // whether to switch to Test mode after login
   import { curentMode, isPassWordPopupOpen, USER_TOKEN } from "../../stores/AppStore.js";
 
   let username = "Admin";
@@ -30,7 +31,10 @@
       if (response.ok) {
         const data = await response.json();
         USER_TOKEN.set(data.access_token);
-        curentMode.set("Test");
+        // Only change mode if changeMode is true (not from Settings page)
+        if (changeMode) {
+          curentMode.set("Test");
+        }
         isPassWordPopupOpen.set(false);
         password = "";
         console.log(USER_TOKEN);

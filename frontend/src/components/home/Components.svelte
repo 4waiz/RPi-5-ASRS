@@ -12,10 +12,10 @@
 
   // --- STORE DEFINITION ---
   const createSystemStore = () => {
-    const { subscribe, set } = writable({ 
-      units: [], 
-      online: false, 
-      lastUpdated: null 
+    const { subscribe, set, update } = writable({
+      units: [],
+      online: false,
+      lastUpdated: null
     });
 
     let interval;
@@ -32,11 +32,11 @@
           });
         } else {
           // Keep old data but mark offline
-          set(state => ({ ...state, online: false }));
+          update(state => ({ ...state, online: false }));
         }
       } catch (err) {
         console.error("API Error:", err);
-        set(state => ({ ...state, online: false }));
+        update(state => ({ ...state, online: false }));
       }
     };
 

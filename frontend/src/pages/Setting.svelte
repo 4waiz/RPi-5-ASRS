@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { currentPage } from "../stores/AppStore";
+  import { onMount, onDestroy } from "svelte";
+  import { currentPage, USER_TOKEN, isPassWordPopupOpen, curentMode } from "../stores/AppStore";
 
   import arrowBackIcon from "../assets/settingPage/arrow-1.svg";
   import languageIcon from "../assets/settingPage/frame6.svg";
@@ -30,6 +30,21 @@
     return () => {
       document.body.style.overflow = previousBodyOverflow || "";
     };
+  });
+
+  // Clear the token when leaving the Settings page only if in Live mode
+  // If in Edit/Test mode, keep the token so user stays authenticated
+  let currentModeValue: string;
+  const unsubscribeMode = curentMode.subscribe((mode) => {
+    currentModeValue = mode;
+  });
+
+  onDestroy(() => {
+    unsubscribeMode();
+    // Only reset token if user is in Live mode
+    if (currentModeValue === "Live") {
+      USER_TOKEN.set("");
+    }
   });
 
   // Prevent browser zoom
@@ -72,6 +87,13 @@
       : 100,
   );
   let activeLogTab = $state<"all" | "error" | "operation">("all");
+
+  // Network authentication state - reactive to USER_TOKEN
+  let isNetworkAuthenticated = $derived($USER_TOKEN !== "");
+
+  function handleUnlockNetwork() {
+    isPassWordPopupOpen.set(true);
+  }
 
   // Apply brightness to display
   function applyBrightness(value: number) {
@@ -278,101 +300,154 @@
           <img
             class="icon lock-icon"
             src={padlockIcon}
-            alt="Locked"
+            alt={isNetworkAuthenticated ? "Unlocked" : "Locked"}
             width="16"
             height="16"
           />
         </div>
 
-        <div class="network-content">
-          <div class="section-label">{$t('settings.machineIps')}</div>
+        {#if isNetworkAuthenticated}
+          <div class="network-content">
+            <div class="section-label">{$t('settings.machineIps')}</div>
 
-          <div class="ip-wrapper">
-            <input
-              class="ip-input"
-              value={ip1Masked ? maskIP(ip1Value) : ip1Value}
-              readonly
-              aria-label="Machine IP 1"
-            />
-            <button
-              class="reveal-btn"
-              type="button"
-              aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
-              onclick={() => (ip1Masked = !ip1Masked)}
-            >
-              <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
-                <path
-                  d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                <circle
-                  cx="12"
-                  cy="12.5"
-                  r="3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                {#if ip1Masked}
-                  <line
-                    x1="4"
-                    y1="4"
-                    x2="20"
-                    y2="21"
+            <div class="ip-wrapper">
+              <input
+                class="ip-input"
+                value={ip1Masked ? maskIP(ip1Value) : ip1Value}
+                readonly
+                aria-label="Machine IP 1"
+              />
+              <button
+                class="reveal-btn"
+                type="button"
+                aria-label={ip1Masked ? "Show IP 1" : "Hide IP 1"}
+                onclick={() => (ip1Masked = !ip1Masked)}
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
+                  <path
+                    d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z"
+                    fill="none"
                     stroke="currentColor"
                     stroke-width="2"
-                    stroke-linecap="round"
                   />
-                {/if}
-              </svg>
-            </button>
-          </div>
-
-          <div class="ip-wrapper">
-            <input
-              class="ip-input"
-              value={ip2Masked ? maskIP(ip2Value) : ip2Value}
-              readonly
-              aria-label="Machine IP 2"
-            />
-            <button
-              class="reveal-btn"
-              type="button"
-              aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
-              onclick={() => (ip2Masked = !ip2Masked)}
-            >
-              <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
-                <path
-                  d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                <circle
-                  cx="12"
-                  cy="12.5"
-                  r="3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                {#if ip2Masked}
-                  <line
-                    x1="4"
-                    y1="4"
-                    x2="20"
-                    y2="21"
+                  <circle
+                    cx="12"
+                    cy="12.5"
+                    r="3.5"
+                    fill="none"
                     stroke="currentColor"
                     stroke-width="2"
-                    stroke-linecap="round"
                   />
-                {/if}
+                  {#if ip1Masked}
+                    <line
+                      x1="4"
+                      y1="4"
+                      x2="20"
+                      y2="21"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  {/if}
+                </svg>
+              </button>
+            </div>
+
+            <div class="ip-wrapper">
+              <input
+                class="ip-input"
+                value={ip2Masked ? maskIP(ip2Value) : ip2Value}
+                readonly
+                aria-label="Machine IP 2"
+              />
+              <button
+                class="reveal-btn"
+                type="button"
+                aria-label={ip2Masked ? "Show IP 2" : "Hide IP 2"}
+                onclick={() => (ip2Masked = !ip2Masked)}
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" width="16" height="16">
+                  <path
+                    d="M12 5C7 5 2.73 8.11 1 12.5 2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12.5"
+                    r="3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  {#if ip2Masked}
+                    <line
+                      x1="4"
+                      y1="4"
+                      x2="20"
+                      y2="21"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  {/if}
+                </svg>
+              </button>
+            </div>
+          </div>
+        {:else}
+          <div class="network-locked">
+            <div class="locked-icon">
+              <svg viewBox="0 0 24 24" width="32" height="32">
+                <rect
+                  x="3"
+                  y="11"
+                  width="18"
+                  height="11"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M7 11V7a5 5 0 0 1 10 0v4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
               </svg>
+            </div>
+            <p class="locked-text">{$t('settings.authRequired') || 'Authentication required to view IP addresses'}</p>
+            <button
+              class="unlock-btn"
+              type="button"
+              onclick={handleUnlockNetwork}
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14">
+                <rect
+                  x="3"
+                  y="11"
+                  width="18"
+                  height="11"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M7 11V7a5 5 0 0 1 9.9-1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>{$t('settings.unlock') || 'Unlock'}</span>
             </button>
           </div>
-        </div>
+        {/if}
       </section>
 
       <!-- Logs -->
@@ -946,6 +1021,55 @@
 
   .reveal-btn:hover .eye-icon {
     color: var(--primary);
+  }
+
+  /* Network Locked State */
+  .network-locked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex: 1;
+    padding: 16px 0;
+  }
+
+  .locked-icon {
+    color: var(--secondary);
+    opacity: 0.6;
+  }
+
+  .locked-text {
+    font-size: 12px;
+    color: var(--secondary);
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .unlock-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--brand);
+    border-radius: 8px;
+    background: var(--brand-light);
+    color: var(--brand);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .unlock-btn:hover {
+    background: var(--brand);
+    color: white;
+  }
+
+  .unlock-btn svg {
+    flex-shrink: 0;
   }
 
   /* Logs */

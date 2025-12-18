@@ -33,7 +33,7 @@
 
 <div class="main">
   <ModePopup open={$isModePopupOpen} onClose={closeModePopup} />
-  <PasswordPopup open={$isPassWordPopupOpen} onClose={closePasswordPopup} />
+  <PasswordPopup open={$isPassWordPopupOpen} onClose={closePasswordPopup} changeMode={$currentPage !== 'Settings'} />
   <svelte:component this={component} />
 </div>
 
