@@ -7,7 +7,6 @@
   import brightnessIcon from "../assets/settingPage/frame3.svg";
   import networkIcon from "../assets/settingPage/frame4.svg";
   import padlockIcon from "../assets/settingPage/frame7.svg";
-  import revealIcon from "../assets/settingPage/frame1.svg";
   import logsPadlockIcon from "../assets/settingPage/frame8.svg";
   import logsFilterIcon from "../assets/settingPage/frame.svg";
   import exportIcon from "../assets/settingPage/frame2.svg";
@@ -123,8 +122,9 @@
   });
 
   // ===== Network IP (masked input with inline eye button) =====
-  let ip1Value = $state("192.168.0.101");
-  let ip2Value = $state("192.168.0.102");
+  // Read IPs from environment variables
+  let ip1Value = $state(import.meta.env.VITE_ASRS_IP);
+  let ip2Value = $state(import.meta.env.VITE_MES_IP);
   let ip1Masked = $state(true);
   let ip2Masked = $state(true);
   const maskIP = (s: string) => s.replace(/\d/g, "•");
@@ -419,7 +419,6 @@
                 />
               </svg>
             </div>
-            <p class="locked-text">{$t('settings.authRequired') || 'Authentication required to view IP addresses'}</p>
             <button
               class="unlock-btn"
               type="button"
@@ -444,7 +443,7 @@
                   stroke-linecap="round"
                 />
               </svg>
-              <span>{$t('settings.unlock') || 'Unlock'}</span>
+              <span>Unlock</span>
             </button>
           </div>
         {/if}
@@ -1029,7 +1028,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 0px;
     flex: 1;
     padding: 16px 0;
   }
@@ -1039,24 +1038,16 @@
     opacity: 0.6;
   }
 
-  .locked-text {
-    font-size: 12px;
-    color: var(--secondary);
-    text-align: center;
-    margin: 0;
-    line-height: 1.4;
-  }
-
   .unlock-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
     padding: 8px 16px;
-    border: 1.5px solid var(--brand);
+    border: 1.5px solid var(--secondary);
     border-radius: 8px;
-    background: var(--brand-light);
-    color: var(--brand);
+    background: var(--bg-page);
+    color: var(--secondary);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
