@@ -58,13 +58,14 @@
     align-self: stretch;
     max-width: 640px;
     max-height: calc(100vh - 160px);
-    background: #fff;
-    box-shadow: -8px 0 18px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(12px);
     display: grid;
     grid-template-rows: auto 1fr;
-    border: 1px solid #eee;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: #f2f2f2;
     border-radius: 16px;
     overflow: hidden;
+    margin-bottom: 24px;
   }
 
   .hdr {
@@ -72,7 +73,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 18px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 2px solid #e0e0e0;
   }
   .head {
     display: flex;

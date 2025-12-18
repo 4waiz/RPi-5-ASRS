@@ -136,16 +136,9 @@
     display: flex;
     gap: 28px;
     align-items: stretch;
-    padding: 20px 24px 32px;
-    min-height: calc(100vh - 120px);
+    height: calc(100vh - 203px);
     box-sizing: border-box;
     transition: all 0.3s ease;
-    background: var(--bg-page);
-    user-select: none;
-    caret-color: transparent;
-  }
-
-  :global(.components-page *) {
     user-select: none;
     caret-color: transparent;
   }
@@ -153,11 +146,11 @@
   .units-column {
     flex: 1 1 100%;
     display: flex;
+    height: 100%;
     flex-direction: column;
-    gap: 16px;
     max-width: 960px;
     transition: all 0.3s ease;
-    background: var(--bg-page);
+    overflow-y: auto;
   }
 
   .components-page.with-drawer {
@@ -172,10 +165,6 @@
 
   .components-page:not(.with-drawer) {
     justify-content: center;
-  }
-
-  .components-page:not(.with-drawer) :global(.unit-card) {
-    min-height: 140px;
   }
 
   @media (max-width: 960px) {

@@ -1,14 +1,18 @@
 <script>
   import { t } from "../../lib/i18n";
-  let { unit, active = false, hideCount = false, hideArrow = false, onOpen = () => {} } = $props();
+  let {
+    unit,
+    active = false,
+    hideCount = false,
+    hideArrow = false,
+    onOpen = () => {},
+  } = $props();
 </script>
 
-<button
-  class="unit-card"
-  class:active={active}
-  onclick={() => onOpen()}
->
-  <div class="thumb"><img src={unit.image} alt="" loading="lazy" decoding="async" /></div>
+<button class="unit-card" class:active onclick={() => onOpen()}>
+  <div class="thumb">
+    <img src={unit.image} alt="" loading="lazy" decoding="async" />
+  </div>
 
   <div class="meta">
     <div class="name">{unit.translatedName || unit.name}</div>
@@ -17,10 +21,25 @@
 
   <div class="right">
     <span class="subcount" class:hidden={active || hideCount}>
-      {unit.subcomponents.length} {$t('components.subcomponents')}
+      {unit.subcomponents.length}
+      {$t("components.subcomponents")}
     </span>
-    <svg class="chev" class:hidden={hideArrow} width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg
+      class="chev"
+      class:hidden={hideArrow}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M9 6l6 6-6 6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </svg>
   </div>
 </button>
@@ -34,9 +53,7 @@
     gap: 12px;
     padding: 17px 34px 17px 26px;
     border-radius: 17px;
-    background: var(--bg-card, #ffffff);
     border: none;
-    box-shadow: 0 0 0.5px 0 rgba(66, 71, 76, 0.32);
     text-align: left;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -44,6 +61,9 @@
     -webkit-tap-highlight-color: var(--shadow-light);
     user-select: none;
     caret-color: transparent;
+    border: rgba(255, 255, 255, 1) 2px solid;
+    margin-bottom: 18px;
+    background: rgba(255, 255, 255, 0.50);
   }
 
   .unit-card:active {
@@ -52,7 +72,7 @@
 
   .unit-card.active {
     border: 2px solid var(--brand, #ff5622);
-    background: var(--bg-card, #ffffff);
+    background: #ff562218;
     border-radius: 17px;
   }
 
@@ -60,11 +80,11 @@
     width: 64px;
     height: 64px;
     border-radius: 12px;
-    background: var(--bg-page, #f4f4f4);
+    background: #CAD6E6;
     display: grid;
     place-items: center;
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: background D0.3s ease;
   }
 
   .thumb img {
@@ -78,6 +98,7 @@
     font-weight: 650;
     color: var(--primary, #222);
     caret-color: transparent;
+    min-width: 200px;
   }
 
   .meta .id {
