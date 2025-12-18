@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import CircularProgressBar from "../charts/Circular-Progress-Bar.svelte";
   import Tem from "../charts/Tem.svelte";
   import NumericData from "../charts/numeric-data.svelte";
@@ -16,7 +17,37 @@
   let cycleTime = 10.1; // Carbon emission in kg CO₂/h
   let energyConsumed = 125; // Energy consumed in w/h
 
-  let slots = ["full", "full", "full", "full"];
+  // Initialize slot status variables
+  let full = $state(0);
+  let pariallyFull = $state(0);
+  let empty = $state(0);
+
+  // Fetch inventory data from API
+  async function fetchInventorySlots() {
+    try {
+      const response = await fetch("/api/inventory");
+      if (!response.ok) throw new Error("Failed to fetch inventory slots");
+      const data = await response.json();
+
+      // Log unique status values to see what's in the API
+      const statuses = [...new Set(data.map(slot => slot.status))];
+      console.log("Available status values:", statuses);
+
+      // Count slots by status
+      full = data.filter(slot => slot.status === "Full").length;
+      pariallyFull = data.filter(slot => slot.status === "Partially full").length;
+      empty = data.filter(slot => slot.status === "Empty").length;
+    } catch (error) {
+      console.error("Error fetching inventory slots:", error);
+    }
+  }
+
+  // On mount, fetch data and refresh every 5 seconds
+  onMount(() => {
+    fetchInventorySlots();
+    const interval = setInterval(fetchInventorySlots, 1000);
+    return () => clearInterval(interval);
+  });
 </script>
 
 <div class="row">
@@ -47,7 +78,7 @@
     <NumericData value={energyConsumed} unit="w/Cycle" label={$t('overview.energyCycle')} />
   </div>
   <div class="column3">
-    <AbstractInventory/>
+    <AbstractInventory {full} {pariallyFull} {empty} />
     <NumericalGraph value={120} unit="Milliseconds" label={$t('overview.cpuOverload')} />
   </div>
 </div>
@@ -72,7 +103,7 @@
     align-items: flex-start;
     gap: 40px;
   }
-    .column3 {
+  .column3 {
     display: flex;
     width: 249.6px;
     flex-direction: column;

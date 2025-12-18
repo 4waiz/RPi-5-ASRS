@@ -454,10 +454,13 @@
   .alerts-shell {
     flex: 1;
     min-width: 0;
+    width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     gap: 16px;
     padding: 16px 24px;
+    overflow-y: auto;
   }
 
   /* Compact Top Bar */

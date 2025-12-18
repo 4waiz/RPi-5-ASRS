@@ -7,19 +7,26 @@
   import CompunentsOverviewTab from "../components/home/Components.svelte";
   import OverviewTabPage from "../components/home/Overview.svelte";
   import SmallAlert from "../components/shared/SmallAlert.svelte";
+  import Control from "../components/home/control.svelte";
+  import {curentMode} from "../stores/AppStore.js";
   import { t } from "../lib/i18n";
 
   let Alerts = [2, 5];
   // Tab names are now derived from translations
-  let Names = $derived([$t('home.tabs.overview'), $t('home.tabs.inventory'), $t('home.tabs.digitalTwin'), $t('home.tabs.components')]);
-  let Pages = [
+  $: Names = [$t('home.tabs.overview'), $t('home.tabs.inventory'), $t('home.tabs.digitalTwin'), $t('home.tabs.components')];
+
+  // Reactively update tabe3 when curentMode changes
+  $: tabe3 = $curentMode === "Test" ? Control : DigitalTwinTabPage;
+
+  // Reactively rebuild Pages array when tabe3 changes
+  $: Pages = [
     OverviewTabPage,
     InverntoryTabPage,
-    DigitalTwinTabPage,
+    tabe3,
     CompunentsOverviewTab,
   ];
 
-  let AlertMessages = $state([]);
+  let AlertMessages = [];
   let smootHours = 5;
 </script>
 

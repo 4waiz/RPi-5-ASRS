@@ -6,9 +6,9 @@
   import { t } from "../../lib/i18n";
   let { full = 14, pariallyFull = 5, empty = 5 } = $props();
   let total = 24;
-  let fullPercent = (full / total) * 197;
-  let partialPercent = (pariallyFull / total) * 197;
-  let emptyPercent = (empty / total) * 197;
+  let fullPercent = $derived((full / total) * 197);
+  let partialPercent = $derived((pariallyFull / total) * 197);
+  let emptyPercent = $derived((empty / total) * 197);
 </script>
 
 <div class="container">
