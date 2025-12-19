@@ -78,9 +78,9 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div class="page-container" on:click={onClose}>
+    <div class="page-container" onclick={onClose}>
       <section class="top-section">
-        <div class="modal" on:click|stopPropagation>
+        <div class="modal" onclick={(e) => e.stopPropagation()}>
           <h1 class="title">Enter the Password</h1>
           <p class="subtitle">
             This is a protected feature for admin users only.
@@ -95,7 +95,7 @@
               type="password"
               bind:value={password}
               placeholder="Enter password..."
-              readonly
+              onkeydown={(e) => e.key === 'Enter' && handleEnter()}
             />
           </div>
 
@@ -105,7 +105,7 @@
         </div>
       </section>
 
-      <section class="bottom-section" on:click|stopPropagation>
+      <section class="bottom-section" onclick={(e) => e.stopPropagation()}>
         <Keyboard on:keypress={handleVirtualKey} />
       </section>
     </div>

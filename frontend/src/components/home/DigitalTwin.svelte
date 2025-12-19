@@ -875,7 +875,7 @@
     const { width, height } = getRenderDimensions();
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(304.9, 72.4, -162.7);
+    camera.position.set(414.3, 121.9, -55.9);
     camera.lookAt(CAMERA_LOOK_TARGET);
 
     renderer = new THREE.WebGLRenderer({
@@ -1107,7 +1107,7 @@
   const CAMERA_HEIGHT = 125;
   const CAMERA_MIN_DISTANCE = 220;
   const CAMERA_MAX_DISTANCE = 520;
-  const CAMERA_LOOK_TARGET = new THREE.Vector3(10, 35, -20);
+  const CAMERA_LOOK_TARGET = new THREE.Vector3(130, 10, 60);
 
   const CAMERA_PRESETS = {
     front: {
