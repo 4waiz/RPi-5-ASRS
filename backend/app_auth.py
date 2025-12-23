@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from starlette.config import Config
+import uvicorn
 
 app = FastAPI()
 
@@ -53,3 +54,5 @@ def verify(credentials: HTTPAuthorizationCredentials = Depends(security)):
     return {"access": "granted"}
 
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8010)

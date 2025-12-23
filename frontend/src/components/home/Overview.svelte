@@ -9,18 +9,40 @@
 
   let Cl = [80, 20];
   // Overview metrics variables
-  let PickingAccuracy = 100; // Pick/Put Accuracy percentage
-  let InventoryAccuracy = 90; // Device Utilization percentage
-  let temperature = 45; // Current temperature
-  let Availability = 70; // Throughput Rate percentage
-  let throughputValue = 123; // Throughput value in Ops/h
-  let cycleTime = 10.1; // Carbon emission in kg CO₂/h
-  let energyConsumed = 125; // Energy consumed in w/h
+  let PickingAccuracy = $state(0);
+  let InventoryAccuracy = $state(0);
+  let temperature = $state(0);
+  let Availability = $state(0);
+  let throughputValue = $state(0);
+  let cycleTime = $state(0);
+  let energyConsumed = $state(0);
+  let cpuLoad = $state(0);
 
   // Initialize slot status variables
   let full = $state(0);
   let pariallyFull = $state(0);
   let empty = $state(0);
+
+  // Fetch dashboard stats from API
+  async function fetchDashboardStats() {
+    try {
+      const response = await fetch("/api/dashboard/stats");
+      if (!response.ok) throw new Error("Failed to fetch dashboard stats");
+      const data = await response.json();
+
+      // Update metrics (convert decimals to percentages where needed)
+      PickingAccuracy = Math.round(data.picking_accuracy * 100);
+      InventoryAccuracy = Math.round(data.inventory_accuracy * 100);
+      temperature = data.temperature;
+      Availability = Math.round(data.availability * 100);
+      throughputValue = data.throughput;
+      cycleTime = data.cycle_time;
+      energyConsumed = data.energy_per_cycle;
+      cpuLoad = data.cpu_load;
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  }
 
   // Fetch inventory data from API
   async function fetchInventorySlots() {
@@ -28,10 +50,6 @@
       const response = await fetch("/api/inventory");
       if (!response.ok) throw new Error("Failed to fetch inventory slots");
       const data = await response.json();
-
-      // Log unique status values to see what's in the API
-      const statuses = [...new Set(data.map(slot => slot.status))];
-      console.log("Available status values:", statuses);
 
       // Count slots by status
       full = data.filter(slot => slot.status === "Full").length;
@@ -42,10 +60,14 @@
     }
   }
 
-  // On mount, fetch data and refresh every 5 seconds
+  // On mount, fetch data and refresh every 1 second
   onMount(() => {
+    fetchDashboardStats();
     fetchInventorySlots();
-    const interval = setInterval(fetchInventorySlots, 1000);
+    const interval = setInterval(() => {
+      fetchDashboardStats();
+      fetchInventorySlots();
+    }, 1000);
     return () => clearInterval(interval);
   });
 </script>
@@ -79,7 +101,7 @@
   </div>
   <div class="column3">
     <AbstractInventory {full} {pariallyFull} {empty} />
-    <NumericalGraph value={120} unit="Milliseconds" label={$t('overview.cpuOverload')} />
+    <NumericalGraph value={cpuLoad} unit="Milliseconds" label={$t('overview.cpuOverload')} />
   </div>
 </div>
 

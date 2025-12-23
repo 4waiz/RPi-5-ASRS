@@ -11,187 +11,108 @@
 
   // Function to open popup
   let isPopupOpen = $state(false);
-    let popupImage = $state("../../../test/image-16.png");
+  let popupImage = $state("../../../test/image-16.png");
   let popupMessage = $state("Box Details Here");
-  let boxDetails = [
-    {
-      id: 1,
-      itemName: "Box 1",
-      message: "Message for box 1",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 2,
-      itemName: "Box 2",
-      message: "Message for box 2",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 3,
-      itemName: "Box 3",
-      message: "Message for box 3",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 4,
-      itemName: "Box 4",
-      message: "Message for box 4",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 5,
-      itemName: "Box 5",
-      message: "Message for box 5",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 6,
-      itemName: "Box 6",
-      message: "Message for box 6",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 7,
-      itemName: "Box 7",
-      message: "Message for box 7",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 8,
-      itemName: "Box 8",
-      message: "Message for box 8",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 9,
-      itemName: "Box 9",
-      message: "Message for box 9",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 10,
-      itemName: "Box 10",
-      message: "Message for box 10",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 11,
-      itemName: "Box 11",
-      message: "Message for box 11",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 12,
-      itemName: "Box 12",
-      message: "Message for box 12",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 13,
-      itemName: "Box 13",
-      message: "Message for box 13",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 14,
-      itemName: "Box 14",
-      message: "Message for box 14",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 15,
-      itemName: "Box 15",
-      message: "Message for box 15",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 16,
-      itemName: "Box 16",
-      message: "Message for box 16",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 17,
-      itemName: "Box 17",
-      message: "Message for box 17",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 18,
-      itemName: "Box 18",
-      message: "Message for box 18",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 19,
-      itemName: "Box 19",
-      message: "Message for box 19",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 20,
-      itemName: "Box 20",
-      message: "Message for box 20",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 21,
-      itemName: "Box 21",
-      message: "Message for box 21",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 22,
-      itemName: "Box 22",
-      message: "Message for box 22",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 23,
-      itemName: "Box 23",
-      message: "Message for box 23",
-      image: "../../../test/image-16.png",
-    },
-    {
-      id: 24,
-      itemName: "Box 24",
-      message: "Message for box 24",
-      image: "../../../test/image-16.png",
-    },
-  ];
-  function openPopUp(id) {
-    popupImage = boxDetails[id].image;
-    popupMessage = boxDetails[id].message;
-    isPopupOpen = true;
+  let boxDetails = $state([]);
+
+  // Fetch box details from API
+  async function fetchBoxDetails() {
+    try {
+      const response = await fetch("http://192.168.208.146:8009/boxes");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      // Transform API data to match the expected format
+      boxDetails = data.map((box) => ({
+        id: box.box_id,
+        itemName: box.box_label,
+        message: box.item_description,
+        image: "../../../static" + box.image_path.replace("/assets/boxes/", "/assets/aiassistant/boxes/"),
+        tagUid: box.tag_uid,
+        maxItems: box.max_n_items,
+        boxConfig: box.box_config,
+        itemType: box.item_type,
+        createdAt: box.created_at,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch box details:", error);
+    }
+  }
+  function openPopUp(index) {
+    const box = boxDetails.find((b) => b.id === index + 1);
+    if (box) {
+      popupImage = box.image;
+      popupMessage = box.message;
+      isPopupOpen = true;
+    }
   }
 
   // Define colorArray using $state() to make it reactive
-  let colorArray = $state([
-    "grey",
-    "green",
-    "red",
-    "green",
-    "grey",
-    "red",
-    "green",
-    "grey",
-    "red",
-    "green",
-    "grey",
-    "red",
-    "green",
-    "red",
-    "grey",
-    "green",
-    "grey",
-    "green",
-    "red",
-    "green",
-    "grey",
-    "green",
-    "red",
-    "grey",
-  ]);
+  // Initialize with 24 grey slots (unknown state until data loads)
+  let colorArray = $state(Array(24).fill("grey"));
+
+  // Function to convert API status to color
+  function statusToColor(status) {
+    switch (status) {
+      case "Full":
+        return "green";
+      case "Empty":
+        return "red";
+      case "Partially full":
+        return "grey";
+      default:
+        return "grey";
+    }
+  }
+
+  // Function to convert slot_id (e.g., "1,2") to array index
+  // Slot format is "row,col" where row=1-6, col=1-4
+  // Array index = (row-1) * 4 + (col-1)
+  function slotIdToIndex(slotId) {
+    const [row, col] = slotId.split(",").map(Number);
+    return (row - 1) * 4 + (col - 1);
+  }
+
+  // Fetch inventory data and update colorArray
+  async function fetchInventory() {
+    try {
+      const response = await fetch("http://192.168.208.146:8009/inventory");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      // Create a new array with default grey values
+      const newColors = Array(24).fill("grey");
+
+      // Update colors based on API response
+      for (const box of data) {
+        const index = slotIdToIndex(box.slot_id);
+        if (index >= 0 && index < 24) {
+          newColors[index] = statusToColor(box.status);
+        }
+      }
+
+      // Update the reactive state
+      colorArray = newColors;
+    } catch (error) {
+      console.error("Failed to fetch inventory:", error);
+    }
+  }
+
+  // Fetch inventory and box details on component mount and every 500ms
+  $effect(() => {
+    fetchInventory();
+    fetchBoxDetails();
+    const inventoryInterval = setInterval(fetchInventory, 500);
+    const boxDetailsInterval = setInterval(fetchBoxDetails, 500);
+    return () => {
+      clearInterval(inventoryInterval);
+      clearInterval(boxDetailsInterval);
+    };
+  });
 
   // Derived state to count each color
   let fullCount = $derived(
@@ -216,7 +137,7 @@
 
 <div class="main">
   <div class="notifications-container">
-    <h2>{$t('inventory.liveOperations')}</h2>
+    <h2>{$t("inventory.liveOperations")}</h2>
     <div class="live-operations-container">
       {#each cardNotificationData as notification}
         <!-- NotificationCard component merged inline -->
@@ -237,7 +158,10 @@
 
           <div class="content">
             <h3 class="title">{notification.title}</h3>
-            <p class="timestamp">{$t('inventory.doneAt')} {notification.timestamp}</p>
+            <p class="timestamp">
+              {$t("inventory.doneAt")}
+              {notification.timestamp}
+            </p>
           </div>
         </div>
       {/each}
@@ -245,15 +169,15 @@
     <div class="legend">
       <div class="legend-item">
         <span class="dot full"></span>
-        <span>{fullCount} : {$t('inventory.full')}</span>
+        <span>{fullCount} : {$t("inventory.full")}</span>
       </div>
       <div class="legend-item">
         <span class="dot partially-full"></span>
-        <span>{partiallyFullCount} : {$t('inventory.partiallyFull')}</span>
+        <span>{partiallyFullCount} : {$t("inventory.partiallyFull")}</span>
       </div>
       <div class="legend-item">
         <span class="dot empty"></span>
-        <span>{emptyCount} : {$t('inventory.empty')}</span>
+        <span>{emptyCount} : {$t("inventory.empty")}</span>
       </div>
     </div>
   </div>
@@ -502,6 +426,7 @@
     left: 74px;
     padding: 0;
     margin: 0;
+    direction: rtl;
   }
 
   .box-container {

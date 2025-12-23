@@ -11,12 +11,15 @@
   import {curentMode} from "../stores/AppStore.js";
   import { t } from "../lib/i18n";
 
+  //test models 
+  import TestModels from "../components/home/TestModels.svelte";
+
   let Alerts = [2, 5];
   // Tab names are now derived from translations
   $: Names = [$t('home.tabs.overview'), $t('home.tabs.inventory'), $t('home.tabs.digitalTwin'), $t('home.tabs.components')];
 
   // Reactively update tabe3 when curentMode changes
-  $: tabe3 = $curentMode === "Test" ? Control : DigitalTwinTabPage;
+  $: tabe3 = $curentMode === "Test" ? Control : TestModels;
 
   // Reactively rebuild Pages array when tabe3 changes
   $: Pages = [
@@ -33,6 +36,8 @@
 <div class="main">
   <SideBar WarningNum={Alerts[1]} AlertsNum={Alerts[0]} ActivePage={"Home"} />
   <section class="right-con">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       class="alert-section"
       onclick={() => {
@@ -42,7 +47,6 @@
       {#if AlertMessages.length === 0}
         <div class="alert-placeholder">
           <svg
-            xmlns="http://www.w3.org/2000/svg"
             width="13"
             height="10"
             viewBox="0 0 13 10"
