@@ -7,7 +7,7 @@
 
   // --- CONFIGURATION ---
   //const API_URL = "http://127.0.0.1:8007/system-status"; 
-  const API_URL = "http://192.168.208.146:8007/system-status";
+  const API_URL = "http://192.168.208.146:8009/system-status";
   const POLL_INTERVAL = 3000; // Update every 3 seconds
 
   // --- STORE DEFINITION ---
@@ -62,28 +62,31 @@
   
   // Translation & Mapping Logic
   // We process the API data to add translations and UI helpers
-  let unitsWithStatus = $derived(systemState.units.map((unit) => {
+  let unitsWithStatus = $derived((systemState.units || []).map((unit) => {
     return {
       ...unit,
+      id: unit.abbreviation, // Use abbreviation as unique ID for units
       translatedName: $t(unit.name) || unit.name, // Try translating subsystem name
-      subcomponents: unit.subcomponents.map((comp) => {
+      image: unit.image_path ? `/${unit.image_path.split('\\').join('/').replace(/ /g, '%20')}` : null,
+      subcomponents: (unit.devices || []).map((comp) => {
         // Map Status to Translation Key
         // e.g. "idle" -> "components.status.idle"
-        const statusKey = `components.status.${comp.status.toLowerCase()}`;
+        const statusKey = `components.status.${comp.status?.toLowerCase() || 'idle'}`;
         const translatedStatus = $t(statusKey) !== statusKey ? $t(statusKey) : comp.status;
 
         return {
           ...comp,
+          id: comp.device_id, // Use device_id as unique ID for components
           // If translation exists for component name, use it; otherwise use DB name
-          translatedName: $t(`components.${comp.id}`) !== `components.${comp.id}` 
-            ? $t(`components.${comp.id}`) 
+          translatedName: $t(`components.${comp.abbreviation}`) !== `components.${comp.abbreviation}`
+            ? $t(`components.${comp.abbreviation}`)
             : comp.name,
-          
+
           status: backendOnline ? comp.status : "Offline",
           translatedStatus: backendOnline ? translatedStatus : $t("components.status.offline"),
-          
+
           // CRITICAL: The API sends 'image_path', we map it to 'image' for your UI
-          image: comp.image ? `/${comp.image.split('\\').join('/').replace(/ /g, '%20')}` : null
+          image: comp.image_path ? `/${comp.image_path.split('\\').join('/').replace(/ /g, '%20')}` : null
         };
       }),
     };
@@ -111,7 +114,7 @@
 
 <div class="components-page" class:with-drawer={open}>
   <div class="units-column">
-    {#each unitsWithStatus as unit (unit.id)}
+    {#each unitsWithStatus as unit, index (unit.id ?? index)}
       <UnitCard
         {unit}
         active={open && selectedUnit?.id === unit.id}

@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite",
     "dev:frontend": "vite",
-    "dev:alerts": "cd ../backend && .\\.venv\\Scripts\\python.exe -m uvicorn app_alerts:app --host 0.0.0.0 --port 8000 --reload",
-    "dev:assistant": "cd ../backend && .\\.venv\\Scripts\\python.exe app_aiassistant.py",
-    "dev:auth": "cd ../backend && .\\.venv\\Scripts\\python.exe -m uvicorn app_auth:app --host 0.0.0.0 --port 8010 --reload",
-    "dev:backend": "concurrently -k -n alerts,assistant,auth \"npm:dev:alerts\" \"npm:dev:assistant\" \"npm:dev:auth\"",
-    "dev:front-after-backend": "wait-on tcp:8000 tcp:8001 tcp:8010 && npm run dev:frontend",
+    "dev:alerts": "cd ../backend && .venv/bin/python -m uvicorn app_alerts:app --host 0.0.0.0 --port 8000 --reload",
+    "dev:assistant": "cd ../backend && .venv/bin/python app_aiassistant.py",
+    "dev:models": "cd ../backend && .venv/Scripts/python -m uvicorn app_models:app --host 127.0.0.1 --port 8013 --reload",
+    "dev:backend": "concurrently -k -n alerts,assistant,models \"npm:dev:alerts\" \"npm:dev:assistant\" \"npm:dev:models\"",
+    "dev:front-after-backend": "wait-on tcp:8000 tcp:8001 && npm run dev:frontend",
     "dev:stack": "concurrently -k -n backend,front \"npm:dev:backend\" \"npm:dev:front-after-backend\"",
     "build": "vite build",
     "preview": "vite preview"

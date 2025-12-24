@@ -4,7 +4,8 @@
       "Bash(python -m venv:*)",
       "Bash(.venvScriptspython.exe -m pip install --upgrade pip)",
       "Bash(\".venv\\Scripts\\python.exe\" -m pip install --upgrade pip)",
-      "Bash(\".venv\\Scripts\\pip.exe\" install -r requirements.txt)"
+      "Bash(\".venv\\Scripts\\pip.exe\" install -r requirements.txt)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
