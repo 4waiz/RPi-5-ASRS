@@ -15,8 +15,6 @@ ACTIONS = [
 BOX_ID = "box_1"
 
 
-
-
 def execute_action(box_id: str, action: str) -> dict:
     """Call the execute-action API endpoint"""
     url = f"{BASE_URL}/api/models/execute-action"

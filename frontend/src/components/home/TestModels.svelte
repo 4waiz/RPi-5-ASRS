@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import * as THREE from "three";
     import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+    import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
     import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
     let container: HTMLDivElement;
     let scene: THREE.Scene;
@@ -982,31 +983,39 @@
         camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
         camera.position.set(0, 0, 5); // Temporary position, will be adjusted after model loads
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: "low-power" });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(1);
+        renderer.shadowMap.enabled = false; // No shadow calculations
         container.appendChild(renderer.domElement);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        // Lighting for PBR materials
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
         scene.add(ambientLight);
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(100, 200, 100);
+        directionalLight.position.set(150, 150, 150);
         scene.add(directionalLight);
+
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight2.position.set(-100, -100, -100);
+        scene.add(directionalLight2);
 
         // Controls
         controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
+        controls.enableDamping = false; // Disable for better performance
 
         // Load model
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
         loader.load(
-            "/Static/Models/Box/New.glb",
+            "/Static/Models/Box/New_4.glb",
             (gltf) => {
                 const model = gltf.scene;
                 scene.add(model);
+
 
                 // Calculate bounding box to fit camera
                 const box = new THREE.Box3().setFromObject(model);
