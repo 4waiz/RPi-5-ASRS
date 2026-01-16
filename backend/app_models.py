@@ -182,17 +182,23 @@ async def websocket_video(websocket: WebSocket):
 
     try:
         frame_count = 0
+        last_visibility = False
         while True:
             # Get latest frame
             with frame_lock:
                 current_frame = latest_frame
+
+            # Log visibility changes
+            if window_visible != last_visibility:
+                print(f"[VIDEO WS] Visibility changed: {last_visibility} -> {window_visible}, has_frame: {current_frame is not None}")
+                last_visibility = window_visible
 
             # Only send if we have a frame AND window is visible
             if current_frame is not None and window_visible:
                 await websocket.send_bytes(current_frame)
                 frame_count += 1
                 if frame_count % 100 == 0:
-                    print(f"Sent {frame_count} frames to client")
+                    print(f"Sent {frame_count} frames to client (frame size: {len(current_frame)} bytes)")
 
             # ~30 FPS
             await asyncio.sleep(0.033)
@@ -255,10 +261,12 @@ def control_signal_receiver_thread():
             print(f"Received control signal: {signal} from {addr}")
 
             if signal == "DETECTED":
-                # Show window
-                if not window_visible:
-                    window_visible = True
-                    print("Window now visible - triggering popup")
+                # Show window - always set visible and notify (handles re-detection)
+                was_visible = window_visible
+                window_visible = True
+                print(f"DETECTED signal - was_visible: {was_visible}, now visible: True")
+
+                if not was_visible:
 
                     # Notify all hand detection clients
                     if main_loop:
@@ -311,7 +319,7 @@ def udp_receiver_thread():
             frame_count += 1
 
             if frame_count % 100 == 0:
-                print(f"Received {frame_count} UDP frames from {addr}")
+                print(f"Received {frame_count} UDP frames from {addr} (last frame size: {len(data)} bytes)")
 
         except Exception as e:
             print(f"UDP Error: {e}")

@@ -18,6 +18,8 @@
             <div class="video-container">
                 {#if imageSrc}
                     <img src={imageSrc} alt="Live Stream" />
+                {:else}
+                    <div class="placeholder">Connecting to camera...</div>
                 {/if}
             </div>
         </div>

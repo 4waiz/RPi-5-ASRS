@@ -45,6 +45,7 @@
       // Update latest frame; popup visibility is controlled by hand-detection events
       if (currentVideoFrame) URL.revokeObjectURL(currentVideoFrame);
       currentVideoFrame = URL.createObjectURL(event.data);
+      console.log("[VIDEO] Frame received, size:", event.data.size, "bytes");
     };
 
     videoWs.onclose = () => {
@@ -74,9 +75,13 @@
       }
 
       if (payload?.event === "hand_detected") {
+        console.log("[HAND] hand_detected received, userDismissedVideo:", userDismissedVideo, "currentPage:", $currentPage);
         // Don't show popup when on QC page
         if (!userDismissedVideo && $currentPage !== 'QC') {
+          console.log("[HAND] Opening popup");
           isHandDetectionPopupOpen.set(true);
+        } else {
+          console.log("[HAND] Popup blocked - userDismissedVideo:", userDismissedVideo);
         }
       }
 
