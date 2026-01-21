@@ -1,0 +1,15 @@
+{
+  "name": "rpi5-asrs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RPi-5 ASRS - Automated Storage and Retrieval System",
+  "scripts": {
+    "dev": "npm run install:all && npm --prefix frontend run dev:all",
+    "dev:frontend": "npm install && npm --prefix frontend run dev:frontend",
+    "build": "npm --prefix frontend run build",
+    "install:all": "npm install && cd backend && python -m venv .venv && .venv\\Scripts\\pip install -r requirements.txt"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
