@@ -1,10 +1,102 @@
 <script>
+    import { onMount, onDestroy } from "svelte";
+    import { get } from "svelte/store";
+    import { USER_TOKEN } from "../../stores/AppStore.js";
     import hhori from "../../assets/inventory/hhori.png";
     import hverti from "../../assets/inventory/hverti.png";
     import hbasecon from "../../assets/inventory/hbasecon.png";
     import innerConvImg from "../../assets/inventory/inner_conv.png";
     import outconvImg from "../../assets/inventory/outterconv.png";
 
+    // ============================================================================
+    // CONFIGURATION
+    // ============================================================================
+    const RPI_WS_URL = "ws://192.168.208.160:8000";
+
+    // ============================================================================
+    // WEBSOCKET STATE
+    // ============================================================================
+    let ws = null;
+    let wsConnected = false;
+
+    // Connect to RPi WebSocket
+    function connectWebSocket() {
+        if (ws && ws.readyState === WebSocket.OPEN) return;
+
+        ws = new WebSocket(RPI_WS_URL);
+
+        ws.onopen = () => {
+            console.log("Connected to RPi WebSocket");
+            wsConnected = true;
+        };
+
+        ws.onclose = () => {
+            console.log("Disconnected from RPi WebSocket");
+            wsConnected = false;
+            // Reconnect after 3 seconds
+            setTimeout(connectWebSocket, 3000);
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        ws.onmessage = (event) => {
+            console.log("RPi response:", event.data);
+        };
+    }
+
+    // Send command to RPi via WebSocket
+    function sendCommand(command) {
+        const token = get(USER_TOKEN);
+
+        if (!token) {
+            console.error("No auth token - please login first");
+            return;
+        }
+
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+            console.error("WebSocket not connected");
+            return;
+        }
+
+        const message = JSON.stringify({
+            command: command,
+            token: token
+        });
+
+        ws.send(message);
+        console.log("Sent command:", command);
+    }
+
+    // Stop command (when button released)
+    function sendStopCommand(command) {
+        const token = get(USER_TOKEN);
+
+        if (!token || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+        const message = JSON.stringify({
+            command: `${command}_stop`,
+            token: token
+        });
+
+        ws.send(message);
+        console.log("Sent stop command:", `${command}_stop`);
+    }
+
+    onMount(() => {
+        connectWebSocket();
+    });
+
+    onDestroy(() => {
+        if (ws) {
+            ws.close();
+        }
+    });
+
+    // ============================================================================
+    // ARM CONTROL
+    // ============================================================================
     // Arm positions
     const orange = { x: 442, y: 14, w: 857 };
     const blueHome = { x: 722, y: 31, w: 315 };
@@ -111,13 +203,13 @@
         </div>
 
         <div class="controls">
-            <button class:active={innerDirection === "inward"} on:pointerdown={() => innerDirection = "inward"} on:pointerup={() => innerDirection = null} on:pointerleave={() => innerDirection = null}>In</button>
-            <button class:active={innerDirection === "outward"} on:pointerdown={() => innerDirection = "outward"} on:pointerup={() => innerDirection = null} on:pointerleave={() => innerDirection = null}>Out</button>
+            <button class:active={innerDirection === "inward"} on:pointerdown={() => { innerDirection = "inward"; sendCommand("inner_conveyor_in"); }} on:pointerup={() => { innerDirection = null; sendStopCommand("inner_conveyor_in"); }} on:pointerleave={() => { innerDirection = null; sendStopCommand("inner_conveyor_in"); }}>In</button>
+            <button class:active={innerDirection === "outward"} on:pointerdown={() => { innerDirection = "outward"; sendCommand("inner_conveyor_out"); }} on:pointerup={() => { innerDirection = null; sendStopCommand("inner_conveyor_out"); }} on:pointerleave={() => { innerDirection = null; sendStopCommand("inner_conveyor_out"); }}>Out</button>
         </div>
 
         <div class="controls">
-            <button class:active={thirdBeltDirection === "left"} on:pointerdown={() => thirdBeltDirection = "left"} on:pointerup={() => thirdBeltDirection = null} on:pointerleave={() => thirdBeltDirection = null}>Left</button>
-            <button class:active={thirdBeltDirection === "right"} on:pointerdown={() => thirdBeltDirection = "right"} on:pointerup={() => thirdBeltDirection = null} on:pointerleave={() => thirdBeltDirection = null}>Right</button>
+            <button class:active={thirdBeltDirection === "left"} on:pointerdown={() => { thirdBeltDirection = "left"; sendCommand("inner_conveyor_left"); }} on:pointerup={() => { thirdBeltDirection = null; sendStopCommand("inner_conveyor_left"); }} on:pointerleave={() => { thirdBeltDirection = null; sendStopCommand("inner_conveyor_left"); }}>Left</button>
+            <button class:active={thirdBeltDirection === "right"} on:pointerdown={() => { thirdBeltDirection = "right"; sendCommand("inner_conveyor_right"); }} on:pointerup={() => { thirdBeltDirection = null; sendStopCommand("inner_conveyor_right"); }} on:pointerleave={() => { thirdBeltDirection = null; sendStopCommand("inner_conveyor_right"); }}>Right</button>
         </div>
     </section>
 
@@ -143,8 +235,8 @@
         </div>
 
         <div class="controls">
-            <button class:active={outerDirection === "inward"} on:pointerdown={() => outerDirection = "inward"} on:pointerup={() => outerDirection = null} on:pointerleave={() => outerDirection = null}>In</button>
-            <button class:active={outerDirection === "outward"} on:pointerdown={() => outerDirection = "outward"} on:pointerup={() => outerDirection = null} on:pointerleave={() => outerDirection = null}>Out</button>
+            <button class:active={outerDirection === "inward"} on:pointerdown={() => { outerDirection = "inward"; sendCommand("outer_conveyor_in"); }} on:pointerup={() => { outerDirection = null; sendStopCommand("outer_conveyor_in"); }} on:pointerleave={() => { outerDirection = null; sendStopCommand("outer_conveyor_in"); }}>In</button>
+            <button class:active={outerDirection === "outward"} on:pointerdown={() => { outerDirection = "outward"; sendCommand("outer_conveyor_out"); }} on:pointerup={() => { outerDirection = null; sendStopCommand("outer_conveyor_out"); }} on:pointerleave={() => { outerDirection = null; sendStopCommand("outer_conveyor_out"); }}>Out</button>
         </div>
     </section>
 </div>

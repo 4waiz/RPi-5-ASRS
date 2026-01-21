@@ -49,10 +49,10 @@ def verify(credentials: HTTPAuthorizationCredentials = Depends(security)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-    if payload.get("username") != "admin":
+    if payload.get("username") != ADMIN_USERNAME:
         raise HTTPException(status_code=403, detail="Forbidden")
     return {"access": "granted"}
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8010)
+    uvicorn.run(app, host="0.0.0.0", port=8010)
